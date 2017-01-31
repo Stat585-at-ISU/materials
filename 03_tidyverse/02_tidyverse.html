@@ -64,20 +64,281 @@
 
     
   
-<section id="numeric-summaries" class="titleslide slide level1"><h2 class="shout">Numeric summaries</h2></section><section id="ny-times-2016-is-another-record-year" class="slide level2">
-<h2>NY Times: 2016 is another record year</h2>
-<p>On Jan 18 2017 the NY Times published the article <a href="https://www.nytimes.com/interactive/2017/01/18/science/earth/2016-hottest-year-on-record.html">How 2016 Became Earth’s Hottest Year on Record</a>. Part of the article was the image shown below:</p>
-<p><img src="https://static01.nyt.com/newsgraphics/2016/12/08/hottest-year/69e769dba65f6bd4266644d66915cb40cde65cb9/scatter-Artboard_1.png" width=650></p>
-<p>Can we re-create this chart and the analysis?</p>
-</section><section id="section" class="slide level2">
-<h2></h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">temps &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="st">&quot;../data/temps.rds&quot;</span>) </code></pre></div>
-<p>NY Times model: take monthly means for years 1951 to 1980</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">require</span>(tidyverse)
-ny_model &lt;-<span class="st"> </span>temps %&gt;%<span class="st"> </span><span class="kw">filter</span>(<span class="kw">between</span>(Year, <span class="dv">1951</span>, <span class="dv">1980</span>)) %&gt;%<span class="st"> </span>
-<span class="st">  </span><span class="kw">group_by</span>(Month) %&gt;%
-<span class="st">  </span><span class="kw">summarise</span>(<span class="dt">Temp =</span> <span class="kw">mean</span>(Temp, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>))</code></pre></div>
+<section id="numeric-summaries-with-dplyr-and-tidyr" class="titleslide slide level1"><h2 class="shout">Numeric Summaries with dplyr and tidyr</h2></section><section id="the-pipe-operator" class="slide level2">
+<h2>The pipe operator <code>%&gt;%</code></h2>
+<p><code>f(x) %&gt;% g(y)</code> is equivalent to <code>g(f(x), y)</code></p>
+<p>i.e. the output of one function is used as input to the next function. This function can be the identity</p>
+<p>Consequences:</p>
+<ul>
+<li><code>x %&gt;% f(y)</code> is the same as <code>f(x, y)</code></li>
+<li>statements of the form <code>k(h(g(f(x, y), z), u), v, w)</code> become <code>x %&gt;% f(y) %&gt;% g(z) %&gt;% h(u) %&gt;% k(v, w)</code></li>
+<li>read <code>%&gt;%</code> as “then do”</li>
+</ul>
 </section>
+<section id="the-dplyr-package" class="titleslide slide level1"><h2 class="shout">The <code>dplyr</code> package</h2></section><section id="dplyr-verbs" class="slide level2">
+<h2>dplyr verbs</h2>
+<p>There are five primary <code>dplyr</code> <em>verbs</em>, representing distinct data analysis tasks:</p>
+<ul>
+<li><strong>Filter</strong>: Select specified rows of a data frame, produce subsets</li>
+<li><strong>Arrange</strong>: Reorder the rows of a data frame</li>
+<li><strong>Select</strong>: Select particular columns of a data frame</li>
+<li><strong>Mutate</strong>: Add new or change existing columns of the data frame (as functions of existing columns)</li>
+<li><strong>Summarise</strong>: Create collapsed summaries of a data frame</li>
+<li>(<strong>Group By</strong>: Introduce structure to a data frame)</li>
+</ul>
+</section><section id="filter" class="slide level2">
+<h2>Filter</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tidyverse)
+<span class="kw">data</span>(french_fries, <span class="dt">package =</span> <span class="st">&quot;reshape2&quot;</span>)
+french_fries %&gt;%
+<span class="st">    </span><span class="kw">filter</span>(subject ==<span class="st"> </span><span class="dv">3</span>, time ==<span class="st"> </span><span class="dv">1</span>)</code></pre></div>
+<pre><code>##   time treatment subject rep potato buttery grassy rancid painty
+## 1    1         1       3   1    2.9     0.0    0.0    0.0    5.5
+## 2    1         1       3   2   14.0     0.0    0.0    1.1    0.0
+## 3    1         2       3   1   13.9     0.0    0.0    3.9    0.0
+## 4    1         2       3   2   13.4     0.1    0.0    1.5    0.0
+## 5    1         3       3   1   14.1     0.0    0.0    1.1    0.0
+## 6    1         3       3   2    9.5     0.0    0.6    2.8    0.0</code></pre>
+<p>Look at <code>?reshape2::french_fries</code> to learn more about the data</p>
+<p><code>filter</code> is similar to the base function <code>subset</code></p>
+<p>Multiple conditions in <code>filter</code> are combined with a logical AND (i.e. all conditions must be fulfilled)</p>
+<p>Logical expressions can be used e.g. <code>filter(subject == 3 &amp; time == 1)</code></p>
+</section><section id="arrange" class="slide level2">
+<h2>Arrange</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">french_fries %&gt;%
+<span class="st">    </span><span class="kw">arrange</span>(<span class="kw">desc</span>(rancid), potato) %&gt;%
+<span class="st">    </span>head</code></pre></div>
+<pre><code>##   time treatment subject rep potato buttery grassy rancid painty
+## 1    9         2      51   1    7.3     2.3      0   14.9    0.1
+## 2   10         1      86   2    0.7     0.0      0   14.3   13.1
+## 3    5         2      63   1    4.4     0.0      0   13.8    0.6
+## 4    9         2      63   1    1.8     0.0      0   13.7   12.3
+## 5    5         2      19   2    5.5     4.7      0   13.4    4.6
+## 6    9         1      63   1    1.7     0.0      0   13.3   12.8</code></pre>
+<p>Successive variables are used for breaking ties from previous variables.</p>
+</section><section id="select" class="slide level2">
+<h2>Select</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">french_fries %&gt;%
+<span class="st">    </span><span class="kw">select</span>(time, treatment, subject, rep, potato) %&gt;%
+<span class="st">    </span>head</code></pre></div>
+<pre><code>##    time treatment subject rep potato
+## 61    1         1       3   1    2.9
+## 25    1         1       3   2   14.0
+## 62    1         1      10   1   11.0
+## 26    1         1      10   2    9.9
+## 63    1         1      15   1    1.2
+## 27    1         1      15   2    8.8</code></pre>
+</section><section id="summarise" class="slide level2">
+<h2>Summarise</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">french_fries %&gt;%
+<span class="st">    </span><span class="kw">summarise</span>(<span class="dt">mean_rancid =</span> <span class="kw">mean</span>(rancid, <span class="dt">na.rm=</span><span class="ot">TRUE</span>), 
+              <span class="dt">sd_rancid =</span> <span class="kw">sd</span>(rancid, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>))</code></pre></div>
+<pre><code>##   mean_rancid sd_rancid
+## 1     3.85223  3.781815</code></pre>
+</section><section id="summarise-and-group_by" class="slide level2">
+<h2>Summarise and Group_by</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">french_fries %&gt;%
+<span class="st">    </span><span class="kw">group_by</span>(time, treatment) %&gt;%
+<span class="st">    </span><span class="kw">summarise</span>(<span class="dt">mean_rancid =</span> <span class="kw">mean</span>(rancid), <span class="dt">sd_rancid =</span> <span class="kw">sd</span>(rancid))</code></pre></div>
+<pre><code>## Source: local data frame [30 x 4]
+## Groups: time [?]
+## 
+##      time treatment mean_rancid sd_rancid
+##    &lt;fctr&gt;    &lt;fctr&gt;       &lt;dbl&gt;     &lt;dbl&gt;
+## 1       1         1    2.758333  3.212870
+## 2       1         2    1.716667  2.714801
+## 3       1         3    2.600000  3.202037
+## 4       2         1    3.900000  4.374730
+## 5       2         2    2.141667  3.117540
+## 6       2         3    2.495833  3.378767
+## 7       3         1    4.650000  3.933358
+## 8       3         2    2.895833  3.773532
+## 9       3         3    3.600000  3.592867
+## 10      4         1    2.079167  2.394737
+## # ... with 20 more rows</code></pre>
+</section><section id="mutate" class="slide level2">
+<h2>mutate</h2>
+<p>Change an existing or create a new variable into the data</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">french_fries %&gt;%
+<span class="st">    </span><span class="kw">mutate</span>(
+      <span class="dt">awful =</span> (buttery+potato)/<span class="dv">2</span> -<span class="st"> </span>(grassy+painty+rancid)/<span class="dv">3</span>
+    ) %&gt;%<span class="st"> </span><span class="kw">glimpse</span>()</code></pre></div>
+<pre><code>## Observations: 696
+## Variables: 10
+## $ time      &lt;fctr&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
+## $ treatment &lt;fctr&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
+## $ subject   &lt;fctr&gt; 3, 3, 10, 10, 15, 15, 16, 16, 19, 19, 31, 31, 51, 5...
+## $ rep       &lt;dbl&gt; 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2...
+## $ potato    &lt;dbl&gt; 2.9, 14.0, 11.0, 9.9, 1.2, 8.8, 9.0, 8.2, 7.0, 13.0,...
+## $ buttery   &lt;dbl&gt; 0.0, 0.0, 6.4, 5.9, 0.1, 3.0, 2.6, 4.4, 3.2, 0.0, 0....
+## $ grassy    &lt;dbl&gt; 0.0, 0.0, 0.0, 2.9, 0.0, 3.6, 0.4, 0.3, 0.0, 3.1, 0....
+## $ rancid    &lt;dbl&gt; 0.0, 1.1, 0.0, 2.2, 1.1, 1.5, 0.1, 1.4, 4.9, 4.3, 2....
+## $ painty    &lt;dbl&gt; 5.5, 0.0, 0.0, 0.0, 5.1, 2.3, 0.2, 4.0, 3.2, 10.3, 2...
+## $ awful     &lt;dbl&gt; -0.3833333, 6.6333333, 8.7000000, 6.2000000, -1.4166...</code></pre>
+</section><section id="careful-trap" class="slide level2">
+<h2>Careful, trap!</h2>
+<p>Why does</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">french_fries$awful</code></pre></div>
+<pre><code>## NULL</code></pre>
+<p>not return a real-valued summary?</p>
+<ol type="1">
+<li class="fragment next">Because we never saved it back into the <code>french_fries</code> data</li>
+<li class="fragment next">Go back and have a look ;)</li>
+</ol>
+</section><section id="mutate-or-summarize" class="slide level2">
+<h2><code>mutate</code> or <code>summarize</code>?</h2>
+<p>Both commands introduce new variables - so which one should we use?</p>
+<p>Differences:</p>
+<ul>
+<li><code>mutate</code> <strong>adds variables</strong> to the existing data set: the resulting variables must have the <strong>same length</strong> as the original data, e.g. use for transformations, combinations of multiple variables</li>
+<li><code>summarize</code> <strong>creates aggregates</strong> of the original data. The number of rows of the new dataset is determined by the number of combinations of the grouping structure. The number of columns is determined by the number of grouping variables and the summary statistics.</li>
+</ul>
+</section><section id="lets-use-these-tools" class="slide level2">
+<h2>Let’s use these tools</h2>
+<p>to answer these french fry experiment questions:</p>
+<ul>
+<li>Is the design complete?</li>
+<li>Are replicates like each other?</li>
+<li>How do the ratings on the different scales differ?</li>
+<li>Are raters giving different scores on average?</li>
+<li>Do ratings change over the weeks?</li>
+</ul>
+</section><section id="completeness" class="slide level2">
+<h2>Completeness</h2>
+<p>If the data is complete it should be 12 (subjects) x 10 (weeks) x 3 (treatments) x 2 (replicates), that is, 6 records for each person in each week. (Assuming that each person rated on all scales.)</p>
+<p>To check this, we want to tabulate the number of records for each subject, time and treatment. This means select appropriate columns, tabulate, count and spread it out to give a nice table.</p>
+</section><section id="visual-approach-completeness" class="slide level2">
+<h2>Visual approach: completeness</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">french_fries %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> time)) +<span class="st"> </span><span class="kw">geom_bar</span>() +<span class="st"> </span><span class="kw">facet_wrap</span>(~subject) </code></pre></div>
+<p><img src="02_tidyverse_files/figure-revealjs/unnamed-chunk-8-1.png" width="768" /></p>
+</section><section id="numeric-summary-of-completeness" class="slide level2">
+<h2>Numeric summary of completeness</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dim</span>(french_fries) <span class="co"># too few rows - should be 720 = 12 x 10 x 6</span></code></pre></div>
+<pre><code>## [1] 696   9</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># if subjects come, they give all six evaluations</span>
+french_fries %&gt;%<span class="st"> </span><span class="kw">group_by</span>(time, subject) %&gt;%<span class="st"> </span><span class="kw">summarize</span>(<span class="dt">n =</span> <span class="kw">n</span>()) %&gt;%<span class="st"> </span><span class="kw">summary</span>()</code></pre></div>
+<pre><code>##       time       subject         n    
+##  1      :12   10     :10   Min.   :6  
+##  2      :12   15     :10   1st Qu.:6  
+##  3      :12   16     :10   Median :6  
+##  4      :12   19     :10   Mean   :6  
+##  5      :12   51     :10   3rd Qu.:6  
+##  6      :12   52     :10   Max.   :6  
+##  (Other):44   (Other):56</code></pre>
+<p>Why are all of the <code>n</code>s equal to 6?</p>
+</section><section id="numeric-summary-of-completeness-contd" class="slide level2">
+<h2>Numeric summary of completeness (cont’d)</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># not all subjects come all the time:</span>
+french_fries %&gt;%<span class="st"> </span><span class="kw">group_by</span>(subject) %&gt;%<span class="st"> </span><span class="kw">summarize</span>(<span class="dt">n =</span> <span class="kw">n</span>()) %&gt;%<span class="st"> </span><span class="kw">arrange</span>(n)</code></pre></div>
+<pre><code>## # A tibble: 12 × 2
+##    subject     n
+##     &lt;fctr&gt; &lt;int&gt;
+## 1        3    54
+## 2       31    54
+## 3       79    54
+## 4       86    54
+## 5       10    60
+## 6       15    60
+## 7       16    60
+## 8       19    60
+## 9       51    60
+## 10      52    60
+## 11      63    60
+## 12      78    60</code></pre>
+</section><section id="shortcuts" class="slide level2">
+<h2>Shortcuts</h2>
+<ul>
+<li><code>summarize(n = n())</code> is equivalent to <code>tally()</code></li>
+<li><code>group_by(week, subject) %&gt;% summarize(n = n())</code> is equivalent to <code>count(week, subject)</code></li>
+</ul>
+</section><section id="are-replicates-similar" class="slide level2">
+<h2>Are replicates similar?</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">reps &lt;-<span class="st"> </span>french_fries %&gt;%<span class="st"> </span><span class="kw">group_by</span>(time, subject, treatment) %&gt;%
+<span class="st">  </span><span class="kw">summarise</span>(
+    <span class="dt">potato_diff =</span> <span class="kw">diff</span>(potato),
+    <span class="dt">potato =</span> <span class="kw">mean</span>(potato)
+  )
+reps</code></pre></div>
+<pre><code>## Source: local data frame [348 x 5]
+## Groups: time, subject [?]
+## 
+##      time subject treatment potato_diff potato
+##    &lt;fctr&gt;  &lt;fctr&gt;    &lt;fctr&gt;       &lt;dbl&gt;  &lt;dbl&gt;
+## 1       1       3         1        11.1   8.45
+## 2       1       3         2        -0.5  13.65
+## 3       1       3         3        -4.6  11.80
+## 4       1      10         1        -1.1  10.45
+## 5       1      10         2         1.7  10.15
+## 6       1      10         3        -1.2  10.70
+## 7       1      15         1         7.6   5.00
+## 8       1      15         2        -2.0   8.00
+## 9       1      15         3         2.2   6.90
+## 10      1      16         1        -0.8   8.60
+## # ... with 338 more rows</code></pre>
+</section><section id="are-replicates-similar-contd" class="slide level2">
+<h2>Are replicates similar? (cont’d)</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">reps %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> potato, <span class="dt">y =</span> potato_diff, <span class="dt">colour =</span> <span class="kw">as.numeric</span>(time))) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">facet_wrap</span>(~subject) +
+<span class="st">  </span><span class="kw">geom_hline</span>(<span class="kw">aes</span>(<span class="dt">yintercept=</span><span class="dv">0</span>)) +
+<span class="st">  </span><span class="kw">geom_point</span>() </code></pre></div>
+<p><img src="02_tidyverse_files/figure-revealjs/unnamed-chunk-12-1.png" width="768" /></p>
+</section><section id="your-turn-10-min" class="slide level2">
+<h2>Your Turn (10 min)</h2>
+<p><img src="images/stones-faded.png" class="cover"></p>
+<p>Try to answer (a part of) the question: are different ratings similar?</p>
+<p>Note: there are many different ways of answering this question. Choose one numeric and one visual approach</p>
+</section><section id="your-turn---one-solution" class="slide level2">
+<h2>Your Turn - One Solution</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">french_fries %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> potato, <span class="dt">y =</span> buttery)) +<span class="st"> </span><span class="kw">geom_point</span>() +
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">aspect.ratio=</span><span class="dv">1</span>) +<span class="st"> </span><span class="kw">xlim</span>(<span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">15</span>)) +<span class="st"> </span><span class="kw">ylim</span>(<span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">15</span>)) +
+<span class="st">  </span><span class="kw">geom_abline</span>(<span class="dt">colour =</span> <span class="st">&quot;grey50&quot;</span>)</code></pre></div>
+<p><img src="02_tidyverse_files/figure-revealjs/unnamed-chunk-13-1.png" width="768" /></p>
+</section><section id="your-turn---one-solution-contd" class="slide level2">
+<h2>Your Turn - One Solution (cont’d)</h2>
+<p>The package <code>GGally</code> has an implementation of a scatterplot matrix using ggplot2:</p>
+<pre><code>GGally::ggpairs(data = french_fries[ ,5:9])</code></pre>
+<p>For the numeric approach of a summary we could compute means across subjects for each week and compare those values:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ffm &lt;-<span class="st"> </span>french_fries %&gt;%<span class="st"> </span><span class="kw">group_by</span>(time) %&gt;%<span class="st"> </span><span class="kw">summarise</span>(
+  <span class="dt">potato =</span> <span class="kw">mean</span>(potato,  <span class="dt">na.rm=</span><span class="ot">TRUE</span>),
+  <span class="dt">buttery =</span> <span class="kw">mean</span>(buttery,  <span class="dt">na.rm=</span><span class="ot">TRUE</span>),
+  <span class="dt">painty =</span> <span class="kw">mean</span>(painty,  <span class="dt">na.rm=</span><span class="ot">TRUE</span>)
+)</code></pre></div>
+</section><section id="your-turn---one-solution-contd-1" class="slide level2">
+<h2>Your Turn - One Solution (cont’d)</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ffm %&gt;%
+<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> time, <span class="dt">y =</span> potato)) +<span class="st"> </span><span class="kw">geom_point</span>(<span class="dt">colour =</span> <span class="st">&quot;blue&quot;</span>) +
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">y =</span> buttery), <span class="dt">colour =</span> <span class="st">&quot;forestgreen&quot;</span>) +
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">y =</span> painty), <span class="dt">colour =</span> <span class="st">&quot;red&quot;</span>) +
+<span class="st">  </span><span class="kw">ylab</span>(<span class="st">&quot;Score&quot;</span>)</code></pre></div>
+<p><img src="02_tidyverse_files/figure-revealjs/unnamed-chunk-15-1.png" width="768" /></p>
+<p>This doesn’t look like the most elegant or most efficient way of answering the question: the data is in an awkward form!</p>
+</section><section id="another-your-turn-10-min" class="slide level2">
+<h2>Another Your Turn (10 min)</h2>
+<p>The dataset <code>ChickWeight</code> is part of the core packages that come with R (i.e. <code>data(ChickWeight)</code> gets the data into your active session). From the help file:</p>
+<blockquote>
+<p>There were four groups of chicks on different protein diets. The body weights of the chicks were measured at birth and every second day thereafter until day 20. They were also measured on day 21.</p>
+</blockquote>
+<p><img src="http://www.kenaifeed.com/wp-content/uploads/2015/03/chicks.jpg" /></p>
+</section><section id="your-turn-10-min-1" class="slide level2">
+<h2>Your Turn (10 min)</h2>
+<p><img src="images/chicks-faded.png" class="cover"></p>
+<ol type="1">
+<li>Introduce a variable <code>gain</code> into the data that keeps track how much weight each chick has gained since Time 0 (i.e. gain at time 0 should be 0). Plot weight gain over time. Connect the observed weight gain for each chick by a line. Facet by diet.<br />
+</li>
+<li>Focus on weight gains on day 21. Draw side-by-side dotplots of weight gains by diet. Summarize the average weight gain on day 21 under each diet. Overlay the dotplots by error bars around the average weight gain under each diet (see <code>?geom_errorbar</code>)</li>
+</ol>
+</section><section id="re-cap" class="slide level2">
+<h2>Re-cap</h2>
+<ul>
+<li>getting used to <code>dplyr</code> actions takes a bit of time and practice</li>
+<li>recognize keywords and match them to <code>dplyr</code> functions</li>
+<li>make a conscious effort in applying <code>dplyr</code> functions in your regular workflow: that means you have to do things <strong>differently</strong> - the long-term benefits are there, promise!</li>
+</ul>
+</section>
+<section id="next-up-tidyr" class="titleslide slide level1"><h2 class="shout">Next up: <a href="04_tidyr.html"><code>tidyr</code></a></h2></section></section>
 
   <!--
   To hide progress bar from entire presentation

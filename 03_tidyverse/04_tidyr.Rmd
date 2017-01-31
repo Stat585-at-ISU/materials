@@ -1,0 +1,175 @@
+---
+title: "Stat 585 - numeric summaries with dplyr and tidyr"
+author: "Heike Hofmann"
+ratio: 16x10
+output:
+  rmdshower::shower_presentation:
+    self_contained: false
+    katex: true
+    theme: ribbon
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+data(french_fries, package="reshape2")
+```
+# The `tidyr` package
+
+## What is tidy data?
+
+> Happy families are all alike; every unhappy family is unhappy in its own way.<br>
+Leo Tolstoy
+
+- Resource: follow along tidyr vignette 
+- available as 
+`vignette("tidy-data", package="tidyr")`
+- vignette is version of the [tidy data paper](https://www.jstatsoft.org/article/view/v059i10) with updated code
+
+## Outline
+
+- Different sources of messiness
+- Key-Value pairs
+- `tidyr`: `spread` and `gather`, `separate`
+
+
+## Data is usually in a spreadsheet format, but ...
+
+there's different ways of encoding the same information:
+
+Option #1
+```{r echo = FALSE}
+read.csv("../data/preg.csv")
+```
+
+Option #2
+```{r echo = FALSE}
+read.csv("../data/preg2.csv")
+```
+
+Neither #1 nor #2 are "clean" versions of the data: observed information is part of the data structure; some implicit information is assumed
+
+## Sources of Messiness
+
+1. Column headers are values, not variable names.<br>
+e.g. *treatmenta, treatmentb*
+2. Multiple variables are stored in one column.<br>
+e.g. *Fall 2015, Spring 2016* or *"1301 8th St SE, Orange City, Iowa 51041
+(42.99755, -96.04149)", "2102 Durant, Harlan, Iowa 51537
+(41.65672, -95.33780)"*
+3. Multiple observational units are stored in the same table.
+4. A single observational unit is stored in multiple tables.
+
+## Tidy data
+
+
+1. Each variable forms one column.
+2. Each observation forms one row.
+3. Each type of observational unit forms a table.
+
+## Clean version of the example
+
+```{r echo = FALSE}
+preg2 <- read.csv("../data/preg2.csv")
+preg2 %>% gather(key = patient, value = score, 2:4) %>% 
+  mutate(patient = gsub("\\.", " ", patient))
+```
+
+- `treatment` and `patient` uniquely describe a single row in the dataset.
+- `treatment` and `patient` are **key variables**,
+- `score` is a **measurement variable**
+- this makes `treatment-patient` and `score` a **key-value pair**
+
+
+## Key-value pairs (KVP)
+ 
+**Key-Value pairs** (KVP) - also *attribute-value*, *field-value*, *name-value*:
+abstract data representation that allows a lot of flexibility  
+
+One way of telling whether a data set is tidy is to check that all keys for a value are aligned in one row:
+
+| | |
+|:------------- |:------------- | 
+| | |
+| <img src="images/kvp-unhappy.png" width=150> | <img src="images/kvp-happy.png" width=150>     | 
+|Untidy data | Tidy data |
+
+## Tidying data - Plan of attack
+
+Very few functions are needed for tidying data:
+
+- Messy (1): `tidyr` functions `gather` and `spread`.  
+`gather (data, key, value, ...)`: take multiple columns and collapse into key-value pairs <br>
+`spread (data, key, value, fill = NA)`: spread a key-value pair across multiple columns.
+- Messy (2): `tidyr` function `separate (data, col, into, sep = "[^[:alnum:]]+")`:
+separate one column into multiple columns
+- Messy (3): `dplyr` - some combination of the functions discussed previously
+- Messy (4): `dplyr` functionality `join` (and friends) to combine multiple data sets 
+
+## Gather
+
+```{r}
+ffm <- french_fries %>% gather(key = scale, value = score, 5:9)
+ffm
+```
+
+## Spread
+
+```{r}
+ffm %>% spread(key = rep, value = score)
+```
+
+##
+
+```{r}
+ffm %>% spread(key = rep, value = score) %>%
+  ggplot(aes(x = `1`, y = `2`)) + geom_point() +
+  facet_wrap(~scale) + geom_abline(colour = "grey50")
+```
+
+## separate
+
+```{r}
+df <- data.frame(x = c(NA, "a.b", "a.d", "b.c"))
+df %>% separate(x, into = c("A", "B"))
+```
+
+## Your Turn (5 min)
+
+<img src="images/beardshear-view.png" width=1100 class="cover">
+
+The Iowa Data Portal is a wealth of information on and about the State of Iowa. 
+
+The website 
+[Campaign Expenditures](https://data.iowa.gov/Government/Campaign-Expenditures/3adi-mht4/data) provides data on campaign expenditures. The code below reads the data into an R session.
+
+```
+url <- "https://data.iowa.gov/api/views/3adi-mht4/rows.csv"
+campaign <- readr::read_csv(url)
+```
+
+Assess the 'messiness' of the data. List issues that prevent us from working with the data directly. Which of these issues are of type (1) or (2) of messiness?
+
+## Problems with the data
+
+- `Date` is text, in the format of Month/Day/Year (Messy 2)
+- city coordinates are a combination of City name, state, zip code and geographic latitude and longitude. (Messy 2)
+- expenditure amount is a textual expression, not a number (Messy different)
+
+no Messy 1? - problems of type Messy 1 are typically hard to detect and often up to interpretation/dependent on the analysis to be done.
+
+
+## Your Turn (10 min)
+
+<img src="images/beardshear-view.png" width=1100 class="cover">
+
+- Check the help for the function `parse_number` in the `readr` package and use it on the campaign expenditure data.
+- Use `separate` to split the date variable into year, month and day.
+- Use `separate` again to extract geographic latitude and longitude (Hint - you might need several steps of `separate`)
+- Using `dplyr` functionality answer the following questions:
+
+  1. What is the total amount of campaign expenditure?
+  2. What is the single largest cost in the campaign expenditures?
+  3. What time frame does the campaign expenditure cover?
+  4. Plot geographic longitude and latitude. Do campaign expenditures stay in the State of IA? Investigate oddities.
+

@@ -1,0 +1,93 @@
+---
+title: "Stat 585 - numeric summaries with dplyr and tidyr"
+author: "Heike Hofmann"
+ratio: 16x10
+output:
+  rmdshower::shower_presentation:
+    self_contained: false
+    katex: true
+    theme: ribbon
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Your Turn (10 min)
+
+<img src="images/chicks-faded.png" class="cover">
+
+
+1. Introduce a variable `gain` into the data that keeps track how much weight each chick has gained since Time 0 (i.e. gain at time 0 should be 0).
+Plot weight gain over time. Connect the observed weight gain for each chick by a line. Facet by diet.  
+2. Focus on weight gains on day 21. Draw side-by-side dotplots of weight gains by diet. Summarize the average weight gain on day 21 under each diet. Overlay the dotplots by error bars around the average weight gain under each diet (see `?geom_errorbar`)
+
+
+## Sample solution
+
+One of the problems with *plug-n-play* concepts such as the `dplyr` actions is, that there is a lot of freedom to how to use these function and put them into play.
+
+Look out for keys when trying to solve a problem:
+
+1. **Introduce a variable** `gain` into the data that keeps track how much weight **each chick** has gained since Time 0 (i.e. gain at time 0 should be 0).
+
+- "**Introduce a variable**" means, we have to use `mutate`
+- "**each chick**" indicates that we need a grouping structure at the chick level
+
+## Question #1
+
+Beyond that structure, it is *just* some logic to figure out the weight gain:
+
+```{r}
+ChickPlus <- ChickWeight %>% 
+  group_by(Chick) %>% 
+  mutate(gain = weight - weight[Time == 0])
+
+ChickPlus
+```
+
+## Visualization for question #1
+
+```{r fig.height = 4}
+ChickPlus %>% 
+  ggplot(aes(x = Time, y = gain, group = Chick)) + 
+  facet_wrap(~Diet) + 
+  geom_line()
+```
+
+## Keys in Question #2
+
+(2) **Focus on** weight gains on day 21. Draw side-by-side dotplots of weight gains by diet. **Summarize** the average weight gain on day 21 under **each diet.** Overlay the dotplots by error bars around the average weight gain under each diet (see `?geom_errorbar`)
+
+
+- "**Focus on**" means a subset, i.e. use of `filter`
+- "**Summarize**" literally means the `summarize` function
+- "**each diet**" again indicates the grouping structure
+
+## Question #2
+
+```{r}
+ChickError <- ChickPlus %>% 
+  filter(Time == 21) %>% 
+  group_by(Diet) %>% 
+  summarize(
+    mean_gain = mean(gain, na.rm=TRUE),
+    sd_gain = sd(gain, na.rm=TRUE)/n()
+  )
+
+ChickError
+```
+
+## Visualization for Question #2
+
+```{r fig.height=4}
+ChickPlus %>% filter(Time == 21) %>%
+  ggplot(aes(x = Diet)) + 
+  geom_point(aes(y = gain)) +
+  geom_errorbar(aes(ymin = mean_gain-1.96*sd_gain, 
+                    ymax = mean_gain+1.96*sd_gain, 
+                    colour = Diet), data = ChickError) + 
+  geom_point(aes(y = mean_gain, colour = Diet), size = 3, data = ChickError)
+```
+
+

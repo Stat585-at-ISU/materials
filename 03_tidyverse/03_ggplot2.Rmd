@@ -96,6 +96,7 @@ Email list (sign up from http://ggplot2.org/)
 ## Your Turn (10 min)
 
 Load the temperature data [temps.rds](https://github.com/Stat585-at-ISU/materials/blob/master/data/temps.rds) with `readRDS`. 
+
 1. Pick one weather station and plot the monthly temperatures using the `ggplot2` package. Use a line to show the time series.
 2. Now expand this plot to show information for two weather stations. 
 3. Label the time series by the station ID.

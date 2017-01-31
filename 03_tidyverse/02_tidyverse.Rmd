@@ -11,45 +11,259 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-# Numeric summaries 
+# Numeric Summaries with dplyr and tidyr
 
-## NY Times: 2016 is another record year
-On Jan 18 2017 the NY Times published the article [How 2016 Became Earth’s Hottest Year on Record](https://www.nytimes.com/interactive/2017/01/18/science/earth/2016-hottest-year-on-record.html). Part of the article was the image shown below:
+## The pipe operator `%>%`
 
-<img src="https://static01.nyt.com/newsgraphics/2016/12/08/hottest-year/69e769dba65f6bd4266644d66915cb40cde65cb9/scatter-Artboard_1.png" width=650>
+`f(x) %>% g(y)` is equivalent to `g(f(x), y)`
 
-Can we re-create this chart and the analysis?
+i.e. the output of one function is used as input to the next function. This function can be the identity
 
-##
+Consequences:
 
-```{r}
-temps <- readRDS("../data/temps.rds") 
-```
+- `x %>% f(y)` is the same as `f(x, y)`
+- statements of the form `k(h(g(f(x, y), z), u), v, w)` become
+`x %>% f(y) %>% g(z) %>% h(u) %>% k(v, w)`
+- read `%>%` as "then do"
 
-NY Times model: take monthly means for years 1951 to 1980
+# The `dplyr` package
+
+## dplyr verbs
+
+There are five primary `dplyr` *verbs*, representing distinct data analysis tasks:
+
+- **Filter**: Select specified rows of a data frame, produce subsets
+- **Arrange**: Reorder the rows of a data frame
+- **Select**: Select particular columns of a data frame
+- **Mutate**: Add new or change existing columns of the data frame (as functions of existing columns)
+- **Summarise**: Create collapsed summaries of a data frame
+- (**Group By**: Introduce structure to a data frame)
+ 
+ 
+## Filter
 
 ```{r message = FALSE}
-require(tidyverse)
-nyt_model <- temps %>% filter(between(Year, 1951, 1980)) %>% 
-  group_by(Month) %>%
-  summarise(Est = mean(Temp, na.rm = TRUE))
+library(tidyverse)
+data(french_fries, package = "reshape2")
+french_fries %>%
+    filter(subject == 3, time == 1)
 ```
 
-## NY Times model
+Look at `?reshape2::french_fries` to learn more about the data
+
+`filter` is similar to the base function `subset`
+
+Multiple conditions in `filter` are combined with a logical AND (i.e. all conditions must be fulfilled)
+
+Logical expressions can be used e.g. `filter(subject == 3 & time == 1)`
+
+
+## Arrange
 
 ```{r}
-nyt_model %>% ggplot(aes(x = Month, y = Est/100)) + geom_point()
+french_fries %>%
+    arrange(desc(rancid), potato) %>%
+    head
 ```
 
-It would be nice to also have an idea of the variability in each month.
+Successive variables are used for breaking ties from previous variables.
 
+## Select
 
-## Compute Residuals 
-
-```{r message=FALSE, cache=TRUE}
-us_avgs <- temps %>% 
-  group_by(Year, Month) %>%
-  summarise(Avgs = mean(Temp, na.rm = TRUE))
-us_avgs <- left_join(us_avgs, nyt_model)
-us_avgs %>% ggplot(aes(x = Year+Month/100, y=Avgs-Est)) + geom_point()
+```{r}
+french_fries %>%
+    select(time, treatment, subject, rep, potato) %>%
+    head
 ```
+
+## Summarise
+
+```{r}
+french_fries %>%
+    summarise(mean_rancid = mean(rancid, na.rm=TRUE), 
+              sd_rancid = sd(rancid, na.rm = TRUE))
+```
+
+## Summarise and Group_by
+
+```{r}
+french_fries %>%
+    group_by(time, treatment) %>%
+    summarise(mean_rancid = mean(rancid), sd_rancid = sd(rancid))
+```
+
+## mutate
+
+Change an existing or create a new variable into the data
+
+```{r}
+french_fries %>%
+    mutate(
+      awful = (buttery+potato)/2 - (grassy+painty+rancid)/3
+    ) %>% glimpse()
+```
+
+## Careful, trap!
+
+Why does 
+
+```{r}
+french_fries$awful
+```
+
+not return a real-valued summary?
+
+> 1. Because we never saved it back into the `french_fries` data
+> 2. Go back and have a look ;)
+
+## `mutate` or `summarize`?
+
+Both commands introduce new variables - so which one should we use?
+
+Differences:
+
+- `mutate` **adds variables** to the existing data set: the resulting variables must have the **same length** as the original data, e.g. use for transformations, combinations of multiple variables
+- `summarize` **creates aggregates** of the original data. The number of rows of the new dataset is determined by the number of combinations of the grouping structure. The number of columns is determined by the number of grouping variables and the summary statistics.
+
+
+## Let's use these tools
+
+to answer these french fry experiment questions:
+
+- Is the design complete?
+- Are replicates like each other?
+- How do the ratings on the different scales differ?
+- Are raters giving different scores on average?
+- Do ratings change over the weeks?
+
+## Completeness 
+
+If the data is complete it should be 12 (subjects) x 10 (weeks) x 3 (treatments) x 2 (replicates), that is, 6 records for each person in each week. (Assuming that each person rated on all scales.) 
+
+To check this, we want to tabulate the number of records for each subject, time and treatment. This means select appropriate columns, tabulate, count and spread it out to give a nice table.
+
+## Visual approach: completeness
+
+```{r}
+french_fries %>% 
+  ggplot(aes(x = time)) + geom_bar() + facet_wrap(~subject) 
+```
+
+## Numeric summary of completeness
+
+```{r}
+dim(french_fries) # too few rows - should be 720 = 12 x 10 x 6
+
+# if subjects come, they give all six evaluations
+french_fries %>% group_by(time, subject) %>% summarize(n = n()) %>% summary()
+```
+
+Why are all of the `n`s equal to 6?
+
+## Numeric summary of completeness (cont'd)
+
+```{r}
+# not all subjects come all the time:
+french_fries %>% group_by(subject) %>% summarize(n = n()) %>% arrange(n)
+```
+
+## Shortcuts
+
+-  `summarize(n = n())` is equivalent to `tally()` 
+-  `group_by(week, subject) %>% summarize(n = n())` is equivalent to `count(week, subject)`
+
+## Are replicates similar?
+
+```{r fig.width = 4.5, fig.height=4.5}
+reps <- french_fries %>% group_by(time, subject, treatment) %>%
+  summarise(
+    potato_diff = diff(potato),
+    potato = mean(potato)
+  )
+reps
+```
+
+## Are replicates similar? (cont'd)
+
+```{r warning = FALSE}
+reps %>% 
+  ggplot(aes(x = potato, y = potato_diff, colour = as.numeric(time))) + 
+  facet_wrap(~subject) +
+  geom_hline(aes(yintercept=0)) +
+  geom_point() 
+```
+
+## Your Turn (10 min) 
+
+<img src="images/stones-faded.png" class="cover">
+
+Try to answer (a part of) the question: are different ratings similar?
+
+Note: there are many different ways of answering this question. Choose one numeric and one visual approach
+
+## Your Turn - One Solution
+
+```{r warning = FALSE}
+french_fries %>% 
+  ggplot(aes(x = potato, y = buttery)) + geom_point() +
+  theme(aspect.ratio=1) + xlim(c(0,15)) + ylim(c(0,15)) +
+  geom_abline(colour = "grey50")
+```
+
+## Your Turn - One Solution (cont'd)
+
+The package `GGally` has an implementation of a scatterplot matrix using ggplot2:
+
+```
+GGally::ggpairs(data = french_fries[ ,5:9])
+```
+
+For the numeric approach of a summary we could compute means across subjects for each week and compare those values:
+
+```{r}
+ffm <- french_fries %>% group_by(time) %>% summarise(
+  potato = mean(potato,  na.rm=TRUE),
+  buttery = mean(buttery,  na.rm=TRUE),
+  painty = mean(painty,  na.rm=TRUE)
+)
+```
+
+## Your Turn - One Solution (cont'd)
+
+```{r fig.height=3.5}
+ffm %>%
+  ggplot(aes(x = time, y = potato)) + geom_point(colour = "blue") +
+  geom_point(aes(y = buttery), colour = "forestgreen") +
+  geom_point(aes(y = painty), colour = "red") +
+  ylab("Score")
+```
+
+This doesn't look like the most elegant or most efficient way of answering the question: the data is in an awkward form!
+
+## Another Your Turn (10 min)
+
+The dataset `ChickWeight` is part of the core packages that come with R (i.e. `data(ChickWeight)` gets the data into your active session).
+From the help file:
+
+> There were four groups of chicks on different protein diets. The body weights of the chicks were measured at birth and every second day thereafter until day 20. They were also measured on day 21. 
+
+![](http://www.kenaifeed.com/wp-content/uploads/2015/03/chicks.jpg)
+
+## Your Turn (10 min)
+
+<img src="images/chicks-faded.png" class="cover">
+
+
+1. Introduce a variable `gain` into the data that keeps track how much weight each chick has gained since Time 0 (i.e. gain at time 0 should be 0).
+Plot weight gain over time. Connect the observed weight gain for each chick by a line. Facet by diet.  
+2. Focus on weight gains on day 21. Draw side-by-side dotplots of weight gains by diet. Summarize the average weight gain on day 21 under each diet. Overlay the dotplots by error bars around the average weight gain under each diet (see `?geom_errorbar`)
+
+## Re-cap
+
+- getting used to `dplyr` actions takes a bit of time and practice
+- recognize keywords and match them to `dplyr` functions
+- make a conscious effort in applying `dplyr` functions in your regular workflow: that means you have to do things **differently** - the long-term benefits are there, promise!
+
+
+
+# Next up: [`tidyr`](04_tidyr.html)
