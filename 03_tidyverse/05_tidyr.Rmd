@@ -1,0 +1,376 @@
+---
+title: "Stat 585 - numeric summaries with tidyr"
+author: "Heike Hofmann"
+ratio: 16x10
+output:
+  rmdshower::shower_presentation:
+    self_contained: false
+    katex: true
+    theme: ribbon
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+# Dealing with Messy (3) and (4)
+
+## Messy (3)
+
+Messy (3): *Multiple observational units are stored in the same table.*
+
+What does that mean? The *key is split*, i.e. for some values all key variables are necessary, while other values only need some key variables.
+
+![](images/normal-not-2.png)
+
+## Why do we need to take care of split keys?
+
+- Data redundancy introduces potential problems (same student *should* have the same student ID)
+- to check data consistency, we split data set into parts - this process is called *normalizing*
+- normalization reduces overall data size
+- useful way of thinking about objects under study
+
+
+## Tidying Messy (3)
+
+Splitting into separate datasets:
+
+![](images/normal-split.png)
+
+## Example: Box office gross
+
+The-Numbers website publishes [weekly charts](http://www.the-numbers.com/weekend-box-office-chart) of the gross income of all movies playing across the US. A set of [scraped data](../data/boxoffice.csv) with movies for the last two years is available in the repo.
+
+```{r echo = FALSE}
+box <- read.csv("../data/boxoffice.csv")
+head(box, 4)
+```
+
+What are the key variables? Why is the key split?
+
+## First round of Data tidying
+
+```{r}
+box <- box %>% mutate(
+  Gross = parse_number(Gross),
+  Total.Gross = parse_number(Total.Gross),
+  Days = parse_number(Days),
+  Thtrs. = parse_number(Thtrs.)
+) 
+```
+
+- All other variables are derived from these four variables, `Movie` name, `Rank`, `Date` and `Distributor`. 
+- We should take re-calculate the derived variabes to check for consistency. 
+
+## Taking care of the split key
+
+```{r eval = FALSE}
+# if we get an error with a message about the length of a dataset
+# we know we have a problem
+movie <- box %>% group_by(Movie) %>% summarize(
+  Distributor = unique(Distributor) 
+)
+```
+
+`Error: expecting a single value`
+
+Bingo! but what now? 
+
+```{r}
+box %>% group_by(Movie) %>% summarize(
+  Distributor = length(unique(Distributor))
+) %>% arrange(desc(Distributor))
+```
+
+## Looking into inconsistencies
+
+The movie *Girlhood* has two distributors: " "  and `Strand` - i.e. the first week the distributor is missing, let's fix that:
+
+```{r}
+box <- box %>% mutate(
+  Distributor = replace(Distributor, Movie=="Girlhood", "Strand")
+)
+```
+
+The movie `The Witness` is actually two different movies, one that came out in October 2015, another one that came out in June 2016. Movie name by itself is not a key. Let's derive the *release date* for each movie:
+
+```{r}
+box <- box %>% mutate(Release = lubridate::ymd(date)-Days)
+```
+
+## Splitting into separate datasets - Take 2
+
+```{r}
+movie <- box %>% group_by(Movie, Release) %>% summarize(
+  Distributor = unique(Distributor) 
+)
+dim(movie)
+length(unique(box$Movie))
+```
+
+Still not quite right - the number of days is a derived variable, and is not quite consistent. 
+
+## 
+
+```{r}
+movie %>% group_by(Movie) %>% count() %>% arrange(desc(n)) %>% head(5)
+movie %>% filter(Movie =="Hot Water")
+```
+
+## Different approach
+
+```{r}
+# introduce release date for each movie and distributor separately
+box <- box %>% group_by(Movie, Distributor) %>% 
+  mutate(
+    Release = min(lubridate::ymd(date))-Days[which.min(lubridate::ymd(date))]
+    )
+
+# split again
+movie <- box %>% group_by(Movie, Release) %>% summarize(
+  Distributor = unique(Distributor) 
+)
+dim(movie)
+length(unique(box$Movie)) # should be one less than above (b/c The Witness)
+```
+
+Better!
+
+## Your Turn  (10 mins)
+
+
+- Re-derive derived variables: `%Change`, `Rank last week`, `Days`, `Gross Per Theater`.<br>
+- Is `Total.Gross` strictly increasing? And does `Gross` match with the differences from one week to the next?
+
+How much of this can you do in 10 mins?
+
+<img src="images/tools.jpeg" width=550>
+
+## 
+
+
+```{r}
+# days and per theatre gross:
+box <- box %>% ungroup() %>% mutate(
+  Days_new = lubridate::ymd(date) - lubridate::ymd(Release),
+  Per.Theater = Gross/Thtrs.
+) 
+box %>% select(Movie, Days, Days_new)
+```
+
+##
+
+```{r}
+# introduce change variable and rank-last-week:
+box <- box %>% group_by(Movie, Release) %>% arrange(date) %>% mutate(
+  Change = c(NA, diff(Gross)/Gross[-length(Gross)])*100,
+  Rank.Last.Week_new = c(NA, Rank[-length(Rank)]),
+  Days_diff = c(NA, diff(Days_new))
+) 
+# some of these ranks are not from last week:
+box <- box %>% mutate(
+  Rank.Last.Week_new = replace(Rank.Last.Week_new, Days_diff != 7, NA)
+)
+
+box %>% filter(Movie=="3 Hearts") %>% arrange(Days_new) %>% as.data.frame() %>% head(3)
+```
+
+##
+
+```{r}
+box <- box %>% group_by(Movie, Release) %>% 
+  arrange(Days) %>% mutate(
+    Gross_new = c(NA, diff(Total.Gross))
+  )
+
+box %>% 
+  ggplot(aes(Gross, Gross_new, colour = Gross_new < 0)) + geom_point()
+
+box %>% ungroup() %>%  filter(Gross_new <0) %>% select(Movie, date, Gross, Gross_new, Total.Gross) %>% arrange(Gross_new)
+```
+
+## 
+
+Now we have finally a clean data set and could get started on an analysis!
+
+Can you predict the Total Gross of a movie based on the opening weekend and the second week?
+
+This is the dataset we used for lab #2.
+
+```{r echo = FALSE, eval = FALSE}
+movies <- box %>% select(date, Rank, Rank.Last.Week_new, Days_new, Movie, Distributor, Gross, Change, Total.Gross, Release, Thtrs., Per.Theater) 
+names(movies) <- c("Date", "Rank", "Rank.Last.Week", "Days", "Movie", "Distributor", "Gross", "Change", "Total.Gross", "Release", "Theaters", "Per.Theater")
+#write.csv(movies, file="../data/movies.csv", row.names=FALSE)
+```
+
+
+# Messy (4)
+
+## Messy (4)
+
+Messy (4): *Values for a single observational unit are stored across multiple tables.*
+
+After data are normalized by splitting, we want to de-normalize again by *joining* datasets.
+
+## Example: Lahman package
+
+Sean Lahman is a database journalist, who started databases of historical sports statistics, in particular, the Lahman database on baseball.
+
+```{r}
+library(Lahman)
+LahmanData
+```
+
+## Lahman database
+
+The Lahman database consists of 24 data frames that are linked by `playerID`. <br>
+This is clean, but not very readable. <br>
+The `Master` table includes names and other attributes for each player. <br>
+*Joining* multiple tables helps us to bring together (pieces of) information from multiple sources.
+
+## Example: Hall of Fame
+
+```{r warning = FALSE, fig.height = 3.5}
+HallOfFame <- HallOfFame %>% group_by(playerID) %>% 
+  mutate(times = order(yearID)) 
+
+HallOfFame %>%
+  ggplot(aes(x = yearID, y = votes/needed, colour = inducted)) + 
+  geom_hline(yintercept = 1, colour = "grey20", size = .1) +
+  geom_line(aes(group = playerID), colour = "black", size = 0.2) +
+  geom_point() 
+```
+
+## Hall of Fame - how many attempts?
+
+We'd like to label all the last attempts - and not just with the `playerID`
+```{r warning = FALSE, fig.height = 3.5}
+HallOfFame %>% 
+  ggplot(aes(x = times, y = votes/needed, colour = inducted)) + 
+  geom_hline(yintercept = 1, colour = "grey20", size = .1) +
+  geom_line(aes(group = playerID), colour = "black", size = 0.2) +
+  geom_point() 
+```
+
+
+## Joins - general idea
+
+![](images/join.png)
+
+## Joins - more specific idea
+
+- Data sets are joined along values of variables. 
+- In `dplyr` there are various join functions: `left_join`, `inner_join`, `full_join`, ...
+- Differences between join functions only visible, if not all values in one set have values in the other
+
+
+
+##
+
+```{r}
+df1 <- data.frame(id = 1:6, trt = rep(c("A", "B", "C"), rep=c(2,1,3)), value = c(5,3,7,1,2,3))
+df1
+```
+
+```{r}
+df2 <- data.frame(id=c(4,4,5,5,7,7), stress=rep(c(0,1), 3), bpm = c(65, 125, 74, 136, 48, 110))
+df2
+```    
+
+## Left join
+
+- all elements in the *left* data set are kept
+- non-matches are filled in by `NA`
+- `right_join` works symmetric
+
+```{r}
+left_join(df1, df2, by="id")
+```
+
+## Inner join
+
+- only matches from both data sets are kept
+
+```{r}
+inner_join(df1, df2, by = "id")
+```
+
+
+## Full join
+
+- all ids are kept, missings are filled in with `NA`
+
+```{r}
+full_join(df1, df2, by = "id")
+```
+
+## Traps of joins
+
+- sometimes we unexpectedly cannot match values: missing values, different spelling, ... 
+- join can be along multiple variables, e.g. `by = c("ID", "Date")`
+- joining variable(s) can have different names, e.g. `by = c("State" = "Name")`
+- always make sure to check dimensions of data before and after a join
+- check on missing values; help with that: `anti_join`
+
+
+## Anti join
+
+- a neat function in `dplyr`
+- careful, not symmetric!  
+
+```{r}
+anti_join(df1, df2, by="id") # no values for id in df2
+anti_join(df2, df1, by="id") # no values for id in df1
+```
+
+## Your turn (10 mins) {.white}
+
+<img src="images/baseball.jpeg" width="1200" class="cover">
+
+- <span style="color:white">Load the `Lahman` package into your R session.</span>
+- <span style="color:white">Join (relevant pieces of) the `Master` data set and the `HallOfFame` data.</span>
+- <span style="color:white">For the `ggplot2` chart label all last attempts of individuals with 15 or more attempts. Make sure to deal with missing values appropriately.</span>
+
+
+## Solution
+
+Not all organizations involved in inducting worthy candidates into the Hall of Fame take votes. <br>
+We will take only voters into consideration:
+```{r}
+Voted <- HallOfFame %>% filter(!is.na(ballots)) %>% 
+  group_by(playerID) %>% arrange(yearID) %>% 
+  mutate( attempt = order(yearID))
+
+dim(Voted)
+Voted <- left_join(Voted, Master %>% select(playerID, nameFirst, nameLast), 
+                   by = "playerID")
+dim(Voted)
+```
+
+## Chart of induction
+
+```{r warning = FALSE, fig.height = 3.5}
+Voted %>% ggplot(aes(x = attempt, y = votes/needed)) +
+  geom_hline(yintercept = 1, colour = "grey25", size = 0.1) +
+  geom_line(aes(group = playerID), colour = "grey35", size = 0.2) + 
+  geom_point(aes(colour = inducted))
+```
+
+## Getting the dataset for the labels
+
+```{r}
+labels <- Voted %>% group_by(playerID) %>% summarize(
+  votes = votes[which.max(attempt)],
+  needed = needed[which.max(attempt)],
+  attempt = max(attempt),
+  name = paste(unique(nameFirst), unique(nameLast))
+)
+```
+
+```{r warning = FALSE, echo=FALSE, fig.height = 3.5}
+Voted %>% ggplot(aes(x = attempt, y = votes/needed)) +
+  geom_hline(yintercept = 1, colour = "grey25", size = 0.1) +
+  geom_line(aes(group = playerID), colour = "grey25", size = 0.2) + 
+  geom_point(aes(colour = inducted)) +
+  ggrepel::geom_label_repel(aes(label=name), data = labels %>% filter(attempt >=16))
+```

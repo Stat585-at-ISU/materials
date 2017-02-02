@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lab Assignment #2</title>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="02_lab_files/rmdshower/node_modules/shower-ribbon/styles/screen-4x3.css">
+  <link rel="stylesheet" href="02_lab_files/rmdshower/style-common.css">
+  <link rel="stylesheet" href="02_lab_files/rmdshower/style-ribbon.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.js"></script>
+  <script src="02_lab_files/rmdshower/auto-render.min.js" type="text/javascript"></script>
+  
+  
+    <style type="text/css">
+   div.sourceCode { overflow-x: auto; }
+   table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+     margin: 0; padding: 0; vertical-align: baseline; border: none; }
+   table.sourceCode { width: 100%; line-height: 100%; }
+   td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+   td.sourceCode { padding-left: 5px; }
+   code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+   code > span.dt { color: #902000; } /* DataType */
+   code > span.dv { color: #40a070; } /* DecVal */
+   code > span.bn { color: #40a070; } /* BaseN */
+   code > span.fl { color: #40a070; } /* Float */
+   code > span.ch { color: #4070a0; } /* Char */
+   code > span.st { color: #4070a0; } /* String */
+   code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+   code > span.ot { color: #007020; } /* Other */
+   code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+   code > span.fu { color: #06287e; } /* Function */
+   code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+   code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+   code > span.cn { color: #880000; } /* Constant */
+   code > span.sc { color: #4070a0; } /* SpecialChar */
+   code > span.vs { color: #4070a0; } /* VerbatimString */
+   code > span.ss { color: #bb6688; } /* SpecialString */
+   code > span.im { } /* Import */
+   code > span.va { color: #19177c; } /* Variable */
+   code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+   code > span.op { color: #666666; } /* Operator */
+   code > span.bu { } /* BuiltIn */
+   code > span.ex { } /* Extension */
+   code > span.pp { color: #bc7a00; } /* Preprocessor */
+   code > span.at { color: #7d9029; } /* Attribute */
+   code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+   code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+   code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+   code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+  
+  
+  
+</head>
+
+<body class="shower list">
+
+  <header class="caption">
+    <h1>Lab Assignment #2</h1>
+    <p>Heike Hofmann</p>
+  </header>
+
+    
+  
+<section id="lab-2" class="titleslide slide level1"><h2 class="shout">Lab #2</h2></section><section id="section" class="slide level2 white">
+<h2></h2>
+<p><img src="images/movies-cropped.jpeg" width=2500 class="cover"></p>
+</section><section id="movies-of-the-last-two-years" class="slide level2">
+<h2>Movies of the last two years</h2>
+<p>The data set <a href="../data/movies.csv">movies</a> consists of movies in theaters for the last two years.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">movies &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;../data/movies.csv&quot;</span>)
+<span class="kw">head</span>(movies)</code></pre></div>
+<pre><code>##         Date Rank Rank.Last.Week Days                        Movie
+## 1 2017-01-27    1              1   10                        Split
+## 2 2017-01-27    2             NA    3              A Dog’s Purpose
+## 3 2017-01-27    3              3   36               Hidden Figures
+## 4 2017-01-27    4             NA    3 Resident Evil: The Final Ch…
+## 5 2017-01-27    5              5   52                   La La Land
+## 6 2017-01-27    6              2   10   xXx: Return of Xander Cage
+##          Distributor    Gross    Change Total.Gross    Release Theaters
+## 1          Universal 25655440 -35.87899    77385530 2017-01-17     3199
+## 2          Universal 18222810        NA    18222810 2017-01-24     3059
+## 3   20th Century Fox 14003275 -10.92974   104024969 2016-12-22     3351
+## 4      Sony Pictures 13601682        NA    13601682 2017-01-24     3104
+## 5          Lionsgate 12233928  45.16532   106693300 2016-12-06     3136
+## 6 Paramount Pictures  8601858 -57.26877    33839608 2017-01-17     3651
+##   Per.Theater
+## 1    8019.831
+## 2    5957.113
+## 3    4178.835
+## 4    4381.985
+## 5    3901.125
+## 6    2356.028</code></pre>
+</section><section id="lab-assignment" class="slide level2">
+<h2>Lab assignment</h2>
+<p>Using tools from <code>dplyr</code> and <code>ggplot2</code> answer the following questions:</p>
+<ul>
+<li>What were the most successful movies over the past two years? Make sure to define how you measure success. What can you say about movies that only came out recently?</li>
+<li>How long, on average, are movies in theaters? Also look at the median time. Try to figure out what contributes to the big difference.</li>
+<li>What is the standard trajectory of a movie’s total gross? Draw a plot and label some of the trajectories. <br> If you feel ambitious, you could try to model this trajectory - but if you do, make sure to detail all assumptions that you make.</li>
+</ul>
+</section><section id="deliverable" class="slide level2">
+<h2>Deliverable</h2>
+<p>Submit a write-up containing code, plot, and description in form of an RMarkdown file to Blackboard.</p>
+</section>
+
+  <!--
+  To hide progress bar from entire presentation
+  just remove “progress” element.
+  -->
+  <!-- <div class="progress"></div> -->
+  <script src="02_lab_files/rmdshower/node_modules/shower/node_modules/shower-core/shower.min.js"></script>
+  <!-- Copyright © 2015 Yours Truly, Famous Inc. -->
+  <!-- Photos by John Carey, fiftyfootshadows.net -->
+
+    <script>renderMathInElement(document.body);</script>
+  
+  
+</body>
+</html>

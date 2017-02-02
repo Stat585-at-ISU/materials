@@ -92,6 +92,38 @@ french_fries %>%
     summarise(mean_rancid = mean(rancid), sd_rancid = sd(rancid))
 ```
 
+## Mutate
+
+Change an existing or create a new variable into the data
+
+```{r}
+french_fries %>%
+    mutate(
+      awful = (buttery+potato)/2 - (grassy+painty+rancid)/3
+    ) %>% glimpse()
+```
+
+## Careful, trap!
+
+Why does 
+
+```{r}
+french_fries$awful
+```
+
+not return a real-valued summary?
+
+> 1. Because we never saved it back into the `french_fries` data
+> 2. Go back and have a look ;)
+
+## `mutate` or `summarize`?
+
+Both commands introduce new variables - so which one should we use?
+
+Differences:
+
+- `mutate` **adds variables** to the existing data set: the resulting variables must have the **same length** as the original data, e.g. use for transformations, combinations of multiple variables
+- `summarize` **creates aggregates** of the original data. The number of rows of the new dataset is determined by the number of combinations of the grouping structure. The number of columns is determined by the number of grouping variables and the summary statistics.
 
 
 ## Let's use these tools

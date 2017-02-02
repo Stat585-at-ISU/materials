@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Stat 585 - numeric summaries with tidyr</title>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="05_tidyr_files/rmdshower/node_modules/shower-ribbon/styles/screen-4x3.css">
+  <link rel="stylesheet" href="05_tidyr_files/rmdshower/style-common.css">
+  <link rel="stylesheet" href="05_tidyr_files/rmdshower/style-ribbon.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.js"></script>
+  <script src="05_tidyr_files/rmdshower/auto-render.min.js" type="text/javascript"></script>
+  
+  
+    <style type="text/css">
+   div.sourceCode { overflow-x: auto; }
+   table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+     margin: 0; padding: 0; vertical-align: baseline; border: none; }
+   table.sourceCode { width: 100%; line-height: 100%; }
+   td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+   td.sourceCode { padding-left: 5px; }
+   code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+   code > span.dt { color: #902000; } /* DataType */
+   code > span.dv { color: #40a070; } /* DecVal */
+   code > span.bn { color: #40a070; } /* BaseN */
+   code > span.fl { color: #40a070; } /* Float */
+   code > span.ch { color: #4070a0; } /* Char */
+   code > span.st { color: #4070a0; } /* String */
+   code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+   code > span.ot { color: #007020; } /* Other */
+   code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+   code > span.fu { color: #06287e; } /* Function */
+   code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+   code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+   code > span.cn { color: #880000; } /* Constant */
+   code > span.sc { color: #4070a0; } /* SpecialChar */
+   code > span.vs { color: #4070a0; } /* VerbatimString */
+   code > span.ss { color: #bb6688; } /* SpecialString */
+   code > span.im { } /* Import */
+   code > span.va { color: #19177c; } /* Variable */
+   code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+   code > span.op { color: #666666; } /* Operator */
+   code > span.bu { } /* BuiltIn */
+   code > span.ex { } /* Extension */
+   code > span.pp { color: #bc7a00; } /* Preprocessor */
+   code > span.at { color: #7d9029; } /* Attribute */
+   code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+   code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+   code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+   code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+  
+  
+  
+</head>
+
+<body class="shower list">
+
+  <header class="caption">
+    <h1>Stat 585 - numeric summaries with tidyr</h1>
+    <p>Heike Hofmann</p>
+  </header>
+
+    
+  
+<section id="dealing-with-messy-3-and-4" class="titleslide slide level1"><h2 class="shout">Dealing with Messy (3) and (4)</h2></section><section id="messy-3" class="slide level2">
+<h2>Messy (3)</h2>
+<p>Messy (3): <em>Multiple observational units are stored in the same table.</em></p>
+<p>What does that mean? The <em>key is split</em>, i.e. for some values all key variables are necessary, while other values only need some key variables.</p>
+<p><img src="images/normal-not-2.png" /></p>
+</section><section id="why-do-we-need-to-take-care-of-split-keys" class="slide level2">
+<h2>Why do we need to take care of split keys?</h2>
+<ul>
+<li>Data redundancy introduces potential problems (same student <em>should</em> have the same student ID)</li>
+<li>to check data consistency, we split data set into parts - this process is called <em>normalizing</em></li>
+<li>normalization reduces overall data size</li>
+<li>useful way of thinking about objects under study</li>
+</ul>
+</section><section id="tidying-messy-3" class="slide level2">
+<h2>Tidying Messy (3)</h2>
+<p>Splitting into separate datasets:</p>
+<p><img src="images/normal-split.png" /></p>
+</section><section id="example-box-office-gross" class="slide level2">
+<h2>Example: Box office gross</h2>
+<p>The-Numbers website publishes <a href="http://www.the-numbers.com/weekend-box-office-chart">weekly charts</a> of the gross income of all movies playing across the US. A set of <a href="../data/boxoffice.csv">scraped data</a> with movies for the last two years is available in the repo.</p>
+<pre><code>##   Rank Rank.Last.Week                        Movie      Distributor
+## 1    1            (1)                        Split        Universal
+## 2    2            new              A Dog’s Purpose        Universal
+## 3    3            (3)               Hidden Figures 20th Century Fox
+## 4    4            new Resident Evil: The Final Ch…    Sony Pictures
+##         Gross Change Thtrs. Per.Thtr.  Total.Gross Days       date
+## 1 $25,655,440   -36%  3,199    $8,020  $77,385,530   10 2017-01-27
+## 2 $18,222,810         3,059    $5,957  $18,222,810    3 2017-01-27
+## 3 $14,003,275   -11%  3,351    $4,179 $104,024,969   36 2017-01-27
+## 4 $13,601,682         3,104    $4,382  $13,601,682    3 2017-01-27</code></pre>
+<p>What are the key variables? Why is the key split?</p>
+</section><section id="first-round-of-data-tidying" class="slide level2">
+<h2>First round of Data tidying</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">box &lt;-<span class="st"> </span>box %&gt;%<span class="st"> </span><span class="kw">mutate</span>(
+  <span class="dt">Gross =</span> <span class="kw">parse_number</span>(Gross),
+  <span class="dt">Total.Gross =</span> <span class="kw">parse_number</span>(Total.Gross),
+  <span class="dt">Days =</span> <span class="kw">parse_number</span>(Days),
+  <span class="dt">Thtrs. =</span> <span class="kw">parse_number</span>(Thtrs.)
+) </code></pre></div>
+<ul>
+<li>All other variables are derived from these four variables, <code>Movie</code> name, <code>Rank</code>, <code>Date</code> and <code>Distributor</code>.</li>
+<li>We should take re-calculate the derived variabes to check for consistency.</li>
+</ul>
+</section><section id="taking-care-of-the-split-key" class="slide level2">
+<h2>Taking care of the split key</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># if we get an error with a message about the length of a dataset</span>
+<span class="co"># we know we have a problem</span>
+movie &lt;-<span class="st"> </span>box %&gt;%<span class="st"> </span><span class="kw">group_by</span>(Movie) %&gt;%<span class="st"> </span><span class="kw">summarize</span>(
+  <span class="dt">Distributor =</span> <span class="kw">unique</span>(Distributor) 
+)</code></pre></div>
+<p><code>Error: expecting a single value</code></p>
+<p>Bingo! but what now?</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">box %&gt;%<span class="st"> </span><span class="kw">group_by</span>(Movie) %&gt;%<span class="st"> </span><span class="kw">summarize</span>(
+  <span class="dt">Distributor =</span> <span class="kw">length</span>(<span class="kw">unique</span>(Distributor))
+) %&gt;%<span class="st"> </span><span class="kw">arrange</span>(<span class="kw">desc</span>(Distributor))</code></pre></div>
+<pre><code>## # A tibble: 1,386 × 2
+##                           Movie Distributor
+##                          &lt;fctr&gt;       &lt;int&gt;
+## 1                      Girlhood           2
+## 2                   The Witness           2
+## 3                           ’71           1
+## 4              1,000 Rupee Note           1
+## 5           10 Cloverfield Lane           1
+## 6         10 Days in a Madhouse           1
+## 7  13 Hours: The Secret Soldie…           1
+## 8                          1915           1
+## 9             2015 Oscar Shorts           1
+## 10            2016 Oscar Shorts           1
+## # ... with 1,376 more rows</code></pre>
+</section><section id="looking-into-inconsistencies" class="slide level2">
+<h2>Looking into inconsistencies</h2>
+<p>The movie <em>Girlhood</em> has two distributors: &quot; &quot; and <code>Strand</code> - i.e. the first week the distributor is missing, let’s fix that:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">box &lt;-<span class="st"> </span>box %&gt;%<span class="st"> </span><span class="kw">mutate</span>(
+  <span class="dt">Distributor =</span> <span class="kw">replace</span>(Distributor, Movie==<span class="st">&quot;Girlhood&quot;</span>, <span class="st">&quot;Strand&quot;</span>)
+)</code></pre></div>
+<p>The movie <code>The Witness</code> is actually two different movies, one that came out in October 2015, another one that came out in June 2016. Movie name by itself is not a key. Let’s derive the <em>release date</em> for each movie:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">box &lt;-<span class="st"> </span>box %&gt;%<span class="st"> </span><span class="kw">mutate</span>(<span class="dt">Release =</span> lubridate::<span class="kw">ymd</span>(date)-Days)</code></pre></div>
+</section><section id="splitting-into-separate-datasets---take-2" class="slide level2">
+<h2>Splitting into separate datasets - Take 2</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">movie &lt;-<span class="st"> </span>box %&gt;%<span class="st"> </span><span class="kw">group_by</span>(Movie, Release) %&gt;%<span class="st"> </span><span class="kw">summarize</span>(
+  <span class="dt">Distributor =</span> <span class="kw">unique</span>(Distributor) 
+)
+<span class="kw">dim</span>(movie)</code></pre></div>
+<pre><code>## [1] 1406    3</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">length</span>(<span class="kw">unique</span>(box$Movie))</code></pre></div>
+<pre><code>## [1] 1386</code></pre>
+<p>Still not quite right - the number of days is a derived variable, and is not quite consistent.</p>
+</section><section id="section" class="slide level2">
+<h2></h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">movie %&gt;%<span class="st"> </span><span class="kw">group_by</span>(Movie) %&gt;%<span class="st"> </span><span class="kw">count</span>() %&gt;%<span class="st"> </span><span class="kw">arrange</span>(<span class="kw">desc</span>(n)) %&gt;%<span class="st"> </span><span class="kw">head</span>(<span class="dv">5</span>)</code></pre></div>
+<pre><code>## # A tibble: 5 × 2
+##             Movie     n
+##            &lt;fctr&gt; &lt;int&gt;
+## 1       Hot Water     3
+## 2        3 Hearts     2
+## 3 Beyond the Mask     2
+## 4  Boy Meets Girl     2
+## 5        Boychoir     2</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">movie %&gt;%<span class="st"> </span><span class="kw">filter</span>(Movie ==<span class="st">&quot;Hot Water&quot;</span>)</code></pre></div>
+<pre><code>## Source: local data frame [3 x 3]
+## Groups: Movie [1]
+## 
+##       Movie    Release      Distributor
+##      &lt;fctr&gt;     &lt;date&gt;           &lt;fctr&gt;
+## 1 Hot Water 2016-03-04 Indican Pictures
+## 2 Hot Water 2016-04-22 Indican Pictures
+## 3 Hot Water 2016-05-02 Indican Pictures</code></pre>
+</section><section id="different-approach" class="slide level2">
+<h2>Different approach</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># introduce release date for each movie and distributor separately</span>
+box &lt;-<span class="st"> </span>box %&gt;%<span class="st"> </span><span class="kw">group_by</span>(Movie, Distributor) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(
+    <span class="dt">Release =</span> <span class="kw">min</span>(lubridate::<span class="kw">ymd</span>(date))-Days[<span class="kw">which.min</span>(lubridate::<span class="kw">ymd</span>(date))]
+    )
+
+<span class="co"># split again</span>
+movie &lt;-<span class="st"> </span>box %&gt;%<span class="st"> </span><span class="kw">group_by</span>(Movie, Release) %&gt;%<span class="st"> </span><span class="kw">summarize</span>(
+  <span class="dt">Distributor =</span> <span class="kw">unique</span>(Distributor) 
+)
+<span class="kw">dim</span>(movie)</code></pre></div>
+<pre><code>## [1] 1387    3</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">length</span>(<span class="kw">unique</span>(box$Movie)) <span class="co"># should be one less than above (b/c The Witness)</span></code></pre></div>
+<pre><code>## [1] 1386</code></pre>
+<p>Better!</p>
+</section><section id="your-turn-10-mins" class="slide level2">
+<h2>Your Turn (10 mins)</h2>
+<ul>
+<li>Re-derive derived variables: <code>%Change</code>, <code>Rank last week</code>, <code>Days</code>, <code>Gross Per Theater</code>.<br></li>
+<li>Is <code>Total.Gross</code> strictly increasing? And does <code>Gross</code> match with the differences from one week to the next?</li>
+</ul>
+<p>How much of this can you do in 10 mins?</p>
+<p><img src="images/tools.jpeg" width=550></p>
+</section><section id="section-1" class="slide level2">
+<h2></h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># days and per theatre gross:</span>
+box &lt;-<span class="st"> </span>box %&gt;%<span class="st"> </span><span class="kw">ungroup</span>() %&gt;%<span class="st"> </span><span class="kw">mutate</span>(
+  <span class="dt">Days_new =</span> lubridate::<span class="kw">ymd</span>(date) -<span class="st"> </span>lubridate::<span class="kw">ymd</span>(Release),
+  <span class="dt">Per.Theater =</span> Gross/Thtrs.
+) 
+box %&gt;%<span class="st"> </span><span class="kw">select</span>(Movie, Days, Days_new)</code></pre></div>
+<pre><code>## # A tibble: 10,327 × 3
+##                           Movie  Days Days_new
+##                          &lt;fctr&gt; &lt;dbl&gt;   &lt;time&gt;
+## 1                         Split    10  10 days
+## 2               A Dog’s Purpose     3   3 days
+## 3                Hidden Figures    36  36 days
+## 4  Resident Evil: The Final Ch…     3   3 days
+## 5                    La La Land    52  52 days
+## 6    xXx: Return of Xander Cage    10  10 days
+## 7                          Sing    40  40 days
+## 8  Rogue One: A Star Wars Story    45  45 days
+## 9                Monster Trucks    17  17 days
+## 10                         Gold     3   3 days
+## # ... with 10,317 more rows</code></pre>
+</section><section id="section-2" class="slide level2">
+<h2></h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># introduce change variable and rank-last-week:</span>
+box &lt;-<span class="st"> </span>box %&gt;%<span class="st"> </span><span class="kw">group_by</span>(Movie, Release) %&gt;%<span class="st"> </span><span class="kw">arrange</span>(date) %&gt;%<span class="st"> </span><span class="kw">mutate</span>(
+  <span class="dt">Change =</span> <span class="kw">c</span>(<span class="ot">NA</span>, <span class="kw">diff</span>(Gross)/Gross[-<span class="kw">length</span>(Gross)])*<span class="dv">100</span>,
+  <span class="dt">Rank.Last.Week_new =</span> <span class="kw">c</span>(<span class="ot">NA</span>, Rank[-<span class="kw">length</span>(Rank)]),
+  <span class="dt">Days_diff =</span> <span class="kw">c</span>(<span class="ot">NA</span>, <span class="kw">diff</span>(Days_new))
+) 
+<span class="co"># some of these ranks are not from last week:</span>
+box &lt;-<span class="st"> </span>box %&gt;%<span class="st"> </span><span class="kw">mutate</span>(
+  <span class="dt">Rank.Last.Week_new =</span> <span class="kw">replace</span>(Rank.Last.Week_new, Days_diff !=<span class="st"> </span><span class="dv">7</span>, <span class="ot">NA</span>)
+)
+
+box %&gt;%<span class="st"> </span><span class="kw">filter</span>(Movie==<span class="st">&quot;3 Hearts&quot;</span>) %&gt;%<span class="st"> </span><span class="kw">arrange</span>(Days_new) %&gt;%<span class="st"> </span><span class="kw">as.data.frame</span>() %&gt;%<span class="st"> </span><span class="kw">head</span>(<span class="dv">3</span>)</code></pre></div>
+<pre><code>##   Rank Rank.Last.Week    Movie       Distributor Gross    Change Thtrs.
+## 1   68            new 3 Hearts Cohen Media Group 11336        NA      4
+## 2   70           (68) 3 Hearts Cohen Media Group  4243 -62.57057      4
+## 3   66            new 3 Hearts Cohen Media Group 11794 177.96370      1
+##   Per.Thtr. Total.Gross Days       date    Release Days_new Per.Theater
+## 1    $2,834       11336    7 2015-02-13 2015-02-06   7 days     2834.00
+## 2    $1,061       21942   14 2015-02-20 2015-02-06  14 days     1060.75
+## 3   $11,794       33736    3 2015-03-13 2015-02-06  35 days    11794.00
+##   Rank.Last.Week_new Days_diff
+## 1                 NA        NA
+## 2                 68         7
+## 3                 NA        21</code></pre>
+</section><section id="section-3" class="slide level2">
+<h2></h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">box &lt;-<span class="st"> </span>box %&gt;%<span class="st"> </span><span class="kw">group_by</span>(Movie, Release) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">arrange</span>(Days) %&gt;%<span class="st"> </span><span class="kw">mutate</span>(
+    <span class="dt">Gross_new =</span> <span class="kw">c</span>(<span class="ot">NA</span>, <span class="kw">diff</span>(Total.Gross))
+  )
+
+box %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(Gross, Gross_new, <span class="dt">colour =</span> Gross_new &lt;<span class="st"> </span><span class="dv">0</span>)) +<span class="st"> </span><span class="kw">geom_point</span>()</code></pre></div>
+<pre><code>## Warning: Removed 1387 rows containing missing values (geom_point).</code></pre>
+<p><img src="05_tidyr_files/figure-revealjs/unnamed-chunk-12-1.png" width="768" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">box %&gt;%<span class="st"> </span><span class="kw">ungroup</span>() %&gt;%<span class="st">  </span><span class="kw">filter</span>(Gross_new &lt;<span class="dv">0</span>) %&gt;%<span class="st"> </span><span class="kw">select</span>(Movie, date, Gross, Gross_new, Total.Gross) %&gt;%<span class="st"> </span><span class="kw">arrange</span>(Gross_new)</code></pre></div>
+<pre><code>## # A tibble: 34 × 5
+##                           Movie       date  Gross Gross_new Total.Gross
+##                          &lt;fctr&gt;     &lt;fctr&gt;  &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;
+## 1  The Hunger Games: Mockingja… 2016-02-12 308370 -54787187   281340856
+## 2  The Hunger Games: Mockingja… 2016-02-19 192870 -54744318   281666058
+## 3  The Hunger Games: Mockingja… 2016-02-05 162227 -54728905   280976000
+## 4  The Hunger Games: Mockingja… 2016-01-29 380044 -54280391   280847534
+## 5            The Lion in Winter 2017-01-20    692 -22275822       18177
+## 6            Born to be Wild 3D 2015-10-30   1010 -21957516     2439919
+## 7  Daughters of the Dust (Re-I… 2016-12-02   7232  -1641815       40465
+## 8         The Battle of Algiers 2016-12-02    725   -798615       55102
+## 9               Army of Shadows 2015-11-20   1946   -722470       27396
+## 10                The Third Man 2015-11-06    572   -559097      445344
+## # ... with 24 more rows</code></pre>
+</section><section id="section-4" class="slide level2">
+<h2></h2>
+<p>Now we have finally a clean data set and could get started on an analysis!</p>
+<p>Can you predict the Total Gross of a movie based on the opening weekend and the second week?</p>
+<p>This is the dataset we used for lab #2.</p>
+</section>
+<section id="messy-4" class="titleslide slide level1"><h2 class="shout">Messy (4)</h2></section><section id="messy-4-1" class="slide level2">
+<h2>Messy (4)</h2>
+<p>Messy (4): <em>Values for a single observational unit are stored across multiple tables.</em></p>
+<p>After data are normalized by splitting, we want to de-normalize again by <em>joining</em> datasets.</p>
+</section><section id="example-lahman-package" class="slide level2">
+<h2>Example: Lahman package</h2>
+<p>Sean Lahman is a database journalist, who started databases of historical sports statistics, in particular, the Lahman database on baseball.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(Lahman)
+LahmanData</code></pre></div>
+<pre><code>##                   file      class   nobs nvar                     title
+## 1          AllstarFull data.frame   4993    8         AllstarFull table
+## 2          Appearances data.frame  99466   21         Appearances table
+## 3       AwardsManagers data.frame    171    6      AwardsManagers table
+## 4        AwardsPlayers data.frame   6026    6       AwardsPlayers table
+## 5  AwardsShareManagers data.frame    401    7 AwardsShareManagers table
+## 6   AwardsSharePlayers data.frame   6705    7  AwardsSharePlayers table
+## 7              Batting data.frame  99846   22             Batting table
+## 8          BattingPost data.frame  11294   22         BattingPost table
+## 9       CollegePlaying data.frame  17350    3      CollegePlaying table
+## 10            Fielding data.frame 167938   18            Fielding table
+## 11          FieldingOF data.frame  12028    6          FieldingOF table
+## 12        FieldingPost data.frame  11924   17         FieldingPost data
+## 13          HallOfFame data.frame   4088    9  Hall of Fame Voting Data
+## 14            Managers data.frame   3370   10            Managers table
+## 15        ManagersHalf data.frame     93   10        ManagersHalf table
+## 16              Master data.frame  18589   26              Master table
+## 17            Pitching data.frame  43330   30            Pitching table
+## 18        PitchingPost data.frame   4945   30        PitchingPost table
+## 19            Salaries data.frame  24758    5            Salaries table
+## 20             Schools data.frame   1207    5             Schools table
+## 21          SeriesPost data.frame    298    9          SeriesPost table
+## 22               Teams data.frame   2775   48               Teams table
+## 23     TeamsFranchises data.frame    120    4      TeamFranchises table
+## 24           TeamsHalf data.frame     52   10           TeamsHalf table</code></pre>
+</section><section id="lahman-database" class="slide level2">
+<h2>Lahman database</h2>
+<p>The Lahman database consists of 24 data frames that are linked by <code>playerID</code>. <br> This is clean, but not very readable. <br> The <code>Master</code> table includes names and other attributes for each player. <br> <em>Joining</em> multiple tables helps us to bring together (pieces of) information from multiple sources.</p>
+</section><section id="example-hall-of-fame" class="slide level2">
+<h2>Example: Hall of Fame</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">HallOfFame &lt;-<span class="st"> </span>HallOfFame %&gt;%<span class="st"> </span><span class="kw">group_by</span>(playerID) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">times =</span> <span class="kw">order</span>(yearID)) 
+
+HallOfFame %&gt;%
+<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> yearID, <span class="dt">y =</span> votes/needed, <span class="dt">colour =</span> inducted)) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> <span class="dv">1</span>, <span class="dt">colour =</span> <span class="st">&quot;grey20&quot;</span>, <span class="dt">size =</span> .<span class="dv">1</span>) +
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">group =</span> playerID), <span class="dt">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">size =</span> <span class="fl">0.2</span>) +
+<span class="st">  </span><span class="kw">geom_point</span>() </code></pre></div>
+<p><img src="05_tidyr_files/figure-revealjs/unnamed-chunk-15-1.png" width="768" /></p>
+</section><section id="hall-of-fame---how-many-attempts" class="slide level2">
+<h2>Hall of Fame - how many attempts?</h2>
+<p>We’d like to label all the last attempts - and not just with the <code>playerID</code></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">HallOfFame %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> times, <span class="dt">y =</span> votes/needed, <span class="dt">colour =</span> inducted)) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> <span class="dv">1</span>, <span class="dt">colour =</span> <span class="st">&quot;grey20&quot;</span>, <span class="dt">size =</span> .<span class="dv">1</span>) +
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">group =</span> playerID), <span class="dt">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">size =</span> <span class="fl">0.2</span>) +
+<span class="st">  </span><span class="kw">geom_point</span>() </code></pre></div>
+<p><img src="05_tidyr_files/figure-revealjs/unnamed-chunk-16-1.png" width="768" /></p>
+</section><section id="joins---general-idea" class="slide level2">
+<h2>Joins - general idea</h2>
+<p><img src="images/join.png" /></p>
+</section><section id="joins---more-specific-idea" class="slide level2">
+<h2>Joins - more specific idea</h2>
+<ul>
+<li>Data sets are joined along values of variables.</li>
+<li>In <code>dplyr</code> there are various join functions: <code>left_join</code>, <code>inner_join</code>, <code>full_join</code>, …</li>
+<li>Differences between join functions only visible, if not all values in one set have values in the other</li>
+</ul>
+</section><section id="section-5" class="slide level2">
+<h2></h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df1 &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">id =</span> <span class="dv">1</span>:<span class="dv">6</span>, <span class="dt">trt =</span> <span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>), <span class="dt">rep=</span><span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">3</span>)), <span class="dt">value =</span> <span class="kw">c</span>(<span class="dv">5</span>,<span class="dv">3</span>,<span class="dv">7</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>))
+df1</code></pre></div>
+<pre><code>##   id trt value
+## 1  1   A     5
+## 2  2   B     3
+## 3  3   C     7
+## 4  4   A     1
+## 5  5   B     2
+## 6  6   C     3</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df2 &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">id=</span><span class="kw">c</span>(<span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">5</span>,<span class="dv">7</span>,<span class="dv">7</span>), <span class="dt">stress=</span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="dv">3</span>), <span class="dt">bpm =</span> <span class="kw">c</span>(<span class="dv">65</span>, <span class="dv">125</span>, <span class="dv">74</span>, <span class="dv">136</span>, <span class="dv">48</span>, <span class="dv">110</span>))
+df2</code></pre></div>
+<pre><code>##   id stress bpm
+## 1  4      0  65
+## 2  4      1 125
+## 3  5      0  74
+## 4  5      1 136
+## 5  7      0  48
+## 6  7      1 110</code></pre>
+</section><section id="left-join" class="slide level2">
+<h2>Left join</h2>
+<ul>
+<li>all elements in the <em>left</em> data set are kept</li>
+<li>non-matches are filled in by <code>NA</code></li>
+<li><code>right_join</code> works symmetric</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">left_join</span>(df1, df2, <span class="dt">by=</span><span class="st">&quot;id&quot;</span>)</code></pre></div>
+<pre><code>##   id trt value stress bpm
+## 1  1   A     5     NA  NA
+## 2  2   B     3     NA  NA
+## 3  3   C     7     NA  NA
+## 4  4   A     1      0  65
+## 5  4   A     1      1 125
+## 6  5   B     2      0  74
+## 7  5   B     2      1 136
+## 8  6   C     3     NA  NA</code></pre>
+</section><section id="inner-join" class="slide level2">
+<h2>Inner join</h2>
+<ul>
+<li>only matches from both data sets are kept</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inner_join</span>(df1, df2, <span class="dt">by =</span> <span class="st">&quot;id&quot;</span>)</code></pre></div>
+<pre><code>##   id trt value stress bpm
+## 1  4   A     1      0  65
+## 2  4   A     1      1 125
+## 3  5   B     2      0  74
+## 4  5   B     2      1 136</code></pre>
+</section><section id="full-join" class="slide level2">
+<h2>Full join</h2>
+<ul>
+<li>all ids are kept, missings are filled in with <code>NA</code></li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">full_join</span>(df1, df2, <span class="dt">by =</span> <span class="st">&quot;id&quot;</span>)</code></pre></div>
+<pre><code>##    id  trt value stress bpm
+## 1   1    A     5     NA  NA
+## 2   2    B     3     NA  NA
+## 3   3    C     7     NA  NA
+## 4   4    A     1      0  65
+## 5   4    A     1      1 125
+## 6   5    B     2      0  74
+## 7   5    B     2      1 136
+## 8   6    C     3     NA  NA
+## 9   7 &lt;NA&gt;    NA      0  48
+## 10  7 &lt;NA&gt;    NA      1 110</code></pre>
+</section><section id="traps-of-joins" class="slide level2">
+<h2>Traps of joins</h2>
+<ul>
+<li>sometimes we unexpectedly cannot match values: missing values, different spelling, …</li>
+<li>join can be along multiple variables, e.g. <code>by = c(&quot;ID&quot;, &quot;Date&quot;)</code></li>
+<li>joining variable(s) can have different names, e.g. <code>by = c(&quot;State&quot; = &quot;Name&quot;)</code></li>
+<li>always make sure to check dimensions of data before and after a join</li>
+<li>check on missing values; help with that: <code>anti_join</code></li>
+</ul>
+</section><section id="anti-join" class="slide level2">
+<h2>Anti join</h2>
+<ul>
+<li>a neat function in <code>dplyr</code></li>
+<li>careful, not symmetric!</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">anti_join</span>(df1, df2, <span class="dt">by=</span><span class="st">&quot;id&quot;</span>) <span class="co"># no values for id in df2</span></code></pre></div>
+<pre><code>##   id trt value
+## 1  6   C     3
+## 2  3   C     7
+## 3  2   B     3
+## 4  1   A     5</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">anti_join</span>(df2, df1, <span class="dt">by=</span><span class="st">&quot;id&quot;</span>) <span class="co"># no values for id in df1</span></code></pre></div>
+<pre><code>##   id stress bpm
+## 1  7      0  48
+## 2  7      1 110</code></pre>
+</section><section id="your-turn-10-mins-1" class="slide level2 white">
+<h2>Your turn (10 mins)</h2>
+<p><img src="images/baseball.jpeg" width="1200" class="cover"></p>
+<ul>
+<li><span style="color:white">Load the <code>Lahman</code> package into your R session</span></li>
+<li><span style="color:white">Join (relevant pieces of) the <code>Master</code> data set and <code>HallOfFame</code></span></li>
+<li><span style="color:white">For the <code>ggplot2</code> chart label all last attempts of individuals with 15 or more attempts. Make sure to deal with missing values appropriately.</span></li>
+</ul>
+</section><section id="solution" class="slide level2">
+<h2>Solution</h2>
+<p>Not all organizations involved in inducting worthy candidates into the Hall of Fame take votes. <br> We will take only voters into consideration:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Voted &lt;-<span class="st"> </span>HallOfFame %&gt;%<span class="st"> </span><span class="kw">filter</span>(!<span class="kw">is.na</span>(ballots)) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(playerID) %&gt;%<span class="st"> </span><span class="kw">arrange</span>(yearID) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>( <span class="dt">attempt =</span> <span class="kw">order</span>(yearID))
+
+<span class="kw">dim</span>(Voted)</code></pre></div>
+<pre><code>## [1] 3927   11</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Voted &lt;-<span class="st"> </span><span class="kw">left_join</span>(Voted, Master %&gt;%<span class="st"> </span><span class="kw">select</span>(playerID, nameFirst, nameLast), 
+                   <span class="dt">by =</span> <span class="st">&quot;playerID&quot;</span>)
+<span class="kw">dim</span>(Voted)</code></pre></div>
+<pre><code>## [1] 3927   13</code></pre>
+</section><section id="chart-of-induction" class="slide level2">
+<h2>Chart of induction</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Voted %&gt;%<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> attempt, <span class="dt">y =</span> votes/needed)) +
+<span class="st">  </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> <span class="dv">1</span>, <span class="dt">colour =</span> <span class="st">&quot;grey25&quot;</span>, <span class="dt">size =</span> <span class="fl">0.1</span>) +
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">group =</span> playerID), <span class="dt">colour =</span> <span class="st">&quot;grey35&quot;</span>, <span class="dt">size =</span> <span class="fl">0.2</span>) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">colour =</span> inducted))</code></pre></div>
+<p><img src="05_tidyr_files/figure-revealjs/unnamed-chunk-24-1.png" width="768" /></p>
+</section><section id="getting-the-dataset-for-the-labels" class="slide level2">
+<h2>Getting the dataset for the labels</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">labels &lt;-<span class="st"> </span>Voted %&gt;%<span class="st"> </span><span class="kw">group_by</span>(playerID) %&gt;%<span class="st"> </span><span class="kw">summarize</span>(
+  <span class="dt">votes =</span> votes[<span class="kw">which.max</span>(attempt)],
+  <span class="dt">needed =</span> needed[<span class="kw">which.max</span>(attempt)],
+  <span class="dt">attempt =</span> <span class="kw">max</span>(attempt),
+  <span class="dt">name =</span> <span class="kw">paste</span>(<span class="kw">unique</span>(nameFirst), <span class="kw">unique</span>(nameLast))
+)</code></pre></div>
+<p><img src="05_tidyr_files/figure-revealjs/unnamed-chunk-26-1.png" width="768" /></p>
+</section>
+
+  <!--
+  To hide progress bar from entire presentation
+  just remove “progress” element.
+  -->
+  <!-- <div class="progress"></div> -->
+  <script src="05_tidyr_files/rmdshower/node_modules/shower/node_modules/shower-core/shower.min.js"></script>
+  <!-- Copyright © 2015 Yours Truly, Famous Inc. -->
+  <!-- Photos by John Carey, fiftyfootshadows.net -->
+
+    <script>renderMathInElement(document.body);</script>
+  
+  
+</body>
+</html>

@@ -1,0 +1,45 @@
+---
+title: 'Lab Assignment #2'
+author: "Heike Hofmann"
+ratio: 16x10
+output:
+  rmdshower::shower_presentation:
+    self_contained: false
+    katex: true
+    theme: ribbon
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Lab #2
+
+## {.white}
+
+<img src="images/movies-cropped.jpeg" width=2500 class="cover">
+
+
+## Movies of the last two years
+
+The data set [movies](../data/movies.csv) consists of movies in theaters for the last two years. 
+
+```{r}
+movies <- read.csv("../data/movies.csv")
+head(movies)
+```
+
+## Lab assignment
+
+Using tools from `dplyr` and `ggplot2` answer the following questions:
+
+- What were the most successful movies over the past two years? Make sure to define how you measure success. What can you say about movies that only came out recently?
+- How long, on average, are movies in theaters? Also look at the median time. Try to figure out what contributes to the big difference.
+- What is the standard trajectory of a movie's total gross? Draw a plot and label some of the trajectories. <br>
+If you feel ambitious, you could try to model this trajectory - but if you do, make sure to detail all assumptions that you make.
+
+## Deliverable 
+
+Submit a write-up containing code, plot, and description in form of an RMarkdown file to Blackboard. 
+
+

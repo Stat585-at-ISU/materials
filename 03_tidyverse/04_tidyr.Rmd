@@ -8,6 +8,7 @@ output:
     katex: true
     theme: ribbon
 ---
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
@@ -27,8 +28,10 @@ Leo Tolstoy
 
 ## Outline
 
-- Discuss data formats
+- Different sources of messiness
 - Key-Value pairs
+- `tidyr`: `spread` and `gather`, `separate`
+
 
 ## Data is usually in a spreadsheet format, but ...
 
@@ -48,14 +51,14 @@ Neither #1 nor #2 are "clean" versions of the data: observed information is part
 
 ## Sources of Messiness
 
-- Column headers are values, not variable names.<br>
+1. Column headers are values, not variable names.<br>
 e.g. *treatmenta, treatmentb*
-- Multiple variables are stored in one column.<br>
+2. Multiple variables are stored in one column.<br>
 e.g. *Fall 2015, Spring 2016* or *"1301 8th St SE, Orange City, Iowa 51041
 (42.99755, -96.04149)", "2102 Durant, Harlan, Iowa 51537
 (41.65672, -95.33780)"*
-- Multiple observational units are stored in the same table.
-- A single observational unit is stored in multiple tables.
+3. Multiple observational units are stored in the same table.
+4. A single observational unit is stored in multiple tables.
 
 ## Tidy data
 
@@ -91,17 +94,17 @@ One way of telling whether a data set is tidy is to check that all keys for a va
 | <img src="images/kvp-unhappy.png" width=150> | <img src="images/kvp-happy.png" width=150>     | 
 |Untidy data | Tidy data |
 
-## Tidying data
+## Tidying data - Plan of attack
 
 Very few functions are needed for tidying data:
 
-- `tidyr::gather (data, key, value, ...)`<br>
-take multiple columns and collapse into key-value pairs
-- `tidyr::spread (data, key, value, fill = NA)`<br> 
-spread a key-value pair across multiple columns.
-- `tidyr::separate (data, col, into, sep = "[^[:alnum:]]+")`<br>
+- Messy (1): `tidyr` functions `gather` and `spread`.  
+`gather (data, key, value, ...)`: take multiple columns and collapse into key-value pairs <br>
+`spread (data, key, value, fill = NA)`: spread a key-value pair across multiple columns.
+- Messy (2): `tidyr` function `separate (data, col, into, sep = "[^[:alnum:]]+")`:
 separate one column into multiple columns
-- join multiple data sets (in `dplyr` package)
+- Messy (3): `dplyr` - some combination of the functions discussed previously
+- Messy (4): `dplyr` functionality `join` (and friends) to combine multiple data sets 
 
 ## Gather
 
@@ -124,8 +127,49 @@ ffm %>% spread(key = rep, value = score) %>%
   facet_wrap(~scale) + geom_abline(colour = "grey50")
 ```
 
-## Your Turn (15 min)
+## separate
+
+```{r}
+df <- data.frame(x = c(NA, "a.b", "a.d", "b.c"))
+df %>% separate(x, into = c("A", "B"))
+```
+
+## Your Turn (5 min)
 
 <img src="images/beardshear-view.png" width=1100 class="cover">
 
-- 
+The Iowa Data Portal is a wealth of information on and about the State of Iowa. 
+
+The website 
+[Campaign Expenditures](https://data.iowa.gov/Government/Campaign-Expenditures/3adi-mht4/data) provides data on campaign expenditures. The code below reads the data into an R session.
+
+```
+url <- "https://data.iowa.gov/api/views/3adi-mht4/rows.csv"
+campaign <- readr::read_csv(url)
+```
+
+Assess the 'messiness' of the data. List issues that prevent us from working with the data directly. Which of these issues are of type (1) or (2) of messiness?
+
+## Problems with the data
+
+- `Date` is text, in the format of Month/Day/Year (Messy 2)
+- city coordinates are a combination of City name, state, zip code and geographic latitude and longitude. (Messy 2)
+- expenditure amount is a textual expression, not a number (Messy different)
+
+no Messy 1? - problems of type Messy 1 are typically hard to detect and often up to interpretation/dependent on the analysis to be done.
+
+
+## Your Turn (10 min)
+
+<img src="images/beardshear-view.png" width=1100 class="cover">
+
+- Check the help for the function `parse_number` in the `readr` package and use it on the campaign expenditure data.
+- Use `separate` to split the date variable into year, month and day.
+- Use `separate` again to extract geographic latitude and longitude (Hint - you might need several steps of `separate`)
+- Using `dplyr` functionality answer the following questions:
+
+  1. What is the total amount of campaign expenditure?
+  2. What is the single largest cost in the campaign expenditures?
+  3. What time frame does the campaign expenditure cover?
+  4. Plot geographic longitude and latitude. Do campaign expenditures stay in the State of IA? Investigate oddities.
+
