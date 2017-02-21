@@ -1,0 +1,254 @@
+---
+title: "585Lab3"
+date: "February 16, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(tidyverse)
+library(purrr)
+```
+
+## Data Cleaning
+
+First step, read in the files. 
+
+
+```{r}
+file1 <- lapply(excel_sheets("spreadsheets/FileOne.xlsx"), read_excel, path = "spreadsheets/FileOne.xlsx")
+file2 <- lapply(excel_sheets("spreadsheets/FileTwo.xlsx"), read_excel, path = "spreadsheets/FileTwo.xlsx")
+
+```
+
+Before we can combine the files, or even the semesters, we need to do a little bit of cleaning.
+
+```{r }
+# First up, file 1:
+
+file1[[1]]
+# file 1 sem 1 is missing column titles
+names(file1[[1]])[c(1,2)]<-c("ID", "Test")
+file1[[1]] <- file1[[1]] %>% mutate ( Sem =1)
+
+
+file1[[2]]
+# file 1 sem 2 is also missing column titles
+names(file1[[2]])[c(1,2)]<-c("ID", "Test")
+# delete extra column of NA's
+file1[[2]] <- file1[[2]][,-15]
+file1[[2]] <- file1[[2]] %>% mutate ( Sem = 2)
+
+file1[[3]]
+# file 1 sem 3 is also missing column titles
+names(file1[[3]])[c(1,2)]<-c("ID", "Test")
+file1[[3]] <- file1[[3]] %>% mutate ( Sem =3)
+
+file1[[4]]
+# file 1 sem 4 is also missing column titles
+names(file1[[4]])[c(1,2)]<-c("ID", "Test")
+# the ids for sem 4 have an extra 100 in them?
+file1[[4]] <- file1[[4]] %>% mutate ( ID=ID -100, Sem =4)
+
+# combine the list of data frames into one dataframe
+f1 <- do.call("rbind", file1)
+
+# make sure all "test" resposes are the same case
+f1$Test <- gsub("PRE", "Pre", f1$Test)
+f1$Test <- gsub("POST", "Post", f1$Test)
+f1
+
+#fix names of the columns
+names(f1)[c(14, 15,18)] <- c("Normalized Change", "Gender", "Treatment Part 2")
+f1
+
+
+```
+
+```{r }
+# Next up, file 2:
+
+file2[[1]]
+# file 1 sem 1 is missing column titles
+names(file2[[1]])[c(1,2)]<-c("ID", "Test")
+file2[[1]] <- file2[[1]] %>% mutate (Sem =1)
+
+
+file2[[2]]
+# file 2 sem 2 is also missing column titles
+names(file2[[2]])[c(1,2)]<-c("ID", "Test")
+file2[[2]] <- file2[[2]] %>% mutate ( Sem =2)
+
+file2[[3]]
+# file 2 sem 3 is also missing column titles
+names(file2[[3]])[c(1,2)]<-c("ID", "Test")
+file2[[3]] <- file2[[3]] %>% mutate ( Sem =3)
+
+file2[[4]]
+# file 1 sem 4 is also missing column titles
+names(file2[[4]])[c(1,2)]<-c("ID", "Test")
+# the ids for sem 4 have an extra 1100 in them?
+file2[[4]] <- file2[[4]] %>% mutate ( ID= ID -1100, Sem =4)
+
+# looking back throu the dimensions of all 4 semesters, semester one is missing the column "MTH 3", so we'll add in a column of NAS
+file2[[1]] <- file2[[1]] %>% mutate ("MTH 3" = NA)
+#but I would like the columns to still be in the same order, so I will rearrange them
+file2[[1]]  <- file2[[1]][,c(1:16,41,17:40)]
+
+# combine the list of data frames into one dataframe
+f2 <- do.call("rbind", file2)
+
+# make sure all "test" resposes are the same case
+f2$Test <- gsub("PRE", "Pre", f2$Test)
+f2$Test <- gsub("POST", "Post", f2$Test)
+f2 %>% arrange(ID)
+names(f2)[37]<- "Gender"
+
+
+```
+
+Now that we have the two files in two dataframes we can start working on getting them combined into one dataframe.
+
+We have a split key so we will need to create two dataframes for each file before continuing.
+
+First, we should extract the all the information about the student that is constant throughout the semester.
+
+```{r}
+
+keys1 <- f1 %>% select(ID, Gender, Characteristic, `Treatment Part 1`, `Treatment Part 2`, Sem)
+keys2 <- f2 %>% select(ID, Gender, Characteristic, `Treatment Part 1`, `Treatment Part 2`, Sem)
+#combine the two together
+keys <- rbind(keys1, keys2)
+
+
+
+#since there are duplicates, we want to pull out the unique, complete, values
+keys <- unique(keys)
+keys <- keys[complete.cases(keys),]
+keys %>% arrange(ID)
+```
+
+
+Now we can join the f1 and f2 with our dataframe of keys
+
+```{r}
+#take gender and characeristic out of files 1 and 2
+F1 <- f1[,-c(15:19)]
+F2 <- f2[,-c(37:41)]
+
+# Join the dataframes
+first <- left_join(keys, F1, by=("ID"))
+first %>% arrange(ID)
+final <- left_join(first, F2, by=c("ID","Test"))
+final %>% arrange(ID)
+
+```
+
+
+After joining the two dataframes, we renamed the variables corresponding to each test total score.
+
+
+```{r}
+
+# Renaming variables
+names(final)[6] <- "Semester"
+names(final)[18] <- "Test1_Total"
+names(final)[52] <- "Test2_Total"
+```
+
+## Graphs Comparing Pre and Post Scores
+
+
+Examining the number of IDs and unique IDs in the key dataframe created earlier, the lengths differ, due to discrepancies between the test 1 and test 2 variables for characteristic and gender. There are several examples below of students that show these discrepancies.
+
+```{r}
+# Comparing lengths of key IDs and unique IDs
+length(keys$ID)
+length(unique(keys$ID))
+
+# Example of disagreement in characteristic value
+final %>%
+  filter(ID == "30033") %>%
+  select(ID, Characteristic)
+
+# Example of disagreement in gender value
+final %>%
+  filter(ID == "40030") %>%
+  select(ID, Gender)
+```
+
+The discrepancies from test 2 dataframe occur at the end of the final dataframe. Although it would be advised to consult with the data collaborator, the duplicates after the first 346 rows are removed on the assumption that the values from the test 1 dataframe are correct .
+
+```{r}
+# Removing rows with dis
+final <- final %>%
+  slice(1:346)
+```
+
+With these rows removed, the dataframe can be transformed into the necessary formats using functions from the *tidyr* package. The test 1 and test 2 scores are separated into two dataframes with pre and post scores in two columns. Only the variables of ID, Gender, Test, and Semester are kept. Additionally, we created a variable of the difference between the post and pre scores (Post-Pre).
+
+To get a better feel for differences between Pre and Posttest scores, as well as differences by gender, several ways of visually comparing the pre and post scores are included below. For each test, we produce a scatterplot comparing Pre and Post scores, then side by side box plots of Pre and Post differences by gender, and lastly overlapping densities of the differences between Pre and Post by gender.
+
+```{r}
+# Data for test 1 scores
+graph.data.1 <- final %>%
+  select(ID, Gender, Test, Test1_Total, Semester) %>%
+  spread(key = Test, value = Test1_Total) %>%
+  mutate(Difference = Post - Pre)
+
+# Data for test 2 scores
+graph.data.2 <- final %>%
+  select(ID, Gender, Test, Test2_Total, Semester) %>%
+  spread(key = Test, value = Test2_Total) %>%
+  mutate(Difference = Post - Pre)
+```
+
+### Test 1 Scores
+
+```{r, warning = FALSE}
+ggplot(graph.data.1, aes(x = Pre, y = Post, color = Gender)) + 
+  geom_point() + 
+  geom_abline(intercept = 0, slope = 1) +
+  facet_wrap( ~ Semester) +
+  labs(title= "Scatterplot of Pre and Post Test 1 scores (black line is the 1:1 line)")
+
+ggplot(graph.data.1, aes(x = Gender, y = Difference)) + 
+  geom_boxplot() +
+  facet_wrap( ~ Semester) +
+  coord_flip() +
+  labs(title= "Side by side boxplots of differences between Pre and Post Test 1 scores")
+
+ggplot(graph.data.1, aes(x = Difference)) + 
+  geom_density(data = subset(graph.data.1, Gender == 'Female'),fill = "red", alpha = 0.5) +
+  geom_density(data = subset(graph.data.1, Gender == 'Male'),fill = "blue", alpha = 0.5) +
+  facet_wrap( ~ Semester) +
+  labs(title= "Overlapping densities of differences between Pre and Post Test 1 scores")
+```
+
+### Test 2 Scores
+
+```{r, warning = FALSE}
+ggplot(graph.data.2, aes(x = Pre, y = Post, color = Gender)) + 
+  geom_point() + 
+  geom_abline(intercept = 0, slope = 1) +
+  facet_wrap( ~ Semester) +
+  labs(title= "Scatterplot of Pre and Post Test 2 scores (black line is the 1:1 line)")
+
+ggplot(graph.data.2, aes(x = Gender, y = Difference)) + 
+  geom_boxplot() +
+  facet_wrap( ~ Semester) +
+  coord_flip()+
+  labs(title= "Side by side boxplots of differences between Pre and Post Test 2 scores")
+
+ggplot(graph.data.2, aes(x = Difference)) + 
+  geom_density(data = subset(graph.data.2, Gender == 'Female'),fill = "red", alpha = 0.5) +
+  geom_density(data = subset(graph.data.2, Gender == 'Male'),fill = "blue", alpha = 0.5) +
+  facet_wrap( ~ Semester) +
+  labs(title= "Overlapping densities of differences between Pre and Post Test 2 scores")
+```
+
+
+
+
+

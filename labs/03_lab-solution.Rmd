@@ -1,0 +1,187 @@
+---
+title: 'Lab Assignment #3 - Sample Solution'
+author: "Heike Hofmann"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Lab #3:<br>Spreadsheeting the joy
+
+## 
+
+<img src="images/spreadsheet.jpeg" width=2500 class="cover">
+
+
+## Selfefficacy measures and pitfalls
+
+Two Excel spreadsheets are available for our lab today: [FileOne](Spreadsheets/FileOne.xlsx) and [FileTwo](Spreadsheets/FileTwo.xlsx).
+
+1. Download the files and save them in a folder called "Spreadsheets". Place that folder into the same folder as your Rmd file for the lab report.
+2. The two files are two different measures of self efficacy of the same students. Each of the Excel files consist of four sheets, one for each semester between Spring 2011 and Fall 2012. In each semester, a score of a pre- and a post-test is recorded, together with some demographic information (gender and Characteristic). 
+3. The two Excel files track scores from two different tests for the same students (same id (in first column) means the same student).
+
+## Goals of the lab
+
+The big goal for this lab is to come up with a single data set consisting of (type of) measure, semester, student id, student demographics, and pre- and post-test score. 
+
+The lab report is supposed to document all steps you take from reading the data out of the Excel spread sheets to checking data quality to the final data. 
+
+Document in the report 
+
+(b) your approach to check for inconsistencies, and 
+(c) come up with a visual summary comparing pre and post-test scores from the two tests facetted by semester. Try to work gender into this display in a meaningful way.
+
+## Two routes of solutions
+
+- `rbind` all files: 
+  - leads to long form of data
+  - no problems with combining data
+  - BUT: did you find all of the problems in the data?
+- combination of `rbind` and `join`:
+  - leads to a wider variant of the data
+  - might not be straightforward, because of problems in the data
+  - no problem identifying the data problems
+
+
+```{r message = FALSE, echo =FALSE}
+library(tidyverse)
+```
+
+# Data problems you were supposed to find
+
+- ids are not the same between `FileOne` and `FileTwo`
+- some id don't describe the same person: 
+  - gender is different
+  - Characteristic is different
+
+
+## Reading files into two big files
+
+```{r}
+readSheet <- function(file, sheet) {
+# read the data in the sheets
+  xls <- readxl::read_excel(file, sheet=sheet) 
+  names(xls)[1:2] <- c("StudentID", "Test")
+  names(xls) <- trimws(names(xls))
+  xls$file <- file
+  xls$sheet <- sheet
+  xls %>% select(file, sheet, StudentID, Test, Total, GENDER, Characteristic, `Treatment Part 1`, `Treatment Part 2`)
+}
+
+xl11 <- readSheet("Spreadsheets/FileOne.xlsx", sheet=1) 
+xl12 <- readSheet("Spreadsheets/FileOne.xlsx", sheet=2) 
+xl13 <- readSheet("Spreadsheets/FileOne.xlsx", sheet=3) 
+xl14 <- readSheet("Spreadsheets/FileOne.xlsx", sheet=4) 
+xl21 <- readSheet("Spreadsheets/FileTwo.xlsx", sheet=1) 
+xl22 <- readSheet("Spreadsheets/FileTwo.xlsx", sheet=2) 
+xl23 <- readSheet("Spreadsheets/FileTwo.xlsx", sheet=3) 
+xl24 <- readSheet("Spreadsheets/FileTwo.xlsx", sheet=4) 
+
+xl1 <- rbind(xl11, xl12, xl13, xl14)
+xl2 <- rbind(xl21, xl22, xl23, xl24)
+```
+
+## Data cleaning
+
+Separate the data into two parts:
+```{r}
+cleanSheet <- function(data) {
+  # separate data into pre and post, 
+  # rename total to pre and post
+  # merge post into pre
+  pre <- data %>% filter(tolower(Test) == "pre") %>%
+    mutate(pre = Total) %>% select(-Total, -Test)
+  post <- data %>% filter(tolower(Test) == "post") %>%
+    mutate(post = Total) %>% select(StudentID, post)
+  aj <- anti_join(pre, post, by="StudentID")
+  stopifnot(nrow(aj)==0) # needs a better error message
+  
+  left_join(pre, post, by="StudentID")
+}
+
+xl1clean <- cleanSheet(xl1)
+xl2clean <- cleanSheet(xl2)
+```
+
+
+# Route #1: one big skinny file
+
+
+## Combine Datasets
+
+```{r}
+xls <- rbind(xl1clean, xl2clean) %>%
+  mutate(
+    GENDER = factor(GENDER),
+    Characteristic = factor(Characteristic),
+    TR1 = factor(`Treatment Part 1`), # rename just for convience
+    TR2 = factor(`Treatment Part 2`)
+  ) %>% select(-`Treatment Part 1`, - `Treatment Part 2`)
+summary(xls)
+
+xls %>% filter(is.na(GENDER))
+```
+## Inconsistencies
+
+All students should show up four times in the data:
+```{r}
+xls %>% count(StudentID) %>% filter(n != 4)
+
+xls %>% filter(StudentID == 20033)
+```
+
+All students should have one gender:
+
+```{r}
+xls %>% group_by(StudentID) %>% summarize(n = length(unique(GENDER))) %>% filter(n != 1)
+xls %>% filter(StudentID == 30026)
+```
+The characteristic should not change for each student:
+
+```{r}
+xls %>% group_by(StudentID) %>% summarize(n = length(unique(Characteristic))) %>% filter(n != 1)
+xls %>% filter(StudentID == 30028)
+```
+
+## Spreading the data
+
+```{r}
+xls %>% ggplot(aes(pre, post)) + geom_abline()+ 
+  geom_point(aes(colour = GENDER)) +
+  facet_grid(sheet+TR1+TR2~Characteristic) 
+
+xls %>% filter(!is.na(Characteristic), !is.na(GENDER)) %>% 
+  ggplot(aes(interaction(TR1, TR2), post-pre)) +
+  geom_boxplot(aes(fill = GENDER)) +
+  facet_grid(.~Characteristic) 
+
+```
+
+
+# Route #2: `rbind` and `join`
+
+```{r}
+aj1 <- anti_join(xl1clean, xl2clean, by="StudentID")
+aj2 <- anti_join(xl2clean, xl1clean, by="StudentID")
+# these are the ones we cannot match:
+dim(aj1)
+dim(aj2)
+xlwide <- full_join(xl1clean, xl2clean, by="StudentID")
+```
+Mainly a problem of 40 versus 41 at the beginning of the StudentID.
+
+
+
+`Gender.x` should be the same as `Gender.y`:
+```{r}
+summary(xlwide$GENDER.x != xlwide$GENDER.y)
+```
+
+`Characteristic.x` should be the same as `Characteristic.y`:
+```{r}
+summary(xlwide$Characteristic.x != xlwide$Characteristic.y)
+```
+
