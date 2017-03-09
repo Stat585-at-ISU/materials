@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lab Assignment #4</title>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="04_lab_files/rmdshower/node_modules/shower-ribbon/styles/screen-4x3.css">
+  <link rel="stylesheet" href="04_lab_files/rmdshower/style-common.css">
+  <link rel="stylesheet" href="04_lab_files/rmdshower/style-ribbon.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.js"></script>
+  <script src="04_lab_files/rmdshower/auto-render.min.js" type="text/javascript"></script>
+  
+  
+    <style type="text/css">
+   div.sourceCode { overflow-x: auto; }
+   table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+     margin: 0; padding: 0; vertical-align: baseline; border: none; }
+   table.sourceCode { width: 100%; line-height: 100%; }
+   td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+   td.sourceCode { padding-left: 5px; }
+   code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+   code > span.dt { color: #902000; } /* DataType */
+   code > span.dv { color: #40a070; } /* DecVal */
+   code > span.bn { color: #40a070; } /* BaseN */
+   code > span.fl { color: #40a070; } /* Float */
+   code > span.ch { color: #4070a0; } /* Char */
+   code > span.st { color: #4070a0; } /* String */
+   code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+   code > span.ot { color: #007020; } /* Other */
+   code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+   code > span.fu { color: #06287e; } /* Function */
+   code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+   code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+   code > span.cn { color: #880000; } /* Constant */
+   code > span.sc { color: #4070a0; } /* SpecialChar */
+   code > span.vs { color: #4070a0; } /* VerbatimString */
+   code > span.ss { color: #bb6688; } /* SpecialString */
+   code > span.im { } /* Import */
+   code > span.va { color: #19177c; } /* Variable */
+   code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+   code > span.op { color: #666666; } /* Operator */
+   code > span.bu { } /* BuiltIn */
+   code > span.ex { } /* Extension */
+   code > span.pp { color: #bc7a00; } /* Preprocessor */
+   code > span.at { color: #7d9029; } /* Attribute */
+   code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+   code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+   code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+   code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+  
+  
+  
+</head>
+
+<body class="shower list">
+
+  <header class="caption">
+    <h1>Lab Assignment #4</h1>
+    <p>Heike Hofmann</p>
+  </header>
+
+    
+  
+<section id="lab-4-web-scraping" class="slide level2">
+<h2>Lab #4: Web Scraping</h2>
+<p><img src="images/web-scraping.png" class="cover" height=2000></p>
+</section>
+<section id="selectorgadget" class="slide level2">
+<h2>SelectorGadget</h2>
+<ul>
+<li>SelectorGadget is a javascript bookmarklet to determine the css selectors of pieces of a website we want to extract.</li>
+<li>Bookmark the <a href="javascript:(function()%7Bvar%20s=document.createElement(&#39;div&#39;);s.innerHTML=&#39;Loading...&#39;;s.style.color=&#39;black&#39;;s.style.padding=&#39;20px&#39;;s.style.position=&#39;fixed&#39;;s.style.zIndex=&#39;9999&#39;;s.style.fontSize=&#39;3.0em&#39;;s.style.border=&#39;2px%20solid%20black&#39;;s.style.right=&#39;40px&#39;;s.style.top=&#39;40px&#39;;s.setAttribute(&#39;class&#39;,&#39;selector_gadget_loading&#39;);s.style.background=&#39;white&#39;;document.body.appendChild(s);s=document.createElement(&#39;script&#39;);s.setAttribute(&#39;type&#39;,&#39;text/javascript&#39;);s.setAttribute(&#39;src&#39;,&#39;http://www.selectorgadget.com/stable/lib/selectorgadget.js?raw=true&#39;);document.body.appendChild(s);%7D)();">SelectorGadget</a> link, then click on it to use it.</li>
+<li>When SelectorGadget is active, pieces of the website are highlighted in orange/green/red.</li>
+<li>Use SelectorGadget on <a href="http://www.baseball-reference.com/players/" class="uri">http://www.baseball-reference.com/players/</a> .</li>
+<li>read more details on <code>vignette(&quot;selectorgadget&quot;)</code></li>
+</ul>
+</section>
+<section id="selectorgadget-result" class="slide level2">
+<h2>SelectorGadget Result</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tidyverse)
+<span class="kw">library</span>(rvest)
+url &lt;-<span class="st"> &quot;http://www.baseball-reference.com/players/a/&quot;</span>
+html &lt;-<span class="st"> </span><span class="kw">read_html</span>(url)
+html %&gt;%<span class="st"> </span><span class="kw">html_nodes</span>(<span class="st">&quot;b a&quot;</span>) %&gt;%<span class="st"> </span><span class="kw">html_text</span>()</code></pre></div>
+<pre><code>##  [1] &quot;David Aardsma&quot;        &quot;Fernando Abad&quot;        &quot;Jose Abreu&quot;          
+##  [4] &quot;Winston Abreu&quot;        &quot;Alfredo Aceves&quot;       &quot;A.J. Achter&quot;         
+##  [7] &quot;Dustin Ackley&quot;        &quot;Manny Acosta&quot;         &quot;Cristhian Adames&quot;    
+## [10] &quot;Austin Adams&quot;         &quot;David Adams&quot;          &quot;Lane Adams&quot;          
+## [13] &quot;Matt Adams&quot;           &quot;Tim Adleman&quot;          &quot;Ehire Adrianza&quot;      
+## [16] &quot;Jesus Aguilar&quot;        &quot;Nick Ahmed&quot;           &quot;Jonathan Albaladejo&quot; 
+## [19] &quot;Andrew Albers&quot;        &quot;Matt Albers&quot;          &quot;Hanser Alberto&quot;      
+## [22] &quot;Al Alburquerque&quot;      &quot;Arismendy Alcantara&quot;  &quot;Raul Alcantara&quot;      
+## [25] &quot;Scott Alexander&quot;      &quot;Jorge Alfaro&quot;         &quot;Eliezer Alfonzo&quot;     
+## [28] &quot;Brandon Allen&quot;        &quot;Cody Allen&quot;           &quot;Abraham Almonte&quot;     
+## [31] &quot;Miguel Almonte&quot;       &quot;Zoilo Almonte&quot;        &quot;Albert Almora&quot;       
+## [34] &quot;Yonder Alonso&quot;        &quot;Dan Altavilla&quot;        &quot;Aaron Altherr&quot;       
+## [37] &quot;Jose Altuve&quot;          &quot;Dariel Alvarez&quot;       &quot;Dario Alvarez&quot;       
+## [40] &quot;Henderson Alvarez&quot;    &quot;Jose Alvarez&quot;         &quot;Pedro Alvarez&quot;       
+## [43] &quot;R.J. Alvarez&quot;         &quot;Alexi Amarista&quot;       &quot;Hector Ambriz&quot;       
+## [46] &quot;Alfredo Amezaga&quot;      &quot;Brett Anderson&quot;       &quot;Bryan Anderson&quot;      
+## [49] &quot;Chase Anderson&quot;       &quot;Cody Anderson&quot;        &quot;Lars Anderson&quot;       
+## [52] &quot;Tim Anderson&quot;         &quot;Tyler Anderson&quot;       &quot;Robert Andino&quot;       
+## [55] &quot;Matt Andriese&quot;        &quot;Elvis Andrus&quot;         &quot;Dean Anna&quot;           
+## [58] &quot;Dustin Antolin&quot;       &quot;Nori Aoki&quot;            &quot;Jayson Aquino&quot;       
+## [61] &quot;Elvis Araujo&quot;         &quot;Chris Archer&quot;         &quot;Orlando Arcia&quot;       
+## [64] &quot;Oswaldo Arcia&quot;        &quot;Nolan Arenado&quot;        &quot;J.P. Arencibia&quot;      
+## [67] &quot;Shawn Armstrong&quot;      &quot;Jonathan Aro&quot;         &quot;Jake Arrieta&quot;        
+## [70] &quot;Bronson Arroyo&quot;       &quot;Erisbel Arruebarrena&quot; &quot;Cody Asche&quot;          
+## [73] &quot;Alec Asher&quot;           &quot;Nevin Ashley&quot;         &quot;Carlos Asuaje&quot;       
+## [76] &quot;Mitch Atkins&quot;         &quot;Tyler Austin&quot;         &quot;Xavier Avery&quot;        
+## [79] &quot;Alex Avila&quot;           &quot;Luis Avilan&quot;          &quot;Mike Aviles&quot;         
+## [82] &quot;Dylan Axelrod&quot;        &quot;John Axford&quot;          &quot;Luis Ayala&quot;          
+## [85] &quot;Erick Aybar&quot;</code></pre>
+</section>
+<section id="example-varied" class="slide level2">
+<h2>Example, varied</h2>
+<p>We are, in fact, not just interested in the <em>names of the players</em>, but also in the <em>links</em> to each player’s website</p>
+<ul>
+<li><code>html_attr</code> let’s us access an attribute of an html node</li>
+<li><code>html_attrs</code> extracts all attributes of an html node</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">html %&gt;%<span class="st"> </span><span class="kw">html_nodes</span>(<span class="st">&quot;b a&quot;</span>) %&gt;%<span class="st"> </span><span class="kw">html_attr</span>(<span class="dt">name=</span><span class="st">&quot;href&quot;</span>)</code></pre></div>
+<pre><code>##  [1] &quot;/players/a/aardsda01.shtml&quot; &quot;/players/a/abadfe01.shtml&quot; 
+##  [3] &quot;/players/a/abreujo02.shtml&quot; &quot;/players/a/abreuwi01.shtml&quot;
+##  [5] &quot;/players/a/aceveal01.shtml&quot; &quot;/players/a/achteaj01.shtml&quot;
+##  [7] &quot;/players/a/ackledu01.shtml&quot; &quot;/players/a/acostma01.shtml&quot;
+##  [9] &quot;/players/a/adamecr01.shtml&quot; &quot;/players/a/adamsau01.shtml&quot;
+## [11] &quot;/players/a/adamsda02.shtml&quot; &quot;/players/a/adamsla01.shtml&quot;
+## [13] &quot;/players/a/adamsma01.shtml&quot; &quot;/players/a/adlemti01.shtml&quot;
+## [15] &quot;/players/a/adriaeh01.shtml&quot; &quot;/players/a/aguilje01.shtml&quot;
+## [17] &quot;/players/a/ahmedni01.shtml&quot; &quot;/players/a/albaljo01.shtml&quot;
+## [19] &quot;/players/a/alberan01.shtml&quot; &quot;/players/a/alberma01.shtml&quot;
+## [21] &quot;/players/a/alberha01.shtml&quot; &quot;/players/a/albural01.shtml&quot;
+## [23] &quot;/players/a/alcanar01.shtml&quot; &quot;/players/a/alcanra01.shtml&quot;
+## [25] &quot;/players/a/alexasc02.shtml&quot; &quot;/players/a/alfarjo01.shtml&quot;
+## [27] &quot;/players/a/alfonel01.shtml&quot; &quot;/players/a/allenbr01.shtml&quot;
+## [29] &quot;/players/a/allenco01.shtml&quot; &quot;/players/a/almonab01.shtml&quot;
+## [31] &quot;/players/a/almonmi01.shtml&quot; &quot;/players/a/almonzo01.shtml&quot;
+## [33] &quot;/players/a/almoral01.shtml&quot; &quot;/players/a/alonsyo01.shtml&quot;
+## [35] &quot;/players/a/altavda01.shtml&quot; &quot;/players/a/altheaa01.shtml&quot;
+## [37] &quot;/players/a/altuvjo01.shtml&quot; &quot;/players/a/alvarda02.shtml&quot;
+## [39] &quot;/players/a/alvarda01.shtml&quot; &quot;/players/a/alvarhe01.shtml&quot;
+## [41] &quot;/players/a/alvarjo02.shtml&quot; &quot;/players/a/alvarpe01.shtml&quot;
+## [43] &quot;/players/a/alvarrj01.shtml&quot; &quot;/players/a/amarial01.shtml&quot;
+## [45] &quot;/players/a/ambrihe01.shtml&quot; &quot;/players/a/amezaal01.shtml&quot;
+## [47] &quot;/players/a/anderbr04.shtml&quot; &quot;/players/a/anderbr05.shtml&quot;
+## [49] &quot;/players/a/anderch01.shtml&quot; &quot;/players/a/anderco01.shtml&quot;
+## [51] &quot;/players/a/anderla03.shtml&quot; &quot;/players/a/anderti01.shtml&quot;
+## [53] &quot;/players/a/anderty01.shtml&quot; &quot;/players/a/andinro01.shtml&quot;
+## [55] &quot;/players/a/andrima01.shtml&quot; &quot;/players/a/andruel01.shtml&quot;
+## [57] &quot;/players/a/annade01.shtml&quot;  &quot;/players/a/antoldu01.shtml&quot;
+## [59] &quot;/players/a/aokino01.shtml&quot;  &quot;/players/a/aquinja01.shtml&quot;
+## [61] &quot;/players/a/araujel01.shtml&quot; &quot;/players/a/archech01.shtml&quot;
+## [63] &quot;/players/a/arciaor01.shtml&quot; &quot;/players/a/arciaos01.shtml&quot;
+## [65] &quot;/players/a/arenano01.shtml&quot; &quot;/players/a/arencjp01.shtml&quot;
+## [67] &quot;/players/a/armstsh01.shtml&quot; &quot;/players/a/arojo01.shtml&quot;  
+## [69] &quot;/players/a/arrieja01.shtml&quot; &quot;/players/a/arroybr01.shtml&quot;
+## [71] &quot;/players/a/arrueba01.shtml&quot; &quot;/players/a/ascheco01.shtml&quot;
+## [73] &quot;/players/a/asheral01.shtml&quot; &quot;/players/a/ashlene01.shtml&quot;
+## [75] &quot;/players/a/asuajca01.shtml&quot; &quot;/players/a/atkinmi01.shtml&quot;
+## [77] &quot;/players/a/austity01.shtml&quot; &quot;/players/a/averyxa01.shtml&quot;
+## [79] &quot;/players/a/avilaal01.shtml&quot; &quot;/players/a/avilalu01.shtml&quot;
+## [81] &quot;/players/a/avilemi01.shtml&quot; &quot;/players/a/axelrdy01.shtml&quot;
+## [83] &quot;/players/a/axforjo01.shtml&quot; &quot;/players/a/ayalalu01.shtml&quot;
+## [85] &quot;/players/a/aybarer01.shtml&quot;</code></pre>
+</section>
+<section id="your-turn" class="slide level2">
+<h2>Your Turn</h2>
+<p>Use the <a href="javascript:(function()%7Bvar%20s=document.createElement(&#39;div&#39;);s.innerHTML=&#39;Loading...&#39;;s.style.color=&#39;black&#39;;s.style.padding=&#39;20px&#39;;s.style.position=&#39;fixed&#39;;s.style.zIndex=&#39;9999&#39;;s.style.fontSize=&#39;3.0em&#39;;s.style.border=&#39;2px%20solid%20black&#39;;s.style.right=&#39;40px&#39;;s.style.top=&#39;40px&#39;;s.setAttribute(&#39;class&#39;,&#39;selector_gadget_loading&#39;);s.style.background=&#39;white&#39;;document.body.appendChild(s);s=document.createElement(&#39;script&#39;);s.setAttribute(&#39;type&#39;,&#39;text/javascript&#39;);s.setAttribute(&#39;src&#39;,&#39;http://www.selectorgadget.com/stable/lib/selectorgadget.js?raw=true&#39;);document.body.appendChild(s);%7D)();">SelectorGadget</a> on the website for <a href="http://www.baseball-reference.com/players/a/aardsda01.shtml">David Aardsma</a></p>
+<p>Find the css description to extract his career statistics and load them into your R session.</p>
+<p>You might find the following code helpful:</p>
+<pre><code>s &lt;- html_session(&quot;http://www.baseball-reference.com&quot;)
+s &lt;- s %&gt;% jump_to(link)
+html &lt;- read_html(s)</code></pre>
+</section>
+<section id="lab-assignment" class="slide level2">
+<h2>Lab Assignment</h2>
+<ol type="1">
+<li>Write a function that allows you to extract the whole matrix (row names, column names and matrix values) of career statistics given the link to a player’s bio website.</li>
+<li>Additionally, save the player’s position.</li>
+<li>Apply the function to scrape data for ten recently active baseball players with names starting with your favorite letter of the alphabet.</li>
+<li>Save the resulting data, and create a visualization (using <code>ggplot2</code>).</li>
+</ol>
+</section>
+<section id="deliverable" class="slide level2">
+<h2>Deliverable</h2>
+<p>Submit a write-up containing code, plots, and descriptions in form of an RMarkdown file to Blackboard.</p>
+</section>
+
+  <!--
+  To hide progress bar from entire presentation
+  just remove “progress” element.
+  -->
+  <!-- <div class="progress"></div> -->
+  <script src="04_lab_files/rmdshower/node_modules/shower/node_modules/shower-core/shower.min.js"></script>
+  <!-- Copyright © 2015 Yours Truly, Famous Inc. -->
+  <!-- Photos by John Carey, fiftyfootshadows.net -->
+
+    <script>renderMathInElement(document.body);</script>
+  
+  
+</body>
+</html>

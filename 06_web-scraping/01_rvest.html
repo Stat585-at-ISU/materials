@@ -991,8 +991,9 @@ bb &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class=
 <h2>Your Turn - Solution (cont’d)</h2>
 <p>second, we follow the links to get to career statistics:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">getStats &lt;-<span class="st"> </span>function(link) {
-  url &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="st">&quot;http://www.baseball-reference.com&quot;</span>, link)
-  html &lt;-<span class="st"> </span><span class="kw">read_html</span>(url)
+  s &lt;-<span class="st"> </span><span class="kw">html_session</span>(<span class="st">&quot;http://www.baseball-reference.com&quot;</span>)
+  s &lt;-<span class="st"> </span>s %&gt;%<span class="st"> </span><span class="kw">jump_to</span>(link)
+  html &lt;-<span class="st"> </span><span class="kw">read_html</span>(s)
   type &lt;-<span class="st"> </span>html %&gt;%<span class="st"> </span><span class="kw">html_nodes</span>(<span class="st">&quot;.stats_pullout .poptip&quot;</span>) %&gt;%<span class="st"> </span><span class="kw">html_text</span>() 
   values &lt;-<span class="st"> </span>html %&gt;%<span class="st"> </span><span class="kw">html_nodes</span>(<span class="st">&quot;.stats_pullout .p1 p, .stats_pullout .p2 p, .stats_pullout .p3 p&quot;</span>) %&gt;%<span class="st"> </span><span class="kw">html_text</span>()
   what &lt;-<span class="st"> </span>html %&gt;%<span class="st"> </span><span class="kw">html_nodes</span>(<span class="st">&quot;.stats_pullout strong&quot;</span>) %&gt;%<span class="st"> </span><span class="kw">html_text</span>()
@@ -1000,9 +1001,10 @@ bb &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class=
   df
 }
 
-bb[<span class="dv">1</span>:<span class="dv">5</span>,] %&gt;%<span class="st"> </span><span class="kw">mutate</span>(
+bbhead &lt;-<span class="st"> </span>bb[<span class="dv">1</span>:<span class="dv">5</span>,] %&gt;%<span class="st"> </span><span class="kw">mutate</span>(
   <span class="dt">career =</span> links %&gt;%<span class="st"> </span>purrr::<span class="kw">map</span>(getStats)
-) %&gt;%<span class="st"> </span><span class="kw">select</span>(-links)</code></pre></div>
+) 
+bbhead[,<span class="kw">c</span>(<span class="st">&quot;players&quot;</span>, <span class="st">&quot;career&quot;</span>)]</code></pre></div>
 <pre><code>##          players
 ## 1  David Aardsma
 ## 2  Fernando Abad

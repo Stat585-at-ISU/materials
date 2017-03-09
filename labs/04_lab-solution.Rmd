@@ -1,5 +1,5 @@
 ---
-title: "Stat 585 - Web Scraping"
+title: 'Lab Assignment #4'
 author: "Heike Hofmann"
 ratio: 16x10
 output:
@@ -8,106 +8,17 @@ output:
     katex: true
     theme: ribbon
 ---
-```{r setup, include=FALSE, message=FALSE, warning = FALSE}
+
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(tidyverse)
 ```
 
-## Web Scraping 
+# Lab #3:<br>Spreadsheeting the joy
 
-<img src="images/web-scraping.png" class="cover" height=2000>
+## 
 
-## The `rvest` package
+<img src="images/spreadsheet.jpeg" width=2500 class="cover">
 
-`read_html` gets *all* the information from a URL
-
-```{r warning = FALSE, message = FALSE}
-library(rvest)
-url <- "http://www.nytimes.com/elections/results/iowa"
-html <- read_html(url)
-html
-```
-
-## Get a *table* from an online source
-
-`html_table` extracts all tables from the sourced html into a list of data frames:
-
-```{r}
-tables <- html %>% html_table(fill=TRUE)
-tables %>% purrr::map(glimpse)
-```
-##
-
-Most tables need a bit of clean-up:
-
-```{r}
-ia_results <- tables[[2]] %>% mutate(
-  Trump = parse_number(Trump),
-  Clinton = parse_number(Clinton)
-)
-ia_results
-```
-
-## Your Turn (5 mins)
-
-Connect to the website of the NY Times election results at http://www.nytimes.com/elections/results/
-
-- Pick your favorite state (by clicking on the state on the map)
-- Use `rvest` to download the election results for the 2016 Presidential Election for all counties of your state.
-- Clean up the data (numbers should be numbers).
-- Convert the numbers into row-wise percentages (decide on either %Republican or %Democrat).
-
-
-## Your Turn (8 mins)
-
-Can you get the data you just scraped onto a map of the counties? - Try to map the percentage you calculated to the fill-color of the counties' polygons.
-
-You will need to `join` the percentages with the county polygons:
-
-```{r message=FALSE}
-counties <- map_data("county")
-head(counties)
-```
-
-## Your Turn - Solution
-
-```{r}
-ia_results <- ia_results %>% mutate(
-  PercDem = Clinton/(Trump + Clinton)*100,
-  subregion = tolower(`Vote by county`)
-) 
-
-anti_join(ia_results, counties %>% filter(region=="iowa"), by="subregion")
-anti_join(counties %>% filter(region=="iowa"), ia_results,  by="subregion")
-```
-
-## Your Turn - Solution (cont'd)
-
-```{r}
-ia_results <- ia_results %>% mutate(
-  subregion = replace(subregion, subregion=="o'brien", "obrien")
-) 
-
-ia_full <- left_join(ia_results, 
-                     counties %>% filter(region=="iowa"), 
-                     by="subregion")
-```
-
-## Your Turn - Solution (cont'd)
-
-```{r}
-ia_full %>% 
-  ggplot(aes( x = long, y = lat, group = subregion)) +
-  geom_polygon(aes(fill = PercDem)) + 
-  scale_fill_gradient2(midpoint=50, mid = "white") +
-  ggthemes::theme_map()
-```
-
-## Beyond tables
-
-Sometimes data on the web is not structured as nicely ... e.g. let's assume we want to get a list of all recently active baseball players from [Baseball reference](http://www.baseball-reference.com/players/)
-
-<img src="images/baseball-reference.png" height=400>
 
 ## SelectorGadget
 
@@ -191,8 +102,9 @@ bbhead <- bb[1:5,] %>% mutate(
 bbhead[,c("players", "career")]
 ```
 
-## Your Turn  - Solution (cont'd)
 
-We also need to know the position a player has ...
+## Deliverable 
 
-This information has the css path "#meta p:nth-child(2)"
+Submit a write-up containing code, plots, and descriptions in form of an RMarkdown file to Blackboard. 
+
+
