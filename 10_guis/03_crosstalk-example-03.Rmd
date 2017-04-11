@@ -1,0 +1,35 @@
+---
+title: "Crosstalk - Example 4"
+author: "Heike Hofmann"
+date: "4/10/2017"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo = FALSE, warning = FALSE, message=FALSE, fig.width=8, fig.height=6}
+library(crosstalk)
+library(tidyverse)
+library(shiny)
+
+sd <- SharedData$new(mtcars)
+bscols(  
+filter_checkbox("cyl", "Cylinders", sd, 
+                    ~cyl, inline = TRUE),
+    filter_slider("hp", "Horsepower", sd, 
+                  ~hp, width = "100%"),
+    filter_select("auto", "Automatic", sd, 
+                  ~ifelse(am == 0, "Yes", "No"))
+
+)
+renderPlot({
+   df <- sd$data(withSelection = TRUE, withFilter = TRUE)
+   ggplot(df, aes(wt, mpg,
+     color = factor(cyl))) +
+     geom_point() 
+   })
+```
+

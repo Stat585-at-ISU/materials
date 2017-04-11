@@ -1,0 +1,39 @@
+---
+title: "Crosstalk - Example 1"
+author: "Heike Hofmann"
+date: "4/10/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo = FALSE, warning = FALSE, fig.width=5, fig.height=4}
+library(crosstalk)
+library(shiny)
+library(d3scatter)
+library(tidyverse)
+library(plotly)
+
+shared_mtcars <- SharedData$new(mtcars)
+
+gg <- shared_mtcars %>% ggplot(aes(x = hp, y = qsec, colour=factor(cyl))) +
+  geom_point()
+
+bscols(widths = c(3,NA,NA),
+  list(
+    filter_checkbox("cyl", "Cylinders", shared_mtcars, 
+                    ~cyl, inline = TRUE),
+    filter_slider("hp", "Horsepower", shared_mtcars, 
+                  ~hp, width = "100%"),
+    filter_select("auto", "Automatic", shared_mtcars, 
+                  ~ifelse(am == 0, "Yes", "No"))
+  ),
+  d3scatter(shared_mtcars, ~wt, ~mpg, ~factor(cyl), 
+            width="300", height=250),
+  ggplotly(p = shared_mtcars$data() %>% ggplot(aes(x = hp, y = qsec, colour=factor(cyl))) +
+  geom_point()) %>% highlight("plotly_hover")
+)
+```
+

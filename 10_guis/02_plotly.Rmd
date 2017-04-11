@@ -1,0 +1,161 @@
+---
+title: "Stat 585 - Plotly"
+author: "Heike Hofmann"
+ratio: 16x10
+output:
+  rmdshower::shower_presentation:
+    self_contained: false
+    katex: true
+    theme: ribbon
+---
+```{r setup, include=FALSE, message=FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+# Adding Interactivity to Graphics
+
+## Interactive Graphics
+
+Interactive graphics take the idea of reactive interfaces directly to the charts. Several approaches have sprung up in the past couple of years:
+
+- plotly
+- ggvis
+
+## What is `plotly`?
+
+- Plotly is a web platform promoting "collaborative modern data science". using interactive graphics
+- The package `plotly` (Carson Sievert) provides an API in R to use plotly charts.
+- `ggplotly` converts a `ggplot2` chart (including a lot of the add-on functionality by other `gg...` packages) into a plotly chart and adds interactivity
+- Tutorial: https://plot.ly/r/
+
+## plotly Example
+
+```{r, fig.width=5, fig.height=4}
+library(ggplot2)
+mtcars$cars <- row.names(mtcars)
+gg <- mtcars %>% 
+  ggplot(aes(x = wt, y = mpg, colour = factor(cyl), label=cars)) +
+  geom_point()
+
+plotly::ggplotly(gg)
+```
+
+## Defining tooltips
+
+```{r}
+plotly::ggplotly(gg, tooltip=c("label","x","y"))
+```
+
+## Your Turn
+
+- Create a chart using ggplot2, save it in an object,
+- Load the package `plotly` and use `ggplotly` on your chart object.
+- Play with the result!
+
+
+## What is `ggvis`?
+
+- author: Hadley Wickham, tutorial: http://ggvis.rstudio.com/
+- Declaratively describe data graphics with a syntax similar in spirit to ggplot2.
+- Create rich interactive graphics that you can play with locally in Rstudio or in your browser.
+- Leverage shiny’s infrastructure to publish interactive graphics usable from any browser
+- aims to be *Grammar of Graphics* for interactive visualizations
+
+
+## ggvis 
+
+`~` is a mapping, `:=` sets a value
+`layer_` replaces `geom_` from ggplot2 call:
+
+```{r, warning=FALSE, message=FALSE, fig.width=4, fig.height=3.5}
+library(ggvis)
+mtcars %>% ggvis(x=~mpg, y=~wt, fill := "red") %>% 
+  layer_points() %>% layer_smooths()
+```
+
+
+## Layer functions
+
+- in ggvis layers take the place of geoms in ggplot2: `layer_points`, `layer_lines`,`layer_boxplots`, `layer_bars`, ...
+- but ... sometimes these layers work a bit differently from geoms
+- e.g. `layer_paths` works like `geom_path` and `geom_polygon`, but doesn’t have `group` aesthetic
+
+```{r, warning = FALSE, message = FALSE}
+iowa <- ggplot2::map_data("county") %>% filter(region=="iowa")
+iowa %>% ggvis(~long, y=~lat) %>% 
+          layer_paths()
+```
+
+## Layer functions (cont'd)
+
+- `ggvis` is fully functional within the data workflow, e.g. layers respect grouping
+
+
+```{r}
+iowa %>% ggvis(~long, y=~lat) %>% group_by(group) %>%
+          layer_paths()
+```
+
+## Adding interactivity
+
+Note that points now have a **fill** color and a **stroke** color
+
+```{r, warning=FALSE, message=FALSE, fig.width=4, fig.height=3.5}
+mtcars %>% ggvis(x=~mpg, y=~wt, fill := "red") %>% 
+  layer_points() %>% 
+  layer_smooths(span = input_slider(min = 0.1, max = 1,  value=0.6))
+```
+
+## Adding interactivity (cont'd)
+
+- `input_` functions allow the user to set and change input values interactively
+- `input_checkbox` , `input_checkboxgroup`, `input_numeric`, `input_radiobuttons`, `input_select`, `input_slider`, `input_text`
+- `input_` functions have similar structure:
+
+```{r, eval = FALSE}
+function (value, label = "", id = rand_id("text_"), map = identity) 
+```
+
+## Your Turn
+
+- Create a scatterplot using `ggvis` functionality
+- Give the user a choice of colors for the points
+- *Tricky*: Give the user a choice between a loess smooth and a regression line.
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+```{r}
+whichModel <-input_checkbox(label = "Regression?",
+                          value=TRUE,
+  map = function(val) if(val) "lm" else "loess")
+
+mtcars %>% ggvis(x=~mpg, y=~wt, 
+                 fill := input_radiobuttons(choices=c("red", "purple", "steelblue"), selected="red", label = "Pick a color for the points")) %>% 
+  layer_points() %>%
+  layer_model_predictions(model=whichModel)
+```
+
+
+## Interactive plots and shiny
+
+- plotly charts are embedded in the interface with the command `plotlyOutput`
+- `ggvis` needs a bit more work:
+    - ggvis is internally implemented as a shiny app
+    - two apps cannot run at the same time
+    - integrate ggvis in shiny: `bind_shiny(ggvis_object, "name_of_plot", "name_of_control")`
+
+
+## Your Turn (needs some time)
+
+- Rewrite your shiny app to use a `plotly` object
+- Rewrite the plot in your shiny app as `ggvis` command and embed into your app.

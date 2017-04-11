@@ -1,0 +1,25 @@
+---
+title: "Crosstalk - Example 3"
+author: "Heike Hofmann"
+date: "4/10/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo = FALSE, warning = FALSE, message=FALSE, fig.width=8, fig.height=6}
+library(crosstalk)
+library(leaflet)
+library(d3scatter)
+
+shared_quakes <- SharedData$new(quakes[sample(nrow(quakes), 100),])
+bscols(
+  leaflet(shared_quakes, width = "100%", height = 300) %>%
+    addTiles() %>%
+    addMarkers(),
+  d3scatter(shared_quakes, ~depth, ~mag, width = "100%", height = 300)
+)
+```
+

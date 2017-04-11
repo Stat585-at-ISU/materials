@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Stat 585 - Plotly</title>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="02_plotly_files/rmdshower/node_modules/shower-ribbon/styles/screen-4x3.css">
+  <link rel="stylesheet" href="02_plotly_files/rmdshower/style-common.css">
+  <link rel="stylesheet" href="02_plotly_files/rmdshower/style-ribbon.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.js"></script>
+  <script src="02_plotly_files/rmdshower/auto-render.min.js" type="text/javascript"></script>
+  
+  
+    <style type="text/css">
+   div.sourceCode { overflow-x: auto; }
+   table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+     margin: 0; padding: 0; vertical-align: baseline; border: none; }
+   table.sourceCode { width: 100%; line-height: 100%; }
+   td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+   td.sourceCode { padding-left: 5px; }
+   code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+   code > span.dt { color: #902000; } /* DataType */
+   code > span.dv { color: #40a070; } /* DecVal */
+   code > span.bn { color: #40a070; } /* BaseN */
+   code > span.fl { color: #40a070; } /* Float */
+   code > span.ch { color: #4070a0; } /* Char */
+   code > span.st { color: #4070a0; } /* String */
+   code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+   code > span.ot { color: #007020; } /* Other */
+   code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+   code > span.fu { color: #06287e; } /* Function */
+   code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+   code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+   code > span.cn { color: #880000; } /* Constant */
+   code > span.sc { color: #4070a0; } /* SpecialChar */
+   code > span.vs { color: #4070a0; } /* VerbatimString */
+   code > span.ss { color: #bb6688; } /* SpecialString */
+   code > span.im { } /* Import */
+   code > span.va { color: #19177c; } /* Variable */
+   code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+   code > span.op { color: #666666; } /* Operator */
+   code > span.bu { } /* BuiltIn */
+   code > span.ex { } /* Extension */
+   code > span.pp { color: #bc7a00; } /* Preprocessor */
+   code > span.at { color: #7d9029; } /* Attribute */
+   code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+   code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+   code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+   code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+  
+  
+      <script src="02_plotly_files/htmlwidgets-0.8/htmlwidgets.js"></script>
+    <link href="02_plotly_files/plotlyjs-1.25.2/plotly-htmlwidgets.css" rel="stylesheet" />
+    <script src="02_plotly_files/plotlyjs-1.25.2/plotly-latest.min.js"></script>
+    <script src="02_plotly_files/plotly-binding-4.5.6.9000/plotly.js"></script>
+    <script src="02_plotly_files/jquery-1.11.3/jquery.min.js"></script>
+    <link href="02_plotly_files/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
+    <script src="02_plotly_files/crosstalk-1.0.0/js/crosstalk.min.js"></script>
+    <script src="02_plotly_files/typedarray-0.1/typedarray.min.js"></script>
+    <script src="02_plotly_files/detect-resize-0.5.3/jquery.resize.js"></script>
+    <link href="02_plotly_files/jquery-ui-1.11.4/jquery-ui.min.css" rel="stylesheet" />
+    <script src="02_plotly_files/jquery-ui-1.11.4/jquery-ui.min.js"></script>
+    <script src="02_plotly_files/d3-3.5.2/d3.min.js"></script>
+    <script src="02_plotly_files/vega-1.4.3/vega.min.js"></script>
+    <script src="02_plotly_files/lodash-2.2.1/lodash.min.js"></script>
+    <script>var lodash = _.noConflict();</script>
+    <link href="02_plotly_files/ggvis-0.4.3/css/ggvis.css" rel="stylesheet" />
+    <script src="02_plotly_files/ggvis-0.4.3/js/ggvis.js"></script>
+  
+</head>
+
+<body class="shower list">
+
+  <header class="caption">
+    <h1>Stat 585 - Plotly</h1>
+    <p>Heike Hofmann</p>
+  </header>
+
+    
+  
+<section id="adding-interactivity-to-graphics" class="titleslide slide level1"><h2 class="shout">Adding Interactivity to Graphics</h2></section><section id="interactive-graphics" class="slide level2">
+<h2>Interactive Graphics</h2>
+<p>Interactive graphics take the idea of reactive interfaces directly to the charts. Several approaches have sprung up in the past couple of years:</p>
+<ul>
+<li>plotly</li>
+<li>ggvis</li>
+</ul>
+</section><section id="what-is-plotly" class="slide level2">
+<h2>What is <code>plotly</code>?</h2>
+<ul>
+<li>Plotly is a web platform promoting “collaborative modern data science”. using interactive graphics</li>
+<li>The package <code>plotly</code> (Carson Sievert) provides an API in R to use plotly charts.</li>
+<li><code>ggplotly</code> converts a <code>ggplot2</code> chart (including a lot of the add-on functionality by other <code>gg...</code> packages) into a plotly chart and adds interactivity</li>
+<li>Tutorial: <a href="https://plot.ly/r/" class="uri">https://plot.ly/r/</a></li>
+</ul>
+</section><section id="plotly-example" class="slide level2">
+<h2>plotly Example</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(ggplot2)
+mtcars$cars &lt;-<span class="st"> </span><span class="kw">row.names</span>(mtcars)
+gg &lt;-<span class="st"> </span>mtcars %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> wt, <span class="dt">y =</span> mpg, <span class="dt">colour =</span> <span class="kw">factor</span>(cyl), <span class="dt">label=</span>cars)) +
+<span class="st">  </span><span class="kw">geom_point</span>()
+
+plotly::<span class="kw">ggplotly</span>(gg)</code></pre></div>
+<div id="htmlwidget-1c18265376f30c8a3fb3" style="width:480px;height:384px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1c18265376f30c8a3fb3">{"x":{"data":[{"x":[2.32,3.19,3.15,2.2,1.615,1.835,2.465,1.935,2.14,1.513,2.78],"y":[22.8,24.4,22.8,32.4,30.4,33.9,21.5,27.3,26,30.4,21.4],"text":["wt: 2.32<br>mpg: 22.8<br>factor(cyl): 4<br>cars: Datsun 710","wt: 3.19<br>mpg: 24.4<br>factor(cyl): 4<br>cars: Merc 240D","wt: 3.15<br>mpg: 22.8<br>factor(cyl): 4<br>cars: Merc 230","wt: 2.2<br>mpg: 32.4<br>factor(cyl): 4<br>cars: Fiat 128","wt: 1.62<br>mpg: 30.4<br>factor(cyl): 4<br>cars: Honda Civic","wt: 1.84<br>mpg: 33.9<br>factor(cyl): 4<br>cars: Toyota Corolla","wt: 2.46<br>mpg: 21.5<br>factor(cyl): 4<br>cars: Toyota Corona","wt: 1.94<br>mpg: 27.3<br>factor(cyl): 4<br>cars: Fiat X1-9","wt: 2.14<br>mpg: 26<br>factor(cyl): 4<br>cars: Porsche 914-2","wt: 1.51<br>mpg: 30.4<br>factor(cyl): 4<br>cars: Lotus Europa","wt: 2.78<br>mpg: 21.4<br>factor(cyl): 4<br>cars: Volvo 142E"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(248,118,109,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(248,118,109,1)"}},"hoveron":"points","name":"4","legendgroup":"4","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2.62,2.875,3.215,3.46,3.44,3.44,2.77],"y":[21,21,21.4,18.1,19.2,17.8,19.7],"text":["wt: 2.62<br>mpg: 21<br>factor(cyl): 6<br>cars: Mazda RX4","wt: 2.88<br>mpg: 21<br>factor(cyl): 6<br>cars: Mazda RX4 Wag","wt: 3.21<br>mpg: 21.4<br>factor(cyl): 6<br>cars: Hornet 4 Drive","wt: 3.46<br>mpg: 18.1<br>factor(cyl): 6<br>cars: Valiant","wt: 3.44<br>mpg: 19.2<br>factor(cyl): 6<br>cars: Merc 280","wt: 3.44<br>mpg: 17.8<br>factor(cyl): 6<br>cars: Merc 280C","wt: 2.77<br>mpg: 19.7<br>factor(cyl): 6<br>cars: Ferrari Dino"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,186,56,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(0,186,56,1)"}},"hoveron":"points","name":"6","legendgroup":"6","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[3.44,3.57,4.07,3.73,3.78,5.25,5.424,5.345,3.52,3.435,3.84,3.845,3.17,3.57],"y":[18.7,14.3,16.4,17.3,15.2,10.4,10.4,14.7,15.5,15.2,13.3,19.2,15.8,15],"text":["wt: 3.44<br>mpg: 18.7<br>factor(cyl): 8<br>cars: Hornet Sportabout","wt: 3.57<br>mpg: 14.3<br>factor(cyl): 8<br>cars: Duster 360","wt: 4.07<br>mpg: 16.4<br>factor(cyl): 8<br>cars: Merc 450SE","wt: 3.73<br>mpg: 17.3<br>factor(cyl): 8<br>cars: Merc 450SL","wt: 3.78<br>mpg: 15.2<br>factor(cyl): 8<br>cars: Merc 450SLC","wt: 5.25<br>mpg: 10.4<br>factor(cyl): 8<br>cars: Cadillac Fleetwood","wt: 5.42<br>mpg: 10.4<br>factor(cyl): 8<br>cars: Lincoln Continental","wt: 5.34<br>mpg: 14.7<br>factor(cyl): 8<br>cars: Chrysler Imperial","wt: 3.52<br>mpg: 15.5<br>factor(cyl): 8<br>cars: Dodge Challenger","wt: 3.44<br>mpg: 15.2<br>factor(cyl): 8<br>cars: AMC Javelin","wt: 3.84<br>mpg: 13.3<br>factor(cyl): 8<br>cars: Camaro Z28","wt: 3.85<br>mpg: 19.2<br>factor(cyl): 8<br>cars: Pontiac Firebird","wt: 3.17<br>mpg: 15.8<br>factor(cyl): 8<br>cars: Ford Pantera L","wt: 3.57<br>mpg: 15<br>factor(cyl): 8<br>cars: Maserati Bora"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(97,156,255,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(97,156,255,1)"}},"hoveron":"points","name":"8","legendgroup":"8","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":25.1324200913242,"r":7.30593607305936,"b":39.0867579908676,"l":37.2602739726027},"plot_bgcolor":"rgba(235,235,235,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"xaxis":{"domain":[0,1],"type":"linear","autorange":false,"tickmode":"array","range":[1.31745,5.61955],"ticktext":["2","3","4","5"],"tickvals":[2,3,4,5],"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y","title":"wt","titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"type":"linear","autorange":false,"tickmode":"array","range":[9.225,35.075],"ticktext":["10","15","20","25","30","35"],"tickvals":[10,15,20,25,30,35],"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":"mpg","titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"y":0.891732283464567},"annotations":[{"text":"factor(cyl)","x":1.02,"y":1,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"left","yanchor":"bottom","legendTitle":true}],"hovermode":"closest","dragmode":"zoom"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":[{"name":"Collaborate","icon":{"width":1000,"ascent":500,"descent":-50,"path":"M487 375c7-10 9-23 5-36l-79-259c-3-12-11-23-22-31-11-8-22-12-35-12l-263 0c-15 0-29 5-43 15-13 10-23 23-28 37-5 13-5 25-1 37 0 0 0 3 1 7 1 5 1 8 1 11 0 2 0 4-1 6 0 3-1 5-1 6 1 2 2 4 3 6 1 2 2 4 4 6 2 3 4 5 5 7 5 7 9 16 13 26 4 10 7 19 9 26 0 2 0 5 0 9-1 4-1 6 0 8 0 2 2 5 4 8 3 3 5 5 5 7 4 6 8 15 12 26 4 11 7 19 7 26 1 1 0 4 0 9-1 4-1 7 0 8 1 2 3 5 6 8 4 4 6 6 6 7 4 5 8 13 13 24 4 11 7 20 7 28 1 1 0 4 0 7-1 3-1 6-1 7 0 2 1 4 3 6 1 1 3 4 5 6 2 3 3 5 5 6 1 2 3 5 4 9 2 3 3 7 5 10 1 3 2 6 4 10 2 4 4 7 6 9 2 3 4 5 7 7 3 2 7 3 11 3 3 0 8 0 13-1l0-1c7 2 12 2 14 2l218 0c14 0 25-5 32-16 8-10 10-23 6-37l-79-259c-7-22-13-37-20-43-7-7-19-10-37-10l-248 0c-5 0-9-2-11-5-2-3-2-7 0-12 4-13 18-20 41-20l264 0c5 0 10 2 16 5 5 3 8 6 10 11l85 282c2 5 2 10 2 17 7-3 13-7 17-13z m-304 0c-1-3-1-5 0-7 1-1 3-2 6-2l174 0c2 0 4 1 7 2 2 2 4 4 5 7l6 18c0 3 0 5-1 7-1 1-3 2-6 2l-173 0c-3 0-5-1-8-2-2-2-4-4-4-7z m-24-73c-1-3-1-5 0-7 2-2 3-2 6-2l174 0c2 0 5 0 7 2 3 2 4 4 5 7l6 18c1 2 0 5-1 6-1 2-3 3-5 3l-174 0c-3 0-5-1-7-3-3-1-4-4-5-6z"},"click":"function(gd) { \n        // is this being viewed in RStudio?\n        if (location.search == '?viewer_pane=1') {\n          alert('To learn about plotly for collaboration, visit:\\n https://cpsievert.github.io/plotly_book/plot-ly-for-collaboration.html');\n        } else {\n          window.open('https://cpsievert.github.io/plotly_book/plot-ly-for-collaboration.html', '_blank');\n        }\n      }"}],"modeBarButtonsToRemove":["sendDataToCloud"]},"source":"A","attrs":{"856721b14475":{"x":{},"y":{},"colour":{},"label":{},"type":"scatter"}},"cur_data":"856721b14475","visdat":{"856721b14475":["function (y) ","x"]},"highlight":{"on":"plotly_selected","off":"plotly_relayout","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"showInLegend":false,"ctGroups":[]},"base_url":"https://plot.ly"},"evals":["config.modeBarButtonsToAdd.0.click"],"jsHooks":{"render":[{"code":"function(el, x) { var ctConfig = crosstalk.var('plotlyCrosstalkOpts').set({\"on\":\"plotly_selected\",\"off\":\"plotly_relayout\",\"persistent\":false,\"dynamic\":false,\"color\":{},\"selectize\":false,\"defaultValues\":{},\"opacityDim\":0.2,\"hoverinfo\":{},\"showInLegend\":false}); }","data":null}]}}</script>
+</section><section id="defining-tooltips" class="slide level2">
+<h2>Defining tooltips</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">plotly::<span class="kw">ggplotly</span>(gg, <span class="dt">tooltip=</span><span class="kw">c</span>(<span class="st">&quot;label&quot;</span>,<span class="st">&quot;x&quot;</span>,<span class="st">&quot;y&quot;</span>))</code></pre></div>
+<div id="htmlwidget-1ca5f4b0bc2f26f3cc9d" style="width:768px;height:470.4px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1ca5f4b0bc2f26f3cc9d">{"x":{"data":[{"x":[2.32,3.19,3.15,2.2,1.615,1.835,2.465,1.935,2.14,1.513,2.78],"y":[22.8,24.4,22.8,32.4,30.4,33.9,21.5,27.3,26,30.4,21.4],"text":["wt: 2.32<br>mpg: 22.8<br>cars: Datsun 710","wt: 3.19<br>mpg: 24.4<br>cars: Merc 240D","wt: 3.15<br>mpg: 22.8<br>cars: Merc 230","wt: 2.2<br>mpg: 32.4<br>cars: Fiat 128","wt: 1.62<br>mpg: 30.4<br>cars: Honda Civic","wt: 1.84<br>mpg: 33.9<br>cars: Toyota Corolla","wt: 2.46<br>mpg: 21.5<br>cars: Toyota Corona","wt: 1.94<br>mpg: 27.3<br>cars: Fiat X1-9","wt: 2.14<br>mpg: 26<br>cars: Porsche 914-2","wt: 1.51<br>mpg: 30.4<br>cars: Lotus Europa","wt: 2.78<br>mpg: 21.4<br>cars: Volvo 142E"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(248,118,109,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(248,118,109,1)"}},"hoveron":"points","name":"4","legendgroup":"4","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2.62,2.875,3.215,3.46,3.44,3.44,2.77],"y":[21,21,21.4,18.1,19.2,17.8,19.7],"text":["wt: 2.62<br>mpg: 21<br>cars: Mazda RX4","wt: 2.88<br>mpg: 21<br>cars: Mazda RX4 Wag","wt: 3.21<br>mpg: 21.4<br>cars: Hornet 4 Drive","wt: 3.46<br>mpg: 18.1<br>cars: Valiant","wt: 3.44<br>mpg: 19.2<br>cars: Merc 280","wt: 3.44<br>mpg: 17.8<br>cars: Merc 280C","wt: 2.77<br>mpg: 19.7<br>cars: Ferrari Dino"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,186,56,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(0,186,56,1)"}},"hoveron":"points","name":"6","legendgroup":"6","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[3.44,3.57,4.07,3.73,3.78,5.25,5.424,5.345,3.52,3.435,3.84,3.845,3.17,3.57],"y":[18.7,14.3,16.4,17.3,15.2,10.4,10.4,14.7,15.5,15.2,13.3,19.2,15.8,15],"text":["wt: 3.44<br>mpg: 18.7<br>cars: Hornet Sportabout","wt: 3.57<br>mpg: 14.3<br>cars: Duster 360","wt: 4.07<br>mpg: 16.4<br>cars: Merc 450SE","wt: 3.73<br>mpg: 17.3<br>cars: Merc 450SL","wt: 3.78<br>mpg: 15.2<br>cars: Merc 450SLC","wt: 5.25<br>mpg: 10.4<br>cars: Cadillac Fleetwood","wt: 5.42<br>mpg: 10.4<br>cars: Lincoln Continental","wt: 5.34<br>mpg: 14.7<br>cars: Chrysler Imperial","wt: 3.52<br>mpg: 15.5<br>cars: Dodge Challenger","wt: 3.44<br>mpg: 15.2<br>cars: AMC Javelin","wt: 3.84<br>mpg: 13.3<br>cars: Camaro Z28","wt: 3.85<br>mpg: 19.2<br>cars: Pontiac Firebird","wt: 3.17<br>mpg: 15.8<br>cars: Ford Pantera L","wt: 3.57<br>mpg: 15<br>cars: Maserati Bora"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(97,156,255,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(97,156,255,1)"}},"hoveron":"points","name":"8","legendgroup":"8","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":27.9280588947908,"r":7.30593607305936,"b":41.8823967943342,"l":37.2602739726027},"plot_bgcolor":"rgba(235,235,235,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"xaxis":{"domain":[0,1],"type":"linear","autorange":false,"tickmode":"array","range":[1.31745,5.61955],"ticktext":["2","3","4","5"],"tickvals":[2,3,4,5],"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y","title":"wt","titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"type":"linear","autorange":false,"tickmode":"array","range":[9.225,35.075],"ticktext":["10","15","20","25","30","35"],"tickvals":[10,15,20,25,30,35],"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":"mpg","titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"y":0.91161819058332},"annotations":[{"text":"factor(cyl)","x":1.02,"y":1,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"left","yanchor":"bottom","legendTitle":true}],"hovermode":"closest","dragmode":"zoom"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":[{"name":"Collaborate","icon":{"width":1000,"ascent":500,"descent":-50,"path":"M487 375c7-10 9-23 5-36l-79-259c-3-12-11-23-22-31-11-8-22-12-35-12l-263 0c-15 0-29 5-43 15-13 10-23 23-28 37-5 13-5 25-1 37 0 0 0 3 1 7 1 5 1 8 1 11 0 2 0 4-1 6 0 3-1 5-1 6 1 2 2 4 3 6 1 2 2 4 4 6 2 3 4 5 5 7 5 7 9 16 13 26 4 10 7 19 9 26 0 2 0 5 0 9-1 4-1 6 0 8 0 2 2 5 4 8 3 3 5 5 5 7 4 6 8 15 12 26 4 11 7 19 7 26 1 1 0 4 0 9-1 4-1 7 0 8 1 2 3 5 6 8 4 4 6 6 6 7 4 5 8 13 13 24 4 11 7 20 7 28 1 1 0 4 0 7-1 3-1 6-1 7 0 2 1 4 3 6 1 1 3 4 5 6 2 3 3 5 5 6 1 2 3 5 4 9 2 3 3 7 5 10 1 3 2 6 4 10 2 4 4 7 6 9 2 3 4 5 7 7 3 2 7 3 11 3 3 0 8 0 13-1l0-1c7 2 12 2 14 2l218 0c14 0 25-5 32-16 8-10 10-23 6-37l-79-259c-7-22-13-37-20-43-7-7-19-10-37-10l-248 0c-5 0-9-2-11-5-2-3-2-7 0-12 4-13 18-20 41-20l264 0c5 0 10 2 16 5 5 3 8 6 10 11l85 282c2 5 2 10 2 17 7-3 13-7 17-13z m-304 0c-1-3-1-5 0-7 1-1 3-2 6-2l174 0c2 0 4 1 7 2 2 2 4 4 5 7l6 18c0 3 0 5-1 7-1 1-3 2-6 2l-173 0c-3 0-5-1-8-2-2-2-4-4-4-7z m-24-73c-1-3-1-5 0-7 2-2 3-2 6-2l174 0c2 0 5 0 7 2 3 2 4 4 5 7l6 18c1 2 0 5-1 6-1 2-3 3-5 3l-174 0c-3 0-5-1-7-3-3-1-4-4-5-6z"},"click":"function(gd) { \n        // is this being viewed in RStudio?\n        if (location.search == '?viewer_pane=1') {\n          alert('To learn about plotly for collaboration, visit:\\n https://cpsievert.github.io/plotly_book/plot-ly-for-collaboration.html');\n        } else {\n          window.open('https://cpsievert.github.io/plotly_book/plot-ly-for-collaboration.html', '_blank');\n        }\n      }"}],"modeBarButtonsToRemove":["sendDataToCloud"]},"source":"A","attrs":{"856734e7b247":{"x":{},"y":{},"colour":{},"label":{},"type":"scatter"}},"cur_data":"856734e7b247","visdat":{"856734e7b247":["function (y) ","x"]},"highlight":{"on":"plotly_selected","off":"plotly_relayout","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"showInLegend":false,"ctGroups":[]},"base_url":"https://plot.ly"},"evals":["config.modeBarButtonsToAdd.0.click"],"jsHooks":{"render":[{"code":"function(el, x) { var ctConfig = crosstalk.var('plotlyCrosstalkOpts').set({\"on\":\"plotly_selected\",\"off\":\"plotly_relayout\",\"persistent\":false,\"dynamic\":false,\"color\":{},\"selectize\":false,\"defaultValues\":{},\"opacityDim\":0.2,\"hoverinfo\":{},\"showInLegend\":false}); }","data":null}]}}</script>
+</section><section id="your-turn" class="slide level2">
+<h2>Your Turn</h2>
+<ul>
+<li>Create a chart using ggplot2, save it in an object,</li>
+<li>Load the package <code>plotly</code> and use <code>ggplotly</code> on your chart object.</li>
+<li>Play with the result!</li>
+</ul>
+</section><section id="what-is-ggvis" class="slide level2">
+<h2>What is <code>ggvis</code>?</h2>
+<ul>
+<li>author: Hadley Wickham, tutorial: <a href="http://ggvis.rstudio.com/" class="uri">http://ggvis.rstudio.com/</a></li>
+<li>Declaratively describe data graphics with a syntax similar in spirit to ggplot2.</li>
+<li>Create rich interactive graphics that you can play with locally in Rstudio or in your browser.</li>
+<li>Leverage shiny’s infrastructure to publish interactive graphics usable from any browser</li>
+<li>aims to be <em>Grammar of Graphics</em> for interactive visualizations</li>
+</ul>
+</section><section id="ggvis" class="slide level2">
+<h2>ggvis</h2>
+<p><code>~</code> is a mapping, <code>:=</code> sets a value <code>layer_</code> replaces <code>geom_</code> from ggplot2 call:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(ggvis)
+mtcars %&gt;%<span class="st"> </span><span class="kw">ggvis</span>(<span class="dt">x=</span>~mpg, <span class="dt">y=</span>~wt, fill :<span class="er">=</span><span class="st"> &quot;red&quot;</span>) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">layer_points</span>() %&gt;%<span class="st"> </span><span class="kw">layer_smooths</span>()</code></pre></div>
+<div id="plot_id198475245-container" class="ggvis-output-container">
+<div id="plot_id198475245" class="ggvis-output"></div>
+<div class="plot-gear-icon">
+<nav class="ggvis-control">
+<a class="ggvis-dropdown-toggle" title="Controls" onclick="return false;"></a>
+<ul class="ggvis-dropdown">
+<li>
+Renderer: 
+<a id="plot_id198475245_renderer_svg" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id198475245" data-renderer="svg">SVG</a>
+ | 
+<a id="plot_id198475245_renderer_canvas" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id198475245" data-renderer="canvas">Canvas</a>
+</li>
+<li>
+<a id="plot_id198475245_download" class="ggvis-download" data-plot-id="plot_id198475245">Download</a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<script type="text/javascript">
+var plot_id198475245_spec = {
+  "data": [
+    {
+      "name": ".0",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "mpg": "number",
+          "wt": "number"
+        }
+      },
+      "values": "\"mpg\",\"wt\"\n21,2.62\n21,2.875\n22.8,2.32\n21.4,3.215\n18.7,3.44\n18.1,3.46\n14.3,3.57\n24.4,3.19\n22.8,3.15\n19.2,3.44\n17.8,3.44\n16.4,4.07\n17.3,3.73\n15.2,3.78\n10.4,5.25\n10.4,5.424\n14.7,5.345\n32.4,2.2\n30.4,1.615\n33.9,1.835\n21.5,2.465\n15.5,3.52\n15.2,3.435\n13.3,3.84\n19.2,3.845\n27.3,1.935\n26,2.14\n30.4,1.513\n15.8,3.17\n19.7,2.77\n15,3.57\n21.4,2.78"
+    },
+    {
+      "name": ".0/model_prediction1",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "pred_": "number",
+          "resp_": "number"
+        }
+      },
+      "values": "\"pred_\",\"resp_\"\n10.4,5.26709870786738\n10.6974683544304,5.14704047855112\n10.9949367088608,5.03118876520954\n11.2924050632911,4.91950899506212\n11.5898734177215,4.81196659532837\n11.8873417721519,4.70852699322776\n12.1848101265823,4.6091556159798\n12.4822784810127,4.51381789080397\n12.779746835443,4.42247924491978\n13.0772151898734,4.33510510554671\n13.3746835443038,4.25171377248888\n13.6721518987342,4.17322495920078\n13.9696202531646,4.09937968773676\n14.2670886075949,4.02937682750615\n14.5645569620253,3.96241524791825\n14.8620253164557,3.89901422494375\n15.1594936708861,3.84312733060352\n15.4569620253165,3.79025491272949\n15.7544303797468,3.74131843080013\n16.0518987341772,3.70318820076903\n16.3493670886076,3.67282222701719\n16.646835443038,3.64700052597305\n16.9443037974684,3.62250311406507\n17.2417721518987,3.59611000772168\n17.5392405063291,3.56460122337134\n17.8367088607595,3.5248055796778\n18.1341772151899,3.47838183528461\n18.4316455696203,3.42863815827054\n18.7291139240506,3.37701737152652\n19.026582278481,3.32496229794347\n19.3240506329114,3.2726173323394\n19.6215189873418,3.21156757675365\n19.9189873417722,3.14421038563615\n20.2164556962025,3.07569029842943\n20.5139240506329,3.01115185457599\n20.8113924050633,2.95573959351838\n21.1088607594937,2.91553607179047\n21.4063291139241,2.88630635433215\n21.7037974683544,2.84793204808514\n22.0012658227848,2.80989137002157\n22.2987341772152,2.77165845439756\n22.5962025316456,2.73270743546924\n22.8936708860759,2.69252434983033\n23.1911392405063,2.65099196354259\n23.4886075949367,2.60839825876548\n23.7860759493671,2.56503916494569\n24.0835443037975,2.52121061152996\n24.3810126582278,2.47720852796498\n24.6784810126582,2.43332884369747\n24.9759493670886,2.38986748817416\n25.273417721519,2.34712039084176\n25.5708860759494,2.30538348114697\n25.8683544303797,2.26495268853653\n26.1658227848101,2.22612394245714\n26.4632911392405,2.18919317235551\n26.7607594936709,2.15445630767837\n27.0582278481013,2.12220927787242\n27.3556962025316,2.09271002326136\n27.653164556962,2.06479889572395\n27.9506329113924,2.03789645504918\n28.2481012658228,2.01211937280276\n28.5455696202532,1.98758432055039\n28.8430379746835,1.96440796985775\n29.1405063291139,1.94270699229056\n29.4379746835443,1.9225980594145\n29.7354430379747,1.90419784279527\n30.0329113924051,1.88762301399857\n30.3303797468354,1.87299024459011\n30.6278481012658,1.86028970448271\n30.9253164556962,1.84928668066065\n31.2227848101266,1.8399745891983\n31.520253164557,1.83235763010661\n31.8177215189873,1.82644000339654\n32.1151898734177,1.82222590907903\n32.4126582278481,1.81971954716503\n32.7101265822785,1.81892511766547\n33.0075949367089,1.81984682059132\n33.3050632911392,1.82248885595351\n33.6025316455696,1.826855423763\n33.9,1.83295072403072"
+    },
+    {
+      "name": "scale/x",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "domain": "number"
+        }
+      },
+      "values": "\"domain\"\n9.225\n35.075"
+    },
+    {
+      "name": "scale/y",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "domain": "number"
+        }
+      },
+      "values": "\"domain\"\n1.31745\n5.61955"
+    }
+  ],
+  "scales": [
+    {
+      "name": "x",
+      "domain": {
+        "data": "scale/x",
+        "field": "data.domain"
+      },
+      "zero": false,
+      "nice": false,
+      "clamp": false,
+      "range": "width"
+    },
+    {
+      "name": "y",
+      "domain": {
+        "data": "scale/y",
+        "field": "data.domain"
+      },
+      "zero": false,
+      "nice": false,
+      "clamp": false,
+      "range": "height"
+    }
+  ],
+  "marks": [
+    {
+      "type": "symbol",
+      "properties": {
+        "update": {
+          "size": {
+            "value": 50
+          },
+          "x": {
+            "scale": "x",
+            "field": "data.mpg"
+          },
+          "y": {
+            "scale": "y",
+            "field": "data.wt"
+          },
+          "fill": {
+            "value": "red"
+          }
+        },
+        "ggvis": {
+          "data": {
+            "value": ".0"
+          }
+        }
+      },
+      "from": {
+        "data": ".0"
+      }
+    },
+    {
+      "type": "line",
+      "properties": {
+        "update": {
+          "stroke": {
+            "value": "#000000"
+          },
+          "strokeWidth": {
+            "value": 2
+          },
+          "x": {
+            "scale": "x",
+            "field": "data.pred_"
+          },
+          "y": {
+            "scale": "y",
+            "field": "data.resp_"
+          },
+          "fill": {
+            "value": "transparent"
+          }
+        },
+        "ggvis": {
+          "data": {
+            "value": ".0/model_prediction1"
+          }
+        }
+      },
+      "from": {
+        "data": ".0/model_prediction1"
+      }
+    }
+  ],
+  "legends": [],
+  "axes": [
+    {
+      "type": "x",
+      "scale": "x",
+      "orient": "bottom",
+      "layer": "back",
+      "grid": true,
+      "title": "mpg"
+    },
+    {
+      "type": "y",
+      "scale": "y",
+      "orient": "left",
+      "layer": "back",
+      "grid": true,
+      "title": "wt"
+    }
+  ],
+  "padding": null,
+  "ggvis_opts": {
+    "keep_aspect": false,
+    "resizable": true,
+    "padding": {},
+    "duration": 250,
+    "renderer": "svg",
+    "hover_duration": 0,
+    "width": 384,
+    "height": 336
+  },
+  "handlers": null
+};
+ggvis.getPlot("plot_id198475245").parseSpec(plot_id198475245_spec);
+</script>
+</section><section id="layer-functions" class="slide level2">
+<h2>Layer functions</h2>
+<ul>
+<li>in ggvis layers take the place of geoms in ggplot2: <code>layer_points</code>, <code>layer_lines</code>,<code>layer_boxplots</code>, <code>layer_bars</code>, …</li>
+<li>but … sometimes these layers work a bit differently from geoms</li>
+<li>e.g. <code>layer_paths</code> works like <code>geom_path</code> and <code>geom_polygon</code>, but doesn’t have <code>group</code> aesthetic</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">iowa &lt;-<span class="st"> </span>ggplot2::<span class="kw">map_data</span>(<span class="st">&quot;county&quot;</span>) %&gt;%<span class="st"> </span><span class="kw">filter</span>(region==<span class="st">&quot;iowa&quot;</span>)
+iowa %&gt;%<span class="st"> </span><span class="kw">ggvis</span>(~long, <span class="dt">y=</span>~lat) %&gt;%<span class="st"> </span>
+<span class="st">          </span><span class="kw">layer_paths</span>()</code></pre></div>
+<div id="plot_id185277368-container" class="ggvis-output-container">
+<div id="plot_id185277368" class="ggvis-output"></div>
+<div class="plot-gear-icon">
+<nav class="ggvis-control">
+<a class="ggvis-dropdown-toggle" title="Controls" onclick="return false;"></a>
+<ul class="ggvis-dropdown">
+<li>
+Renderer: 
+<a id="plot_id185277368_renderer_svg" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id185277368" data-renderer="svg">SVG</a>
+ | 
+<a id="plot_id185277368_renderer_canvas" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id185277368" data-renderer="canvas">Canvas</a>
+</li>
+<li>
+<a id="plot_id185277368_download" class="ggvis-download" data-plot-id="plot_id185277368">Download</a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<script type="text/javascript">
+var plot_id185277368_spec = {
+  "data": [
+    {
+      "name": ".0",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "lat": "number",
+          "long": "number"
+        }
+      },
+      "values": "\"lat\",\"long\"\n41.5050621032715,-94.2458267211914\n41.1612892150879,-94.2458267211914\n41.1612892150879,-94.4864654541016\n41.1612892150879,-94.7099227905273\n41.5050621032715,-94.7099227905273\n41.5050621032715,-94.2458267211914\n41.1612892150879,-94.7099227905273\n41.1612892150879,-94.4864654541016\n40.9034576416016,-94.4864654541016\n40.9034576416016,-94.9333801269531\n41.1555557250977,-94.9333801269531\n41.1612892150879,-94.7099227905273\n43.4989547729492,-91.2263412475586\n43.4531211853027,-91.2263412475586\n43.4302024841309,-91.2034225463867\n43.413013458252,-91.1690444946289\n43.3614463806152,-91.15185546875\n43.2984199523926,-91.0716400146484\n43.2640419006348,-91.0601806640625\n43.2411231994629,-91.0716400146484\n43.1666412353516,-91.1403961181641\n43.1265296936035,-91.1747741699219\n43.080696105957,-91.1805038452148\n43.08642578125,-91.1747741699219\n43.08642578125,-91.598762512207\n43.3557167053223,-91.598762512207\n43.3499870300293,-91.610221862793\n43.5104141235352,-91.6044921875\n43.4989547729492,-91.2263412475586\n40.9034576416016,-92.6300888061523\n40.6055183410645,-92.6300888061523\n40.6055183410645,-92.6873779296875\n40.6055183410645,-93.0999145507812\n40.9034576416016,-93.1056442260742\n40.9034576416016,-92.6300888061523\n41.8602981567383,-95.1052627563477\n41.8660278320312,-94.7557601928711\n41.6081924438477,-94.7557601928711\n41.6081924438477,-94.7099227905273\n41.5050621032715,-94.7099227905273\n41.5050621032715,-95.0594329833984\n41.602466583252,-95.0537033081055\n41.602466583252,-95.1052627563477\n41.8602981567383,-95.1052627563477\n42.3014755249023,-92.062858581543\n42.3014755249023,-91.8222122192383\n41.871753692627,-91.8222122192383\n41.871753692627,-92.2805786132812\n42.3014755249023,-92.2863159179688\n42.3014755249023,-92.062858581543\n42.6452484130859,-92.5498733520508\n42.6452484130859,-92.0800476074219\n42.4733619689941,-92.0743179321289\n42.4733619689941,-92.062858581543\n42.3014755249023,-92.062858581543\n42.3014755249023,-92.2863159179688\n42.3014755249023,-92.5269546508789\n42.4733619689941,-92.5269546508789\n42.4733619689941,-92.5498733520508\n42.5650367736816,-92.5498733520508\n42.6452484130859,-92.5498733520508\n41.8602981567383,-93.7015228271484\n41.8602981567383,-93.8161087036133\n41.8660278320312,-94.1713409423828\n42.2098007202148,-94.1656112670898\n42.2098007202148,-93.9307022094727\n42.2098007202148,-93.7015228271484\n41.8602981567383,-93.7015228271484\n42.9088096618652,-92.0800476074219\n42.6452484130859,-92.0800476074219\n42.6452484130859,-92.5498733520508\n42.9088096618652,-92.5498733520508\n42.9088096618652,-92.0800476074219\n42.3014755249023,-91.8222122192383\n42.3014755249023,-92.062858581543\n42.4733619689941,-92.062858581543\n42.4733619689941,-92.0743179321289\n42.6452484130859,-92.0800476074219\n42.6452484130859,-91.598762512207\n42.4848213195801,-91.598762512207\n42.4848213195801,-91.5815734863281\n42.3014755249023,-91.5873031616211\n42.3014755249023,-91.8222122192383\n42.9202690124512,-94.9219207763672\n42.5593032836914,-94.9219207763672\n42.5650367736816,-95.3974685668945\n42.9145393371582,-95.3974685668945\n42.9202690124512,-94.9219207763672\n42.9088096618652,-93.0254287719727\n42.9088096618652,-92.5498733520508\n42.6452484130859,-92.5498733520508\n42.5650367736816,-92.5498733520508\n42.5650367736816,-93.0254287719727\n42.9088096618652,-93.0254287719727\n42.5593032836914,-94.9219207763672\n42.5535736083984,-94.4463577270508\n42.4733619689941,-94.4406356811523\n42.4733619689941,-94.4005279541016\n42.2098007202148,-94.40625\n42.2098007202148,-94.6297073364258\n42.2098007202148,-94.8703536987305\n42.4733619689941,-94.8646240234375\n42.4733619689941,-94.9219207763672\n42.5593032836914,-94.9219207763672\n41.8602981567383,-95.1052627563477\n42.2040710449219,-95.0995407104492\n42.2098007202148,-94.8703536987305\n42.2098007202148,-94.6297073364258\n41.8660278320312,-94.6354370117188\n41.8660278320312,-94.7557601928711\n41.8602981567383,-95.1052627563477\n41.5050621032715,-95.1682891845703\n41.5050621032715,-95.0594329833984\n41.5050621032715,-94.7099227905273\n41.1612892150879,-94.7099227905273\n41.1555557250977,-94.9333801269531\n41.1555557250977,-95.1625595092773\n41.5050621032715,-95.1682891845703\n41.6081924438477,-91.3466644287109\n41.871753692627,-91.3523941040039\n41.9519729614258,-91.3523941040039\n41.9519729614258,-90.882568359375\n41.7800827026367,-90.8768310546875\n41.602466583252,-90.882568359375\n41.6081924438477,-91.3466644287109\n43.2640419006348,-93.5009765625\n43.2583122253418,-93.0254287719727\n43.2239379882812,-93.0254287719727\n42.9088096618652,-93.0254287719727\n42.9145393371582,-93.4952545166016\n43.2640419006348,-93.5009765625\n42.5535736083984,-95.8558349609375\n42.9088096618652,-95.8558349609375\n42.9145393371582,-95.3974685668945\n42.5650367736816,-95.3974685668945\n42.5593032836914,-95.7412490844727\n42.5535736083984,-95.8558349609375\n43.2239379882812,-92.5556030273438\n43.218204498291,-92.0800476074219\n43.08642578125,-92.0743179321289\n42.9088096618652,-92.0800476074219\n42.9088096618652,-92.5498733520508\n43.2239379882812,-92.5556030273438\n41.1612892150879,-93.5640106201172\n40.9034576416016,-93.5640106201172\n40.9034576416016,-94.0166473388672\n41.1612892150879,-94.0166473388672\n41.1670188903809,-93.8046493530273\n41.1612892150879,-93.5640106201172\n42.9145393371582,-95.3974685668945\n43.2640419006348,-95.3917388916016\n43.2640419006348,-94.9219207763672\n42.9202690124512,-94.9219207763672\n42.9145393371582,-95.3974685668945\n42.6452484130859,-91.598762512207\n43.08642578125,-91.598762512207\n43.08642578125,-91.1747741699219\n42.9947547912598,-91.15185546875\n42.9202690124512,-91.1289367675781\n42.8744316101074,-91.0888290405273\n42.7884902954102,-91.0716400146484\n42.7541122436523,-91.0601806640625\n42.7311935424805,-91.0086135864258\n42.7025451660156,-90.9570465087891\n42.6910858154297,-90.8997573852539\n42.6796264648438,-90.8768310546875\n42.6567077636719,-90.8711013793945\n42.6452484130859,-90.888298034668\n42.6452484130859,-91.1232070922852\n42.6452484130859,-91.598762512207\n42.0379104614258,-90.8768310546875\n42.0379104614258,-90.1491775512695\n42.0092658996582,-90.1377182006836\n41.9634284973145,-90.1491775512695\n41.9347801208496,-90.16064453125\n41.8946723937988,-90.16064453125\n41.8373794555664,-90.1778259277344\n41.8201904296875,-90.1892852783203\n41.7915420532227,-90.240852355957\n41.7800827026367,-90.2695007324219\n41.7571640014648,-90.3038787841797\n41.722785949707,-90.3210678100586\n41.7457046508789,-90.3669052124023\n41.7514343261719,-90.3955535888672\n41.7800827026367,-90.4184646606445\n41.7800827026367,-90.429931640625\n41.7743530273438,-90.4471206665039\n41.7800827026367,-90.4585723876953\n41.7915420532227,-90.4585723876953\n41.7972717285156,-90.4700393676758\n41.7915420532227,-90.4872283935547\n41.7800827026367,-90.4986801147461\n41.7915420532227,-90.5330657958984\n41.7800827026367,-90.5502471923828\n41.7743530273438,-90.5617141723633\n41.7800827026367,-90.5788955688477\n41.7800827026367,-90.607551574707\n41.7800827026367,-90.6361923217773\n41.7743530273438,-90.6591110229492\n41.7628936767578,-90.6820297241211\n41.7514343261719,-90.7221374511719\n41.7514343261719,-90.7278671264648\n41.7800827026367,-90.7622451782227\n41.7800827026367,-90.8768310546875\n41.9519729614258,-90.882568359375\n42.0379104614258,-90.8768310546875\n42.2040710449219,-95.0995407104492\n41.8602981567383,-95.1052627563477\n41.8602981567383,-95.5578994750977\n41.8602981567383,-95.6782150268555\n42.2040710449219,-95.672492980957\n42.2040710449219,-95.3401794433594\n42.2040710449219,-95.0995407104492\n41.8660278320312,-94.1713409423828\n41.8602981567383,-93.8161087036133\n41.6081924438477,-93.8218383789062\n41.6081924438477,-93.8046493530273\n41.5107917785645,-93.8046493530273\n41.5107917785645,-93.86767578125\n41.5050621032715,-93.9937210083008\n41.5050621032715,-94.2458267211914\n41.602466583252,-94.2458267211914\n41.602466583252,-94.2859344482422\n41.8660278320312,-94.2916641235352\n41.8660278320312,-94.1713409423828\n40.6169776916504,-92.1717224121094\n40.6112480163574,-92.3436126708984\n40.6055183410645,-92.6300888061523\n40.9034576416016,-92.6300888061523\n40.9034576416016,-92.1717224121094\n40.6169776916504,-92.1717224121094\n40.9034576416016,-93.5640106201172\n40.5997886657715,-93.5697402954102\n40.5997886657715,-93.7760009765625\n40.5997886657715,-94.0166473388672\n40.9034576416016,-94.0166473388672\n40.9034576416016,-93.5640106201172\n42.6452484130859,-91.598762512207\n42.6452484130859,-91.1232070922852\n42.4905471801758,-91.1232070922852\n42.4848213195801,-91.1174774169922\n42.3014755249023,-91.1174774169922\n42.3014755249023,-91.3523941040039\n42.3014755249023,-91.5873031616211\n42.4848213195801,-91.5815734863281\n42.4848213195801,-91.598762512207\n42.6452484130859,-91.598762512207\n41.0810737609863,-90.9513168334961\n41.0696144104004,-90.9455871582031\n40.966480255127,-90.9513168334961\n40.9321060180664,-90.9742431640625\n40.8748092651367,-91.0429916381836\n40.8232421875,-91.0888290405273\n40.7544898986816,-91.1002883911133\n40.7086524963379,-91.1117477416992\n40.7258415222168,-91.1403961181641\n40.7315711975098,-91.15185546875\n40.7315711975098,-91.1633148193359\n40.7315711975098,-91.1862335205078\n40.7373008728027,-91.2148818969727\n40.7602157592773,-91.23779296875\n40.7602157592773,-91.2664489746094\n40.7774085998535,-91.3008270263672\n40.7945976257324,-91.3065567016602\n40.8060531616211,-91.335205078125\n40.8175163269043,-91.3581161499023\n41.0868034362793,-91.3523941040039\n41.0810737609863,-90.9513168334961\n43.2640419006348,-95.3917388916016\n43.5046844482422,-95.3917388916016\n43.5046844482422,-94.9161911010742\n43.2640419006348,-94.9219207763672\n43.2640419006348,-95.3917388916016\n42.6796264648438,-90.8768310546875\n42.6681671142578,-90.8195419311523\n42.6452484130859,-90.7507858276367\n42.6108741760254,-90.69921875\n42.5707626342773,-90.6648406982422\n42.5421180725098,-90.6591110229492\n42.507740020752,-90.6419219970703\n42.507740020752,-90.6476516723633\n42.4733619689941,-90.6419219970703\n42.3874168395996,-90.4814987182617\n42.3931465148926,-90.6304626464844\n42.3014755249023,-90.6419219970703\n42.3014755249023,-90.8711013793945\n42.3014755249023,-91.1174774169922\n42.4848213195801,-91.1174774169922\n42.4905471801758,-91.1232070922852\n42.6452484130859,-91.1232070922852\n42.6452484130859,-90.888298034668\n42.6567077636719,-90.8711013793945\n42.6796264648438,-90.8768310546875\n43.5046844482422,-94.8646240234375\n43.5046844482422,-94.4520874023438\n43.2640419006348,-94.4520874023438\n43.2640419006348,-94.9219207763672\n43.5046844482422,-94.9161911010742\n43.5046844482422,-94.8646240234375\n43.08642578125,-91.598762512207\n42.6452484130859,-91.598762512207\n42.6452484130859,-92.0800476074219\n42.9088096618652,-92.0800476074219\n43.08642578125,-92.0743179321289\n43.08642578125,-91.598762512207\n42.9088096618652,-93.0254287719727\n43.2239379882812,-93.0254287719727\n43.2239379882812,-92.5556030273438\n42.9088096618652,-92.5498733520508\n42.9088096618652,-93.0254287719727\n42.5593032836914,-93.4952545166016\n42.9145393371582,-93.4952545166016\n42.9088096618652,-93.0254287719727\n42.5650367736816,-93.0254287719727\n42.5593032836914,-93.4952545166016\n40.9091873168945,-95.8271942138672\n40.8977279663086,-95.3802871704102\n40.7487602233887,-95.3860168457031\n40.7487602233887,-95.3745574951172\n40.6055183410645,-95.3745574951172\n40.6112480163574,-95.7527084350586\n40.6055183410645,-95.76416015625\n40.6398963928223,-95.769889831543\n40.6628150939941,-95.7928161621094\n40.691463470459,-95.8329238891602\n40.7201080322266,-95.8615646362305\n40.7487602233887,-95.8730316162109\n40.7659454345703,-95.867301940918\n40.8117828369141,-95.8443756103516\n40.8518905639648,-95.8558349609375\n40.9091873168945,-95.8271942138672\n42.2098007202148,-94.1656112670898\n41.8660278320312,-94.1713409423828\n41.8660278320312,-94.2916641235352\n41.8660278320312,-94.6354370117188\n42.2098007202148,-94.6297073364258\n42.2098007202148,-94.40625\n42.2098007202148,-94.1656112670898\n42.2155303955078,-92.9967803955078\n42.4733619689941,-92.9967803955078\n42.4733619689941,-93.0196990966797\n42.5650367736816,-93.0254287719727\n42.5650367736816,-92.5498733520508\n42.4733619689941,-92.5498733520508\n42.4733619689941,-92.5269546508789\n42.3014755249023,-92.5269546508789\n42.3014755249023,-92.7618637084961\n42.2155303955078,-92.7618637084961\n42.2155303955078,-92.9967803955078\n41.5050621032715,-94.7099227905273\n41.6081924438477,-94.7099227905273\n41.6081924438477,-94.7557601928711\n41.8660278320312,-94.7557601928711\n41.8660278320312,-94.6354370117188\n41.8660278320312,-94.2916641235352\n41.602466583252,-94.2859344482422\n41.602466583252,-94.2458267211914\n41.5050621032715,-94.2458267211914\n41.5050621032715,-94.7099227905273\n42.5593032836914,-93.9650802612305\n42.5593032836914,-93.4952545166016\n42.4561729431152,-93.4952545166016\n42.4504432678223,-93.4666061401367\n42.2098007202148,-93.4666061401367\n42.2098007202148,-93.7015228271484\n42.2098007202148,-93.9307022094727\n42.4676284790039,-93.9307022094727\n42.4676284790039,-93.9650802612305\n42.5593032836914,-93.9650802612305\n43.2640419006348,-93.5009765625\n42.9145393371582,-93.4952545166016\n42.9145393371582,-93.9708099365234\n43.2583122253418,-93.9708099365234\n43.2640419006348,-93.5009765625\n42.2155303955078,-92.9967803955078\n42.2098007202148,-93.231689453125\n42.2098007202148,-93.4666061401367\n42.4504432678223,-93.4666061401367\n42.4561729431152,-93.4952545166016\n42.5593032836914,-93.4952545166016\n42.5650367736816,-93.0254287719727\n42.4733619689941,-93.0196990966797\n42.4733619689941,-92.9967803955078\n42.2155303955078,-92.9967803955078\n41.5050621032715,-96.0048141479492\n41.5337104797363,-96.0162658691406\n41.5337104797363,-96.0449142456055\n41.5508995056152,-96.0850219726562\n41.5680885314941,-96.0792922973633\n41.602466583252,-96.0506439208984\n41.6196556091309,-96.0506439208984\n41.6196556091309,-96.0678329467773\n41.6196556091309,-96.0964813232422\n41.6368446350098,-96.125129699707\n41.6654891967773,-96.125129699707\n41.7170562744141,-96.1194000244141\n41.7514343261719,-96.0907516479492\n41.7800827026367,-96.1022109985352\n41.8259201049805,-96.0964813232422\n41.8602981567383,-96.130859375\n41.8602981567383,-95.6782150268555\n41.8602981567383,-95.5578994750977\n41.602466583252,-95.5521774291992\n41.596736907959,-95.489143371582\n41.5050621032715,-95.494873046875\n41.5050621032715,-96.0048141479492\n40.8232421875,-91.7076263427734\n40.9034576416016,-91.7018966674805\n41.1727447509766,-91.7018966674805\n41.1727447509766,-91.4669799804688\n41.1727447509766,-91.3581161499023\n41.0868034362793,-91.3523941040039\n40.8175163269043,-91.3581161499023\n40.8232421875,-91.3982238769531\n40.8232421875,-91.7076263427734\n43.5046844482422,-92.4581985473633\n43.5046844482422,-92.0800476074219\n43.218204498291,-92.0800476074219\n43.2239379882812,-92.5556030273438\n43.5104141235352,-92.5498733520508\n43.5046844482422,-92.4581985473633\n42.9145393371582,-93.9708099365234\n42.639518737793,-93.9708099365234\n42.6452484130859,-94.4406356811523\n42.9202690124512,-94.4406356811523\n42.9145393371582,-93.9708099365234\n42.5650367736816,-95.3974685668945\n42.4733619689941,-95.3917388916016\n42.4733619689941,-95.3344497680664\n42.2040710449219,-95.3401794433594\n42.2040710449219,-95.672492980957\n42.4733619689941,-95.672492980957\n42.4733619689941,-95.7412490844727\n42.5593032836914,-95.7412490844727\n42.5650367736816,-95.3974685668945\n41.5165214538574,-91.9310836791992\n41.5222511291504,-92.2691192626953\n41.6081924438477,-92.2748489379883\n41.6081924438477,-92.2863159179688\n41.871753692627,-92.2805786132812\n41.871753692627,-91.8222122192383\n41.6081924438477,-91.8279418945312\n41.6081924438477,-91.8164825439453\n41.5165214538574,-91.8222122192383\n41.5165214538574,-91.9310836791992\n42.0379104614258,-90.1491775512695\n42.0379104614258,-90.8768310546875\n42.3014755249023,-90.8711013793945\n42.3014755249023,-90.6419219970703\n42.3931465148926,-90.6304626464844\n42.3874168395996,-90.4814987182617\n42.3702278137207,-90.4528427124023\n42.3358535766602,-90.4184646606445\n42.2957458496094,-90.4184646606445\n42.2499084472656,-90.4070129394531\n42.2269897460938,-90.3726272583008\n42.2040710449219,-90.3267974853516\n42.175422668457,-90.24658203125\n42.1353187561035,-90.1778259277344\n42.1009368896484,-90.16064453125\n42.0379104614258,-90.1491775512695\n41.5050621032715,-93.3348236083984\n41.6081924438477,-93.3348236083984\n41.6081924438477,-93.3520126342773\n41.8602981567383,-93.3462829589844\n41.8660278320312,-93.231689453125\n41.871753692627,-92.7618637084961\n41.6311111450195,-92.7618637084961\n41.6311111450195,-92.7446823120117\n41.5165214538574,-92.7446823120117\n41.5165214538574,-92.8592681884766\n41.5050621032715,-93.3348236083984\n41.1727447509766,-91.9253540039062\n41.1727447509766,-91.7018966674805\n40.9034576416016,-91.7018966674805\n40.9034576416016,-92.1717224121094\n41.1670188903809,-92.1659927368164\n41.1727447509766,-91.9253540039062\n41.6081924438477,-91.3466644287109\n41.4248466491699,-91.3523941040039\n41.4305801391602,-91.4727172851562\n41.4477653503418,-91.4841690063477\n41.4649543762207,-91.4898986816406\n41.4764175415039,-91.5013580322266\n41.4993362426758,-91.4956283569336\n41.5107917785645,-91.5013580322266\n41.5222511291504,-91.5185546875\n41.5165214538574,-91.8222122192383\n41.6081924438477,-91.8164825439453\n41.6081924438477,-91.8279418945312\n41.871753692627,-91.8222122192383\n41.871753692627,-91.3523941040039\n41.6081924438477,-91.3466644287109\n42.3014755249023,-90.8711013793945\n42.0379104614258,-90.8768310546875\n41.9519729614258,-90.882568359375\n41.9519729614258,-91.3523941040039\n42.3014755249023,-91.3523941040039\n42.3014755249023,-91.1174774169922\n42.3014755249023,-90.8711013793945\n41.5165214538574,-91.9310836791992\n41.1727447509766,-91.9253540039062\n41.1670188903809,-92.1659927368164\n41.1727447509766,-92.3951721191406\n41.5222511291504,-92.4123611450195\n41.5222511291504,-92.2691192626953\n41.5165214538574,-91.9310836791992\n43.2640419006348,-94.4520874023438\n43.5046844482422,-94.4520874023438\n43.5046844482422,-94.2630157470703\n43.5104141235352,-93.9765396118164\n43.2583122253418,-93.9708099365234\n42.9145393371582,-93.9708099365234\n42.9202690124512,-94.4406356811523\n43.2640419006348,-94.4520874023438\n40.7086524963379,-91.1117477416992\n40.680004119873,-91.1117477416992\n40.6570854187012,-91.146125793457\n40.6341667175293,-91.1862335205078\n40.6227073669434,-91.2664489746094\n40.6227073669434,-91.3065567016602\n40.6112480163574,-91.3523941040039\n40.5883293151855,-91.3753051757812\n40.5654106140137,-91.415412902832\n40.5539512634277,-91.415412902832\n40.496654510498,-91.3753051757812\n40.4450912475586,-91.3925018310547\n40.4221725463867,-91.3925018310547\n40.3935241699219,-91.3867721557617\n40.3820648193359,-91.4096832275391\n40.376335144043,-91.415412902832\n40.4164428710938,-91.4898986816406\n40.4737358093262,-91.5242767333984\n40.5081176757812,-91.5873031616211\n40.5654106140137,-91.6159515380859\n40.5654106140137,-91.6675186157227\n40.6169776916504,-91.7018966674805\n40.8232421875,-91.7076263427734\n40.8232421875,-91.3982238769531\n40.8175163269043,-91.3581161499023\n40.8060531616211,-91.335205078125\n40.7945976257324,-91.3065567016602\n40.7774085998535,-91.3008270263672\n40.7602157592773,-91.2664489746094\n40.7602157592773,-91.23779296875\n40.7373008728027,-91.2148818969727\n40.7315711975098,-91.1862335205078\n40.7315711975098,-91.1633148193359\n40.7315711975098,-91.15185546875\n40.7258415222168,-91.1403961181641\n40.7086524963379,-91.1117477416992\n42.3014755249023,-91.8222122192383\n42.3014755249023,-91.5873031616211\n42.3014755249023,-91.3523941040039\n41.9519729614258,-91.3523941040039\n41.871753692627,-91.3523941040039\n41.871753692627,-91.8222122192383\n42.3014755249023,-91.8222122192383\n41.3446350097656,-91.06591796875\n41.3274459838867,-91.0601806640625\n41.3102569580078,-91.06591796875\n41.270149230957,-91.0888290405273\n41.2300453186035,-91.0888290405273\n41.2013931274414,-91.0544509887695\n41.1784744262695,-91.0200805664062\n41.1555557250977,-90.9857025146484\n41.1154518127441,-90.9570465087891\n41.0810737609863,-90.9513168334961\n41.0868034362793,-91.3523941040039\n41.1727447509766,-91.3581161499023\n41.1727447509766,-91.4669799804688\n41.4305801391602,-91.4727172851562\n41.4248466491699,-91.3523941040039\n41.3503646850586,-91.3523941040039\n41.3446350097656,-91.06591796875\n41.1670188903809,-93.1056442260742\n40.9034576416016,-93.1056442260742\n40.9034576416016,-93.5640106201172\n41.1612892150879,-93.5640106201172\n41.1612892150879,-93.3348236083984\n41.1670188903809,-93.1056442260742\n43.4989547729492,-96.0449142456055\n43.5046844482422,-95.8615646362305\n43.2640419006348,-95.8615646362305\n43.2583122253418,-96.5605773925781\n43.2812309265137,-96.5720367431641\n43.2984199523926,-96.5548477172852\n43.3098793029785,-96.5319290161133\n43.3385276794434,-96.5147399902344\n43.3786354064941,-96.5090103149414\n43.3958206176758,-96.5376586914062\n43.4244728088379,-96.5720367431641\n43.4531211853027,-96.5949554443359\n43.4989547729492,-96.58349609375\n43.4932289123535,-96.4287948608398\n43.4989547729492,-96.0449142456055\n41.1612892150879,-94.2458267211914\n41.5050621032715,-94.2458267211914\n41.5050621032715,-93.9937210083008\n41.5107917785645,-93.86767578125\n41.5107917785645,-93.8046493530273\n41.1670188903809,-93.8046493530273\n41.1612892150879,-94.0166473388672\n41.1612892150879,-94.2458267211914\n41.5165214538574,-92.8592681884766\n41.5165214538574,-92.7446823120117\n41.5222511291504,-92.4123611450195\n41.1727447509766,-92.3951721191406\n41.1670188903809,-92.6358108520508\n41.1670188903809,-92.8592681884766\n41.5165214538574,-92.8592681884766\n41.4936027526855,-93.3348236083984\n41.5050621032715,-93.3348236083984\n41.5165214538574,-92.8592681884766\n41.1670188903809,-92.8592681884766\n41.1670188903809,-93.1056442260742\n41.1612892150879,-93.3348236083984\n41.4936027526855,-93.3348236083984\n42.2098007202148,-93.231689453125\n42.2155303955078,-92.9967803955078\n42.2155303955078,-92.7618637084961\n41.871753692627,-92.7618637084961\n41.8660278320312,-93.231689453125\n42.2098007202148,-93.231689453125\n41.1612892150879,-95.8844833374023\n41.1612892150879,-95.3802871704102\n40.8977279663086,-95.3802871704102\n40.9091873168945,-95.8271942138672\n40.9321060180664,-95.8271942138672\n40.949291229248,-95.8214645385742\n40.9722099304199,-95.8386535644531\n41.0295066833496,-95.8730316162109\n41.0466995239258,-95.8730316162109\n41.0753440856934,-95.8730316162109\n41.0982627868652,-95.8558349609375\n41.1326370239258,-95.8730316162109\n41.1612892150879,-95.8844833374023\n43.2583122253418,-93.0254287719727\n43.5104141235352,-93.0254287719727\n43.5104141235352,-92.5498733520508\n43.2239379882812,-92.5556030273438\n43.2239379882812,-93.0254287719727\n43.2583122253418,-93.0254287719727\n41.8602981567383,-96.130859375\n41.9175910949707,-96.1652374267578\n41.9462394714355,-96.1537780761719\n41.9691581726074,-96.1537780761719\n41.9863471984863,-96.1652374267578\n42.0035362243652,-96.1824264526367\n42.0035362243652,-96.222526550293\n42.0321846008301,-96.2282638549805\n42.055103302002,-96.2626342773438\n42.0665626525879,-96.2798309326172\n42.1181259155273,-96.2970123291016\n42.1467742919922,-96.3371200561523\n42.1582374572754,-96.3428497314453\n42.175422668457,-96.3428497314453\n42.1983413696289,-96.319938659668\n42.2098007202148,-96.319938659668\n42.2040710449219,-95.672492980957\n41.8602981567383,-95.6782150268555\n41.8602981567383,-96.130859375\n41.1670188903809,-93.1056442260742\n41.1670188903809,-92.8592681884766\n41.1670188903809,-92.6358108520508\n40.9034576416016,-92.6300888061523\n40.9034576416016,-93.1056442260742\n41.1670188903809,-93.1056442260742\n41.1612892150879,-95.3802871704102\n41.1555557250977,-95.1625595092773\n41.1555557250977,-94.9333801269531\n40.9034576416016,-94.9333801269531\n40.8977279663086,-95.3802871704102\n41.1612892150879,-95.3802871704102\n41.602466583252,-90.882568359375\n41.602466583252,-90.7622451782227\n41.4592247009277,-90.7737045288086\n41.453498840332,-90.8367309570312\n41.4477653503418,-90.8768310546875\n41.4305801391602,-90.9284057617188\n41.4305801391602,-90.9857025146484\n41.4305801391602,-91.0143432617188\n41.4076614379883,-91.0372619628906\n41.3446350097656,-91.06591796875\n41.3503646850586,-91.3523941040039\n41.4248466491699,-91.3523941040039\n41.6081924438477,-91.3466644287109\n41.602466583252,-90.882568359375\n43.2640419006348,-95.8615646362305\n43.2640419006348,-95.3917388916016\n42.9145393371582,-95.3974685668945\n42.9088096618652,-95.8558349609375\n43.2640419006348,-95.8615646362305\n43.5046844482422,-95.3917388916016\n43.2640419006348,-95.3917388916016\n43.2640419006348,-95.8615646362305\n43.5046844482422,-95.8615646362305\n43.5046844482422,-95.4662322998047\n43.5046844482422,-95.3917388916016\n40.5997886657715,-94.9161911010742\n40.6055183410645,-95.2026672363281\n40.6055183410645,-95.3745574951172\n40.7487602233887,-95.3745574951172\n40.7487602233887,-95.3860168457031\n40.8977279663086,-95.3802871704102\n40.9034576416016,-94.9333801269531\n40.7373008728027,-94.9333801269531\n40.7373008728027,-94.9219207763672\n40.5997886657715,-94.9161911010742\n42.9202690124512,-94.9219207763672\n43.2640419006348,-94.9219207763672\n43.2640419006348,-94.4520874023438\n42.9202690124512,-94.4406356811523\n42.9202690124512,-94.9219207763672\n42.9088096618652,-95.8558349609375\n42.5535736083984,-95.8558349609375\n42.5478477478027,-96.4689025878906\n42.5707626342773,-96.4746322631836\n42.6681671142578,-96.5605773925781\n42.6853561401367,-96.58349609375\n42.7025451660156,-96.6064147949219\n42.7369194030762,-96.6064147949219\n42.777027130127,-96.5949554443359\n42.817138671875,-96.5605773925781\n42.8744316101074,-96.5204696655273\n42.9030799865723,-96.5204696655273\n42.9088096618652,-95.8558349609375\n42.5593032836914,-94.9219207763672\n42.9202690124512,-94.9219207763672\n42.9202690124512,-94.4406356811523\n42.6452484130859,-94.4406356811523\n42.5535736083984,-94.4463577270508\n42.5593032836914,-94.9219207763672\n41.5050621032715,-93.3348236083984\n41.4936027526855,-93.3348236083984\n41.5107917785645,-93.3978500366211\n41.5165214538574,-93.4666061401367\n41.5107917785645,-93.8046493530273\n41.6081924438477,-93.8046493530273\n41.6081924438477,-93.8218383789062\n41.8602981567383,-93.8161087036133\n41.8602981567383,-93.7015228271484\n41.8602981567383,-93.3462829589844\n41.6081924438477,-93.3520126342773\n41.6081924438477,-93.3348236083984\n41.5050621032715,-93.3348236083984\n41.1555557250977,-95.1625595092773\n41.1612892150879,-95.3802871704102\n41.1612892150879,-95.8844833374023\n41.1784744262695,-95.8902130126953\n41.2185821533203,-95.9016723632812\n41.2586898803711,-95.9016723632812\n41.2930679321289,-95.8787612915039\n41.3102569580078,-95.8730316162109\n41.3159866333008,-95.8787612915039\n41.3274459838867,-95.9016723632812\n41.3389053344727,-95.9245986938477\n41.3503646850586,-95.9303207397461\n41.3618240356445,-95.9245986938477\n41.3847427368164,-95.9245986938477\n41.419116973877,-95.9303207397461\n41.4420356750488,-95.9360504150391\n41.4592247009277,-95.947509765625\n41.4878730773926,-95.9990768432617\n41.5050621032715,-96.0048141479492\n41.5050621032715,-95.494873046875\n41.5050621032715,-95.1682891845703\n41.1555557250977,-95.1625595092773\n41.871753692627,-92.7618637084961\n41.871753692627,-92.2805786132812\n41.6081924438477,-92.2863159179688\n41.6081924438477,-92.2748489379883\n41.5222511291504,-92.2691192626953\n41.5222511291504,-92.4123611450195\n41.5165214538574,-92.7446823120117\n41.6311111450195,-92.7446823120117\n41.6311111450195,-92.7618637084961\n41.871753692627,-92.7618637084961\n40.9034576416016,-94.0166473388672\n40.5997886657715,-94.0166473388672\n40.5940628051758,-94.2400970458984\n40.5940628051758,-94.4807434082031\n40.9034576416016,-94.4864654541016\n40.9034576416016,-94.0166473388672\n42.5650367736816,-95.3974685668945\n42.5593032836914,-94.9219207763672\n42.4733619689941,-94.9219207763672\n42.4733619689941,-94.8646240234375\n42.2098007202148,-94.8703536987305\n42.2040710449219,-95.0995407104492\n42.2040710449219,-95.3401794433594\n42.4733619689941,-95.3344497680664\n42.4733619689941,-95.3917388916016\n42.5650367736816,-95.3974685668945\n41.7800827026367,-90.8768310546875\n41.7800827026367,-90.7622451782227\n41.7514343261719,-90.7278671264648\n41.7514343261719,-90.7221374511719\n41.7628936767578,-90.6820297241211\n41.7743530273438,-90.6591110229492\n41.7800827026367,-90.6361923217773\n41.7800827026367,-90.607551574707\n41.7800827026367,-90.5788955688477\n41.7743530273438,-90.5617141723633\n41.7800827026367,-90.5502471923828\n41.7915420532227,-90.5330657958984\n41.7800827026367,-90.4986801147461\n41.7915420532227,-90.4872283935547\n41.7972717285156,-90.4700393676758\n41.7915420532227,-90.4585723876953\n41.7800827026367,-90.4585723876953\n41.7743530273438,-90.4471206665039\n41.7800827026367,-90.429931640625\n41.7800827026367,-90.4184646606445\n41.7514343261719,-90.3955535888672\n41.7457046508789,-90.3669052124023\n41.722785949707,-90.3210678100586\n41.6941375732422,-90.3267974853516\n41.6196556091309,-90.3439865112305\n41.596736907959,-90.3554458618164\n41.5623550415039,-90.4127349853516\n41.5394401550293,-90.4585723876953\n41.5222511291504,-90.5445175170898\n41.4993362426758,-90.607551574707\n41.4649543762207,-90.6533889770508\n41.4592247009277,-90.7164077758789\n41.4592247009277,-90.7737045288086\n41.602466583252,-90.7622451782227\n41.602466583252,-90.882568359375\n41.7800827026367,-90.8768310546875\n41.8602981567383,-95.5578994750977\n41.8602981567383,-95.1052627563477\n41.602466583252,-95.1052627563477\n41.602466583252,-95.0537033081055\n41.5050621032715,-95.0594329833984\n41.5050621032715,-95.1682891845703\n41.5050621032715,-95.494873046875\n41.596736907959,-95.489143371582\n41.602466583252,-95.5521774291992\n41.8602981567383,-95.5578994750977\n43.2640419006348,-95.8615646362305\n42.9088096618652,-95.8558349609375\n42.9030799865723,-96.5204696655273\n42.9259986877441,-96.5204696655273\n42.9431838989258,-96.4975509643555\n42.9832916259766,-96.4975509643555\n43.0119400024414,-96.4975509643555\n43.0291290283203,-96.5147399902344\n43.0520477294922,-96.4459838867188\n43.080696105957,-96.4402542114258\n43.1036148071289,-96.4345245361328\n43.1208038330078,-96.4345245361328\n43.1494483947754,-96.4402542114258\n43.1781005859375,-96.4517135620117\n43.2010192871094,-96.4574508666992\n43.218204498291,-96.4689025878906\n43.2239379882812,-96.4975509643555\n43.2239379882812,-96.5319290161133\n43.2353935241699,-96.5548477172852\n43.2583122253418,-96.5605773925781\n43.2640419006348,-95.8615646362305\n42.2098007202148,-93.7015228271484\n42.2098007202148,-93.4666061401367\n42.2098007202148,-93.231689453125\n41.8660278320312,-93.231689453125\n41.8602981567383,-93.3462829589844\n41.8602981567383,-93.7015228271484\n42.2098007202148,-93.7015228271484\n42.3014755249023,-92.2863159179688\n41.871753692627,-92.2805786132812\n41.871753692627,-92.7618637084961\n42.2155303955078,-92.7618637084961\n42.3014755249023,-92.7618637084961\n42.3014755249023,-92.5269546508789\n42.3014755249023,-92.2863159179688\n40.5940628051758,-94.4807434082031\n40.5940628051758,-94.6354370117188\n40.5997886657715,-94.9161911010742\n40.7373008728027,-94.9219207763672\n40.7373008728027,-94.9333801269531\n40.9034576416016,-94.9333801269531\n40.9034576416016,-94.4864654541016\n40.5940628051758,-94.4807434082031\n41.1612892150879,-94.4864654541016\n41.1612892150879,-94.2458267211914\n41.1612892150879,-94.0166473388672\n40.9034576416016,-94.0166473388672\n40.9034576416016,-94.4864654541016\n41.1612892150879,-94.4864654541016\n40.9034576416016,-91.7018966674805\n40.8232421875,-91.7076263427734\n40.6169776916504,-91.7018966674805\n40.6169776916504,-91.9368057250977\n40.6169776916504,-92.1717224121094\n40.9034576416016,-92.1717224121094\n40.9034576416016,-91.7018966674805\n41.1670188903809,-92.1659927368164\n40.9034576416016,-92.1717224121094\n40.9034576416016,-92.6300888061523\n41.1670188903809,-92.6358108520508\n41.1727447509766,-92.3951721191406\n41.1670188903809,-92.1659927368164\n41.4936027526855,-93.3348236083984\n41.1612892150879,-93.3348236083984\n41.1612892150879,-93.5640106201172\n41.1670188903809,-93.8046493530273\n41.5107917785645,-93.8046493530273\n41.5165214538574,-93.4666061401367\n41.5107917785645,-93.3978500366211\n41.4936027526855,-93.3348236083984\n41.1727447509766,-91.9253540039062\n41.5165214538574,-91.9310836791992\n41.5165214538574,-91.8222122192383\n41.5222511291504,-91.5185546875\n41.5107917785645,-91.5013580322266\n41.4993362426758,-91.4956283569336\n41.4764175415039,-91.5013580322266\n41.4649543762207,-91.4898986816406\n41.4477653503418,-91.4841690063477\n41.4305801391602,-91.4727172851562\n41.1727447509766,-91.4669799804688\n41.1727447509766,-91.7018966674805\n41.1727447509766,-91.9253540039062\n40.5997886657715,-93.5697402954102\n40.9034576416016,-93.5640106201172\n40.9034576416016,-93.1056442260742\n40.6055183410645,-93.0999145507812\n40.5997886657715,-93.3749313354492\n40.5997886657715,-93.5697402954102\n42.5593032836914,-93.9650802612305\n42.4676284790039,-93.9650802612305\n42.4676284790039,-93.9307022094727\n42.2098007202148,-93.9307022094727\n42.2098007202148,-94.1656112670898\n42.2098007202148,-94.40625\n42.4733619689941,-94.4005279541016\n42.4733619689941,-94.4406356811523\n42.5535736083984,-94.4463577270508\n42.6452484130859,-94.4406356811523\n42.639518737793,-93.9708099365234\n42.5593032836914,-93.9650802612305\n43.5104141235352,-93.4952545166016\n43.2640419006348,-93.5009765625\n43.2583122253418,-93.9708099365234\n43.5104141235352,-93.9765396118164\n43.5104141235352,-93.6442260742188\n43.5104141235352,-93.4952545166016\n43.5046844482422,-92.0800476074219\n43.5104141235352,-91.7248153686523\n43.5104141235352,-91.6044921875\n43.3499870300293,-91.610221862793\n43.3557167053223,-91.598762512207\n43.08642578125,-91.598762512207\n43.08642578125,-92.0743179321289\n43.218204498291,-92.0800476074219\n43.5046844482422,-92.0800476074219\n42.2670974731445,-96.3485794067383\n42.3301200866699,-96.405876159668\n42.3530387878418,-96.4116134643555\n42.3816909790039,-96.405876159668\n42.3988761901855,-96.394416809082\n42.4160652160645,-96.3886871337891\n42.4389839172363,-96.3886871337891\n42.4619026184082,-96.394416809082\n42.4733619689941,-96.4345245361328\n42.4733619689941,-96.4402542114258\n42.507740020752,-96.4689025878906\n42.5306549072266,-96.4689025878906\n42.5478477478027,-96.4689025878906\n42.5535736083984,-95.8558349609375\n42.5593032836914,-95.7412490844727\n42.4733619689941,-95.7412490844727\n42.4733619689941,-95.672492980957\n42.2040710449219,-95.672492980957\n42.2098007202148,-96.319938659668\n42.2441787719727,-96.3485794067383\n42.2499084472656,-96.3428497314453\n42.2670974731445,-96.3485794067383\n43.5104141235352,-93.0254287719727\n43.2583122253418,-93.0254287719727\n43.2640419006348,-93.5009765625\n43.5104141235352,-93.4952545166016\n43.5104141235352,-93.0598068237305\n43.5104141235352,-93.0254287719727\n42.9145393371582,-93.4952545166016\n42.5593032836914,-93.4952545166016\n42.5593032836914,-93.9650802612305\n42.639518737793,-93.9708099365234\n42.9145393371582,-93.9708099365234\n42.9145393371582,-93.4952545166016"
+    },
+    {
+      "name": "scale/x",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "domain": "number"
+        }
+      },
+      "values": "\"domain\"\n-96.9298496246338\n-89.8142833709717"
+    },
+    {
+      "name": "scale/y",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "domain": "number"
+        }
+      },
+      "values": "\"domain\"\n40.2196311950684\n43.6671180725098"
+    }
+  ],
+  "scales": [
+    {
+      "name": "x",
+      "domain": {
+        "data": "scale/x",
+        "field": "data.domain"
+      },
+      "zero": false,
+      "nice": false,
+      "clamp": false,
+      "range": "width"
+    },
+    {
+      "name": "y",
+      "domain": {
+        "data": "scale/y",
+        "field": "data.domain"
+      },
+      "zero": false,
+      "nice": false,
+      "clamp": false,
+      "range": "height"
+    }
+  ],
+  "marks": [
+    {
+      "type": "line",
+      "properties": {
+        "update": {
+          "stroke": {
+            "value": "#000000"
+          },
+          "y": {
+            "scale": "y",
+            "field": "data.lat"
+          },
+          "x": {
+            "scale": "x",
+            "field": "data.long"
+          }
+        },
+        "ggvis": {
+          "data": {
+            "value": ".0"
+          }
+        }
+      },
+      "from": {
+        "data": ".0"
+      }
+    }
+  ],
+  "legends": [],
+  "axes": [
+    {
+      "type": "x",
+      "scale": "x",
+      "orient": "bottom",
+      "layer": "back",
+      "grid": true,
+      "title": "long"
+    },
+    {
+      "type": "y",
+      "scale": "y",
+      "orient": "left",
+      "layer": "back",
+      "grid": true,
+      "title": "lat"
+    }
+  ],
+  "padding": null,
+  "ggvis_opts": {
+    "keep_aspect": false,
+    "resizable": true,
+    "padding": {},
+    "duration": 250,
+    "renderer": "svg",
+    "hover_duration": 0,
+    "width": 768,
+    "height": 470.4
+  },
+  "handlers": null
+};
+ggvis.getPlot("plot_id185277368").parseSpec(plot_id185277368_spec);
+</script>
+</section><section id="layer-functions-contd" class="slide level2">
+<h2>Layer functions (cont’d)</h2>
+<ul>
+<li><code>ggvis</code> is fully functional within the data workflow, e.g. layers respect grouping</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">iowa %&gt;%<span class="st"> </span><span class="kw">ggvis</span>(~long, <span class="dt">y=</span>~lat) %&gt;%<span class="st"> </span><span class="kw">group_by</span>(group) %&gt;%
+<span class="st">          </span><span class="kw">layer_paths</span>()</code></pre></div>
+<div id="plot_id234710131-container" class="ggvis-output-container">
+<div id="plot_id234710131" class="ggvis-output"></div>
+<div class="plot-gear-icon">
+<nav class="ggvis-control">
+<a class="ggvis-dropdown-toggle" title="Controls" onclick="return false;"></a>
+<ul class="ggvis-dropdown">
+<li>
+Renderer: 
+<a id="plot_id234710131_renderer_svg" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id234710131" data-renderer="svg">SVG</a>
+ | 
+<a id="plot_id234710131_renderer_canvas" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id234710131" data-renderer="canvas">Canvas</a>
+</li>
+<li>
+<a id="plot_id234710131_download" class="ggvis-download" data-plot-id="plot_id234710131">Download</a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<script type="text/javascript">
+var plot_id234710131_spec = {
+  "data": [
+    {
+      "name": ".0/group_by1_flat",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "group": "number",
+          "lat": "number",
+          "long": "number"
+        }
+      },
+      "values": "\"group\",\"lat\",\"long\"\n755,41.5050621032715,-94.2458267211914\n755,41.1612892150879,-94.2458267211914\n755,41.1612892150879,-94.4864654541016\n755,41.1612892150879,-94.7099227905273\n755,41.5050621032715,-94.7099227905273\n755,41.5050621032715,-94.2458267211914\n756,41.1612892150879,-94.7099227905273\n756,41.1612892150879,-94.4864654541016\n756,40.9034576416016,-94.4864654541016\n756,40.9034576416016,-94.9333801269531\n756,41.1555557250977,-94.9333801269531\n756,41.1612892150879,-94.7099227905273\n757,43.4989547729492,-91.2263412475586\n757,43.4531211853027,-91.2263412475586\n757,43.4302024841309,-91.2034225463867\n757,43.413013458252,-91.1690444946289\n757,43.3614463806152,-91.15185546875\n757,43.2984199523926,-91.0716400146484\n757,43.2640419006348,-91.0601806640625\n757,43.2411231994629,-91.0716400146484\n757,43.1666412353516,-91.1403961181641\n757,43.1265296936035,-91.1747741699219\n757,43.080696105957,-91.1805038452148\n757,43.08642578125,-91.1747741699219\n757,43.08642578125,-91.598762512207\n757,43.3557167053223,-91.598762512207\n757,43.3499870300293,-91.610221862793\n757,43.5104141235352,-91.6044921875\n757,43.4989547729492,-91.2263412475586\n758,40.9034576416016,-92.6300888061523\n758,40.6055183410645,-92.6300888061523\n758,40.6055183410645,-92.6873779296875\n758,40.6055183410645,-93.0999145507812\n758,40.9034576416016,-93.1056442260742\n758,40.9034576416016,-92.6300888061523\n759,41.8602981567383,-95.1052627563477\n759,41.8660278320312,-94.7557601928711\n759,41.6081924438477,-94.7557601928711\n759,41.6081924438477,-94.7099227905273\n759,41.5050621032715,-94.7099227905273\n759,41.5050621032715,-95.0594329833984\n759,41.602466583252,-95.0537033081055\n759,41.602466583252,-95.1052627563477\n759,41.8602981567383,-95.1052627563477\n760,42.3014755249023,-92.062858581543\n760,42.3014755249023,-91.8222122192383\n760,41.871753692627,-91.8222122192383\n760,41.871753692627,-92.2805786132812\n760,42.3014755249023,-92.2863159179688\n760,42.3014755249023,-92.062858581543\n761,42.6452484130859,-92.5498733520508\n761,42.6452484130859,-92.0800476074219\n761,42.4733619689941,-92.0743179321289\n761,42.4733619689941,-92.062858581543\n761,42.3014755249023,-92.062858581543\n761,42.3014755249023,-92.2863159179688\n761,42.3014755249023,-92.5269546508789\n761,42.4733619689941,-92.5269546508789\n761,42.4733619689941,-92.5498733520508\n761,42.5650367736816,-92.5498733520508\n761,42.6452484130859,-92.5498733520508\n762,41.8602981567383,-93.7015228271484\n762,41.8602981567383,-93.8161087036133\n762,41.8660278320312,-94.1713409423828\n762,42.2098007202148,-94.1656112670898\n762,42.2098007202148,-93.9307022094727\n762,42.2098007202148,-93.7015228271484\n762,41.8602981567383,-93.7015228271484\n763,42.9088096618652,-92.0800476074219\n763,42.6452484130859,-92.0800476074219\n763,42.6452484130859,-92.5498733520508\n763,42.9088096618652,-92.5498733520508\n763,42.9088096618652,-92.0800476074219\n764,42.3014755249023,-91.8222122192383\n764,42.3014755249023,-92.062858581543\n764,42.4733619689941,-92.062858581543\n764,42.4733619689941,-92.0743179321289\n764,42.6452484130859,-92.0800476074219\n764,42.6452484130859,-91.598762512207\n764,42.4848213195801,-91.598762512207\n764,42.4848213195801,-91.5815734863281\n764,42.3014755249023,-91.5873031616211\n764,42.3014755249023,-91.8222122192383\n765,42.9202690124512,-94.9219207763672\n765,42.5593032836914,-94.9219207763672\n765,42.5650367736816,-95.3974685668945\n765,42.9145393371582,-95.3974685668945\n765,42.9202690124512,-94.9219207763672\n766,42.9088096618652,-93.0254287719727\n766,42.9088096618652,-92.5498733520508\n766,42.6452484130859,-92.5498733520508\n766,42.5650367736816,-92.5498733520508\n766,42.5650367736816,-93.0254287719727\n766,42.9088096618652,-93.0254287719727\n767,42.5593032836914,-94.9219207763672\n767,42.5535736083984,-94.4463577270508\n767,42.4733619689941,-94.4406356811523\n767,42.4733619689941,-94.4005279541016\n767,42.2098007202148,-94.40625\n767,42.2098007202148,-94.6297073364258\n767,42.2098007202148,-94.8703536987305\n767,42.4733619689941,-94.8646240234375\n767,42.4733619689941,-94.9219207763672\n767,42.5593032836914,-94.9219207763672\n768,41.8602981567383,-95.1052627563477\n768,42.2040710449219,-95.0995407104492\n768,42.2098007202148,-94.8703536987305\n768,42.2098007202148,-94.6297073364258\n768,41.8660278320312,-94.6354370117188\n768,41.8660278320312,-94.7557601928711\n768,41.8602981567383,-95.1052627563477\n769,41.5050621032715,-95.1682891845703\n769,41.5050621032715,-95.0594329833984\n769,41.5050621032715,-94.7099227905273\n769,41.1612892150879,-94.7099227905273\n769,41.1555557250977,-94.9333801269531\n769,41.1555557250977,-95.1625595092773\n769,41.5050621032715,-95.1682891845703\n770,41.6081924438477,-91.3466644287109\n770,41.871753692627,-91.3523941040039\n770,41.9519729614258,-91.3523941040039\n770,41.9519729614258,-90.882568359375\n770,41.7800827026367,-90.8768310546875\n770,41.602466583252,-90.882568359375\n770,41.6081924438477,-91.3466644287109\n771,43.2640419006348,-93.5009765625\n771,43.2583122253418,-93.0254287719727\n771,43.2239379882812,-93.0254287719727\n771,42.9088096618652,-93.0254287719727\n771,42.9145393371582,-93.4952545166016\n771,43.2640419006348,-93.5009765625\n772,42.5535736083984,-95.8558349609375\n772,42.9088096618652,-95.8558349609375\n772,42.9145393371582,-95.3974685668945\n772,42.5650367736816,-95.3974685668945\n772,42.5593032836914,-95.7412490844727\n772,42.5535736083984,-95.8558349609375\n773,43.2239379882812,-92.5556030273438\n773,43.218204498291,-92.0800476074219\n773,43.08642578125,-92.0743179321289\n773,42.9088096618652,-92.0800476074219\n773,42.9088096618652,-92.5498733520508\n773,43.2239379882812,-92.5556030273438\n774,41.1612892150879,-93.5640106201172\n774,40.9034576416016,-93.5640106201172\n774,40.9034576416016,-94.0166473388672\n774,41.1612892150879,-94.0166473388672\n774,41.1670188903809,-93.8046493530273\n774,41.1612892150879,-93.5640106201172\n775,42.9145393371582,-95.3974685668945\n775,43.2640419006348,-95.3917388916016\n775,43.2640419006348,-94.9219207763672\n775,42.9202690124512,-94.9219207763672\n775,42.9145393371582,-95.3974685668945\n776,42.6452484130859,-91.598762512207\n776,43.08642578125,-91.598762512207\n776,43.08642578125,-91.1747741699219\n776,42.9947547912598,-91.15185546875\n776,42.9202690124512,-91.1289367675781\n776,42.8744316101074,-91.0888290405273\n776,42.7884902954102,-91.0716400146484\n776,42.7541122436523,-91.0601806640625\n776,42.7311935424805,-91.0086135864258\n776,42.7025451660156,-90.9570465087891\n776,42.6910858154297,-90.8997573852539\n776,42.6796264648438,-90.8768310546875\n776,42.6567077636719,-90.8711013793945\n776,42.6452484130859,-90.888298034668\n776,42.6452484130859,-91.1232070922852\n776,42.6452484130859,-91.598762512207\n777,42.0379104614258,-90.8768310546875\n777,42.0379104614258,-90.1491775512695\n777,42.0092658996582,-90.1377182006836\n777,41.9634284973145,-90.1491775512695\n777,41.9347801208496,-90.16064453125\n777,41.8946723937988,-90.16064453125\n777,41.8373794555664,-90.1778259277344\n777,41.8201904296875,-90.1892852783203\n777,41.7915420532227,-90.240852355957\n777,41.7800827026367,-90.2695007324219\n777,41.7571640014648,-90.3038787841797\n777,41.722785949707,-90.3210678100586\n777,41.7457046508789,-90.3669052124023\n777,41.7514343261719,-90.3955535888672\n777,41.7800827026367,-90.4184646606445\n777,41.7800827026367,-90.429931640625\n777,41.7743530273438,-90.4471206665039\n777,41.7800827026367,-90.4585723876953\n777,41.7915420532227,-90.4585723876953\n777,41.7972717285156,-90.4700393676758\n777,41.7915420532227,-90.4872283935547\n777,41.7800827026367,-90.4986801147461\n777,41.7915420532227,-90.5330657958984\n777,41.7800827026367,-90.5502471923828\n777,41.7743530273438,-90.5617141723633\n777,41.7800827026367,-90.5788955688477\n777,41.7800827026367,-90.607551574707\n777,41.7800827026367,-90.6361923217773\n777,41.7743530273438,-90.6591110229492\n777,41.7628936767578,-90.6820297241211\n777,41.7514343261719,-90.7221374511719\n777,41.7514343261719,-90.7278671264648\n777,41.7800827026367,-90.7622451782227\n777,41.7800827026367,-90.8768310546875\n777,41.9519729614258,-90.882568359375\n777,42.0379104614258,-90.8768310546875\n778,42.2040710449219,-95.0995407104492\n778,41.8602981567383,-95.1052627563477\n778,41.8602981567383,-95.5578994750977\n778,41.8602981567383,-95.6782150268555\n778,42.2040710449219,-95.672492980957\n778,42.2040710449219,-95.3401794433594\n778,42.2040710449219,-95.0995407104492\n779,41.8660278320312,-94.1713409423828\n779,41.8602981567383,-93.8161087036133\n779,41.6081924438477,-93.8218383789062\n779,41.6081924438477,-93.8046493530273\n779,41.5107917785645,-93.8046493530273\n779,41.5107917785645,-93.86767578125\n779,41.5050621032715,-93.9937210083008\n779,41.5050621032715,-94.2458267211914\n779,41.602466583252,-94.2458267211914\n779,41.602466583252,-94.2859344482422\n779,41.8660278320312,-94.2916641235352\n779,41.8660278320312,-94.1713409423828\n780,40.6169776916504,-92.1717224121094\n780,40.6112480163574,-92.3436126708984\n780,40.6055183410645,-92.6300888061523\n780,40.9034576416016,-92.6300888061523\n780,40.9034576416016,-92.1717224121094\n780,40.6169776916504,-92.1717224121094\n781,40.9034576416016,-93.5640106201172\n781,40.5997886657715,-93.5697402954102\n781,40.5997886657715,-93.7760009765625\n781,40.5997886657715,-94.0166473388672\n781,40.9034576416016,-94.0166473388672\n781,40.9034576416016,-93.5640106201172\n782,42.6452484130859,-91.598762512207\n782,42.6452484130859,-91.1232070922852\n782,42.4905471801758,-91.1232070922852\n782,42.4848213195801,-91.1174774169922\n782,42.3014755249023,-91.1174774169922\n782,42.3014755249023,-91.3523941040039\n782,42.3014755249023,-91.5873031616211\n782,42.4848213195801,-91.5815734863281\n782,42.4848213195801,-91.598762512207\n782,42.6452484130859,-91.598762512207\n783,41.0810737609863,-90.9513168334961\n783,41.0696144104004,-90.9455871582031\n783,40.966480255127,-90.9513168334961\n783,40.9321060180664,-90.9742431640625\n783,40.8748092651367,-91.0429916381836\n783,40.8232421875,-91.0888290405273\n783,40.7544898986816,-91.1002883911133\n783,40.7086524963379,-91.1117477416992\n783,40.7258415222168,-91.1403961181641\n783,40.7315711975098,-91.15185546875\n783,40.7315711975098,-91.1633148193359\n783,40.7315711975098,-91.1862335205078\n783,40.7373008728027,-91.2148818969727\n783,40.7602157592773,-91.23779296875\n783,40.7602157592773,-91.2664489746094\n783,40.7774085998535,-91.3008270263672\n783,40.7945976257324,-91.3065567016602\n783,40.8060531616211,-91.335205078125\n783,40.8175163269043,-91.3581161499023\n783,41.0868034362793,-91.3523941040039\n783,41.0810737609863,-90.9513168334961\n784,43.2640419006348,-95.3917388916016\n784,43.5046844482422,-95.3917388916016\n784,43.5046844482422,-94.9161911010742\n784,43.2640419006348,-94.9219207763672\n784,43.2640419006348,-95.3917388916016\n785,42.6796264648438,-90.8768310546875\n785,42.6681671142578,-90.8195419311523\n785,42.6452484130859,-90.7507858276367\n785,42.6108741760254,-90.69921875\n785,42.5707626342773,-90.6648406982422\n785,42.5421180725098,-90.6591110229492\n785,42.507740020752,-90.6419219970703\n785,42.507740020752,-90.6476516723633\n785,42.4733619689941,-90.6419219970703\n785,42.3874168395996,-90.4814987182617\n785,42.3931465148926,-90.6304626464844\n785,42.3014755249023,-90.6419219970703\n785,42.3014755249023,-90.8711013793945\n785,42.3014755249023,-91.1174774169922\n785,42.4848213195801,-91.1174774169922\n785,42.4905471801758,-91.1232070922852\n785,42.6452484130859,-91.1232070922852\n785,42.6452484130859,-90.888298034668\n785,42.6567077636719,-90.8711013793945\n785,42.6796264648438,-90.8768310546875\n786,43.5046844482422,-94.8646240234375\n786,43.5046844482422,-94.4520874023438\n786,43.2640419006348,-94.4520874023438\n786,43.2640419006348,-94.9219207763672\n786,43.5046844482422,-94.9161911010742\n786,43.5046844482422,-94.8646240234375\n787,43.08642578125,-91.598762512207\n787,42.6452484130859,-91.598762512207\n787,42.6452484130859,-92.0800476074219\n787,42.9088096618652,-92.0800476074219\n787,43.08642578125,-92.0743179321289\n787,43.08642578125,-91.598762512207\n788,42.9088096618652,-93.0254287719727\n788,43.2239379882812,-93.0254287719727\n788,43.2239379882812,-92.5556030273438\n788,42.9088096618652,-92.5498733520508\n788,42.9088096618652,-93.0254287719727\n789,42.5593032836914,-93.4952545166016\n789,42.9145393371582,-93.4952545166016\n789,42.9088096618652,-93.0254287719727\n789,42.5650367736816,-93.0254287719727\n789,42.5593032836914,-93.4952545166016\n790,40.9091873168945,-95.8271942138672\n790,40.8977279663086,-95.3802871704102\n790,40.7487602233887,-95.3860168457031\n790,40.7487602233887,-95.3745574951172\n790,40.6055183410645,-95.3745574951172\n790,40.6112480163574,-95.7527084350586\n790,40.6055183410645,-95.76416015625\n790,40.6398963928223,-95.769889831543\n790,40.6628150939941,-95.7928161621094\n790,40.691463470459,-95.8329238891602\n790,40.7201080322266,-95.8615646362305\n790,40.7487602233887,-95.8730316162109\n790,40.7659454345703,-95.867301940918\n790,40.8117828369141,-95.8443756103516\n790,40.8518905639648,-95.8558349609375\n790,40.9091873168945,-95.8271942138672\n791,42.2098007202148,-94.1656112670898\n791,41.8660278320312,-94.1713409423828\n791,41.8660278320312,-94.2916641235352\n791,41.8660278320312,-94.6354370117188\n791,42.2098007202148,-94.6297073364258\n791,42.2098007202148,-94.40625\n791,42.2098007202148,-94.1656112670898\n792,42.2155303955078,-92.9967803955078\n792,42.4733619689941,-92.9967803955078\n792,42.4733619689941,-93.0196990966797\n792,42.5650367736816,-93.0254287719727\n792,42.5650367736816,-92.5498733520508\n792,42.4733619689941,-92.5498733520508\n792,42.4733619689941,-92.5269546508789\n792,42.3014755249023,-92.5269546508789\n792,42.3014755249023,-92.7618637084961\n792,42.2155303955078,-92.7618637084961\n792,42.2155303955078,-92.9967803955078\n793,41.5050621032715,-94.7099227905273\n793,41.6081924438477,-94.7099227905273\n793,41.6081924438477,-94.7557601928711\n793,41.8660278320312,-94.7557601928711\n793,41.8660278320312,-94.6354370117188\n793,41.8660278320312,-94.2916641235352\n793,41.602466583252,-94.2859344482422\n793,41.602466583252,-94.2458267211914\n793,41.5050621032715,-94.2458267211914\n793,41.5050621032715,-94.7099227905273\n794,42.5593032836914,-93.9650802612305\n794,42.5593032836914,-93.4952545166016\n794,42.4561729431152,-93.4952545166016\n794,42.4504432678223,-93.4666061401367\n794,42.2098007202148,-93.4666061401367\n794,42.2098007202148,-93.7015228271484\n794,42.2098007202148,-93.9307022094727\n794,42.4676284790039,-93.9307022094727\n794,42.4676284790039,-93.9650802612305\n794,42.5593032836914,-93.9650802612305\n795,43.2640419006348,-93.5009765625\n795,42.9145393371582,-93.4952545166016\n795,42.9145393371582,-93.9708099365234\n795,43.2583122253418,-93.9708099365234\n795,43.2640419006348,-93.5009765625\n796,42.2155303955078,-92.9967803955078\n796,42.2098007202148,-93.231689453125\n796,42.2098007202148,-93.4666061401367\n796,42.4504432678223,-93.4666061401367\n796,42.4561729431152,-93.4952545166016\n796,42.5593032836914,-93.4952545166016\n796,42.5650367736816,-93.0254287719727\n796,42.4733619689941,-93.0196990966797\n796,42.4733619689941,-92.9967803955078\n796,42.2155303955078,-92.9967803955078\n797,41.5050621032715,-96.0048141479492\n797,41.5337104797363,-96.0162658691406\n797,41.5337104797363,-96.0449142456055\n797,41.5508995056152,-96.0850219726562\n797,41.5680885314941,-96.0792922973633\n797,41.602466583252,-96.0506439208984\n797,41.6196556091309,-96.0506439208984\n797,41.6196556091309,-96.0678329467773\n797,41.6196556091309,-96.0964813232422\n797,41.6368446350098,-96.125129699707\n797,41.6654891967773,-96.125129699707\n797,41.7170562744141,-96.1194000244141\n797,41.7514343261719,-96.0907516479492\n797,41.7800827026367,-96.1022109985352\n797,41.8259201049805,-96.0964813232422\n797,41.8602981567383,-96.130859375\n797,41.8602981567383,-95.6782150268555\n797,41.8602981567383,-95.5578994750977\n797,41.602466583252,-95.5521774291992\n797,41.596736907959,-95.489143371582\n797,41.5050621032715,-95.494873046875\n797,41.5050621032715,-96.0048141479492\n798,40.8232421875,-91.7076263427734\n798,40.9034576416016,-91.7018966674805\n798,41.1727447509766,-91.7018966674805\n798,41.1727447509766,-91.4669799804688\n798,41.1727447509766,-91.3581161499023\n798,41.0868034362793,-91.3523941040039\n798,40.8175163269043,-91.3581161499023\n798,40.8232421875,-91.3982238769531\n798,40.8232421875,-91.7076263427734\n799,43.5046844482422,-92.4581985473633\n799,43.5046844482422,-92.0800476074219\n799,43.218204498291,-92.0800476074219\n799,43.2239379882812,-92.5556030273438\n799,43.5104141235352,-92.5498733520508\n799,43.5046844482422,-92.4581985473633\n800,42.9145393371582,-93.9708099365234\n800,42.639518737793,-93.9708099365234\n800,42.6452484130859,-94.4406356811523\n800,42.9202690124512,-94.4406356811523\n800,42.9145393371582,-93.9708099365234\n801,42.5650367736816,-95.3974685668945\n801,42.4733619689941,-95.3917388916016\n801,42.4733619689941,-95.3344497680664\n801,42.2040710449219,-95.3401794433594\n801,42.2040710449219,-95.672492980957\n801,42.4733619689941,-95.672492980957\n801,42.4733619689941,-95.7412490844727\n801,42.5593032836914,-95.7412490844727\n801,42.5650367736816,-95.3974685668945\n802,41.5165214538574,-91.9310836791992\n802,41.5222511291504,-92.2691192626953\n802,41.6081924438477,-92.2748489379883\n802,41.6081924438477,-92.2863159179688\n802,41.871753692627,-92.2805786132812\n802,41.871753692627,-91.8222122192383\n802,41.6081924438477,-91.8279418945312\n802,41.6081924438477,-91.8164825439453\n802,41.5165214538574,-91.8222122192383\n802,41.5165214538574,-91.9310836791992\n803,42.0379104614258,-90.1491775512695\n803,42.0379104614258,-90.8768310546875\n803,42.3014755249023,-90.8711013793945\n803,42.3014755249023,-90.6419219970703\n803,42.3931465148926,-90.6304626464844\n803,42.3874168395996,-90.4814987182617\n803,42.3702278137207,-90.4528427124023\n803,42.3358535766602,-90.4184646606445\n803,42.2957458496094,-90.4184646606445\n803,42.2499084472656,-90.4070129394531\n803,42.2269897460938,-90.3726272583008\n803,42.2040710449219,-90.3267974853516\n803,42.175422668457,-90.24658203125\n803,42.1353187561035,-90.1778259277344\n803,42.1009368896484,-90.16064453125\n803,42.0379104614258,-90.1491775512695\n804,41.5050621032715,-93.3348236083984\n804,41.6081924438477,-93.3348236083984\n804,41.6081924438477,-93.3520126342773\n804,41.8602981567383,-93.3462829589844\n804,41.8660278320312,-93.231689453125\n804,41.871753692627,-92.7618637084961\n804,41.6311111450195,-92.7618637084961\n804,41.6311111450195,-92.7446823120117\n804,41.5165214538574,-92.7446823120117\n804,41.5165214538574,-92.8592681884766\n804,41.5050621032715,-93.3348236083984\n805,41.1727447509766,-91.9253540039062\n805,41.1727447509766,-91.7018966674805\n805,40.9034576416016,-91.7018966674805\n805,40.9034576416016,-92.1717224121094\n805,41.1670188903809,-92.1659927368164\n805,41.1727447509766,-91.9253540039062\n806,41.6081924438477,-91.3466644287109\n806,41.4248466491699,-91.3523941040039\n806,41.4305801391602,-91.4727172851562\n806,41.4477653503418,-91.4841690063477\n806,41.4649543762207,-91.4898986816406\n806,41.4764175415039,-91.5013580322266\n806,41.4993362426758,-91.4956283569336\n806,41.5107917785645,-91.5013580322266\n806,41.5222511291504,-91.5185546875\n806,41.5165214538574,-91.8222122192383\n806,41.6081924438477,-91.8164825439453\n806,41.6081924438477,-91.8279418945312\n806,41.871753692627,-91.8222122192383\n806,41.871753692627,-91.3523941040039\n806,41.6081924438477,-91.3466644287109\n807,42.3014755249023,-90.8711013793945\n807,42.0379104614258,-90.8768310546875\n807,41.9519729614258,-90.882568359375\n807,41.9519729614258,-91.3523941040039\n807,42.3014755249023,-91.3523941040039\n807,42.3014755249023,-91.1174774169922\n807,42.3014755249023,-90.8711013793945\n808,41.5165214538574,-91.9310836791992\n808,41.1727447509766,-91.9253540039062\n808,41.1670188903809,-92.1659927368164\n808,41.1727447509766,-92.3951721191406\n808,41.5222511291504,-92.4123611450195\n808,41.5222511291504,-92.2691192626953\n808,41.5165214538574,-91.9310836791992\n809,43.2640419006348,-94.4520874023438\n809,43.5046844482422,-94.4520874023438\n809,43.5046844482422,-94.2630157470703\n809,43.5104141235352,-93.9765396118164\n809,43.2583122253418,-93.9708099365234\n809,42.9145393371582,-93.9708099365234\n809,42.9202690124512,-94.4406356811523\n809,43.2640419006348,-94.4520874023438\n810,40.7086524963379,-91.1117477416992\n810,40.680004119873,-91.1117477416992\n810,40.6570854187012,-91.146125793457\n810,40.6341667175293,-91.1862335205078\n810,40.6227073669434,-91.2664489746094\n810,40.6227073669434,-91.3065567016602\n810,40.6112480163574,-91.3523941040039\n810,40.5883293151855,-91.3753051757812\n810,40.5654106140137,-91.415412902832\n810,40.5539512634277,-91.415412902832\n810,40.496654510498,-91.3753051757812\n810,40.4450912475586,-91.3925018310547\n810,40.4221725463867,-91.3925018310547\n810,40.3935241699219,-91.3867721557617\n810,40.3820648193359,-91.4096832275391\n810,40.376335144043,-91.415412902832\n810,40.4164428710938,-91.4898986816406\n810,40.4737358093262,-91.5242767333984\n810,40.5081176757812,-91.5873031616211\n810,40.5654106140137,-91.6159515380859\n810,40.5654106140137,-91.6675186157227\n810,40.6169776916504,-91.7018966674805\n810,40.8232421875,-91.7076263427734\n810,40.8232421875,-91.3982238769531\n810,40.8175163269043,-91.3581161499023\n810,40.8060531616211,-91.335205078125\n810,40.7945976257324,-91.3065567016602\n810,40.7774085998535,-91.3008270263672\n810,40.7602157592773,-91.2664489746094\n810,40.7602157592773,-91.23779296875\n810,40.7373008728027,-91.2148818969727\n810,40.7315711975098,-91.1862335205078\n810,40.7315711975098,-91.1633148193359\n810,40.7315711975098,-91.15185546875\n810,40.7258415222168,-91.1403961181641\n810,40.7086524963379,-91.1117477416992\n811,42.3014755249023,-91.8222122192383\n811,42.3014755249023,-91.5873031616211\n811,42.3014755249023,-91.3523941040039\n811,41.9519729614258,-91.3523941040039\n811,41.871753692627,-91.3523941040039\n811,41.871753692627,-91.8222122192383\n811,42.3014755249023,-91.8222122192383\n812,41.3446350097656,-91.06591796875\n812,41.3274459838867,-91.0601806640625\n812,41.3102569580078,-91.06591796875\n812,41.270149230957,-91.0888290405273\n812,41.2300453186035,-91.0888290405273\n812,41.2013931274414,-91.0544509887695\n812,41.1784744262695,-91.0200805664062\n812,41.1555557250977,-90.9857025146484\n812,41.1154518127441,-90.9570465087891\n812,41.0810737609863,-90.9513168334961\n812,41.0868034362793,-91.3523941040039\n812,41.1727447509766,-91.3581161499023\n812,41.1727447509766,-91.4669799804688\n812,41.4305801391602,-91.4727172851562\n812,41.4248466491699,-91.3523941040039\n812,41.3503646850586,-91.3523941040039\n812,41.3446350097656,-91.06591796875\n813,41.1670188903809,-93.1056442260742\n813,40.9034576416016,-93.1056442260742\n813,40.9034576416016,-93.5640106201172\n813,41.1612892150879,-93.5640106201172\n813,41.1612892150879,-93.3348236083984\n813,41.1670188903809,-93.1056442260742\n814,43.4989547729492,-96.0449142456055\n814,43.5046844482422,-95.8615646362305\n814,43.2640419006348,-95.8615646362305\n814,43.2583122253418,-96.5605773925781\n814,43.2812309265137,-96.5720367431641\n814,43.2984199523926,-96.5548477172852\n814,43.3098793029785,-96.5319290161133\n814,43.3385276794434,-96.5147399902344\n814,43.3786354064941,-96.5090103149414\n814,43.3958206176758,-96.5376586914062\n814,43.4244728088379,-96.5720367431641\n814,43.4531211853027,-96.5949554443359\n814,43.4989547729492,-96.58349609375\n814,43.4932289123535,-96.4287948608398\n814,43.4989547729492,-96.0449142456055\n815,41.1612892150879,-94.2458267211914\n815,41.5050621032715,-94.2458267211914\n815,41.5050621032715,-93.9937210083008\n815,41.5107917785645,-93.86767578125\n815,41.5107917785645,-93.8046493530273\n815,41.1670188903809,-93.8046493530273\n815,41.1612892150879,-94.0166473388672\n815,41.1612892150879,-94.2458267211914\n816,41.5165214538574,-92.8592681884766\n816,41.5165214538574,-92.7446823120117\n816,41.5222511291504,-92.4123611450195\n816,41.1727447509766,-92.3951721191406\n816,41.1670188903809,-92.6358108520508\n816,41.1670188903809,-92.8592681884766\n816,41.5165214538574,-92.8592681884766\n817,41.4936027526855,-93.3348236083984\n817,41.5050621032715,-93.3348236083984\n817,41.5165214538574,-92.8592681884766\n817,41.1670188903809,-92.8592681884766\n817,41.1670188903809,-93.1056442260742\n817,41.1612892150879,-93.3348236083984\n817,41.4936027526855,-93.3348236083984\n818,42.2098007202148,-93.231689453125\n818,42.2155303955078,-92.9967803955078\n818,42.2155303955078,-92.7618637084961\n818,41.871753692627,-92.7618637084961\n818,41.8660278320312,-93.231689453125\n818,42.2098007202148,-93.231689453125\n819,41.1612892150879,-95.8844833374023\n819,41.1612892150879,-95.3802871704102\n819,40.8977279663086,-95.3802871704102\n819,40.9091873168945,-95.8271942138672\n819,40.9321060180664,-95.8271942138672\n819,40.949291229248,-95.8214645385742\n819,40.9722099304199,-95.8386535644531\n819,41.0295066833496,-95.8730316162109\n819,41.0466995239258,-95.8730316162109\n819,41.0753440856934,-95.8730316162109\n819,41.0982627868652,-95.8558349609375\n819,41.1326370239258,-95.8730316162109\n819,41.1612892150879,-95.8844833374023\n820,43.2583122253418,-93.0254287719727\n820,43.5104141235352,-93.0254287719727\n820,43.5104141235352,-92.5498733520508\n820,43.2239379882812,-92.5556030273438\n820,43.2239379882812,-93.0254287719727\n820,43.2583122253418,-93.0254287719727\n821,41.8602981567383,-96.130859375\n821,41.9175910949707,-96.1652374267578\n821,41.9462394714355,-96.1537780761719\n821,41.9691581726074,-96.1537780761719\n821,41.9863471984863,-96.1652374267578\n821,42.0035362243652,-96.1824264526367\n821,42.0035362243652,-96.222526550293\n821,42.0321846008301,-96.2282638549805\n821,42.055103302002,-96.2626342773438\n821,42.0665626525879,-96.2798309326172\n821,42.1181259155273,-96.2970123291016\n821,42.1467742919922,-96.3371200561523\n821,42.1582374572754,-96.3428497314453\n821,42.175422668457,-96.3428497314453\n821,42.1983413696289,-96.319938659668\n821,42.2098007202148,-96.319938659668\n821,42.2040710449219,-95.672492980957\n821,41.8602981567383,-95.6782150268555\n821,41.8602981567383,-96.130859375\n822,41.1670188903809,-93.1056442260742\n822,41.1670188903809,-92.8592681884766\n822,41.1670188903809,-92.6358108520508\n822,40.9034576416016,-92.6300888061523\n822,40.9034576416016,-93.1056442260742\n822,41.1670188903809,-93.1056442260742\n823,41.1612892150879,-95.3802871704102\n823,41.1555557250977,-95.1625595092773\n823,41.1555557250977,-94.9333801269531\n823,40.9034576416016,-94.9333801269531\n823,40.8977279663086,-95.3802871704102\n823,41.1612892150879,-95.3802871704102\n824,41.602466583252,-90.882568359375\n824,41.602466583252,-90.7622451782227\n824,41.4592247009277,-90.7737045288086\n824,41.453498840332,-90.8367309570312\n824,41.4477653503418,-90.8768310546875\n824,41.4305801391602,-90.9284057617188\n824,41.4305801391602,-90.9857025146484\n824,41.4305801391602,-91.0143432617188\n824,41.4076614379883,-91.0372619628906\n824,41.3446350097656,-91.06591796875\n824,41.3503646850586,-91.3523941040039\n824,41.4248466491699,-91.3523941040039\n824,41.6081924438477,-91.3466644287109\n824,41.602466583252,-90.882568359375\n825,43.2640419006348,-95.8615646362305\n825,43.2640419006348,-95.3917388916016\n825,42.9145393371582,-95.3974685668945\n825,42.9088096618652,-95.8558349609375\n825,43.2640419006348,-95.8615646362305\n826,43.5046844482422,-95.3917388916016\n826,43.2640419006348,-95.3917388916016\n826,43.2640419006348,-95.8615646362305\n826,43.5046844482422,-95.8615646362305\n826,43.5046844482422,-95.4662322998047\n826,43.5046844482422,-95.3917388916016\n827,40.5997886657715,-94.9161911010742\n827,40.6055183410645,-95.2026672363281\n827,40.6055183410645,-95.3745574951172\n827,40.7487602233887,-95.3745574951172\n827,40.7487602233887,-95.3860168457031\n827,40.8977279663086,-95.3802871704102\n827,40.9034576416016,-94.9333801269531\n827,40.7373008728027,-94.9333801269531\n827,40.7373008728027,-94.9219207763672\n827,40.5997886657715,-94.9161911010742\n828,42.9202690124512,-94.9219207763672\n828,43.2640419006348,-94.9219207763672\n828,43.2640419006348,-94.4520874023438\n828,42.9202690124512,-94.4406356811523\n828,42.9202690124512,-94.9219207763672\n829,42.9088096618652,-95.8558349609375\n829,42.5535736083984,-95.8558349609375\n829,42.5478477478027,-96.4689025878906\n829,42.5707626342773,-96.4746322631836\n829,42.6681671142578,-96.5605773925781\n829,42.6853561401367,-96.58349609375\n829,42.7025451660156,-96.6064147949219\n829,42.7369194030762,-96.6064147949219\n829,42.777027130127,-96.5949554443359\n829,42.817138671875,-96.5605773925781\n829,42.8744316101074,-96.5204696655273\n829,42.9030799865723,-96.5204696655273\n829,42.9088096618652,-95.8558349609375\n830,42.5593032836914,-94.9219207763672\n830,42.9202690124512,-94.9219207763672\n830,42.9202690124512,-94.4406356811523\n830,42.6452484130859,-94.4406356811523\n830,42.5535736083984,-94.4463577270508\n830,42.5593032836914,-94.9219207763672\n831,41.5050621032715,-93.3348236083984\n831,41.4936027526855,-93.3348236083984\n831,41.5107917785645,-93.3978500366211\n831,41.5165214538574,-93.4666061401367\n831,41.5107917785645,-93.8046493530273\n831,41.6081924438477,-93.8046493530273\n831,41.6081924438477,-93.8218383789062\n831,41.8602981567383,-93.8161087036133\n831,41.8602981567383,-93.7015228271484\n831,41.8602981567383,-93.3462829589844\n831,41.6081924438477,-93.3520126342773\n831,41.6081924438477,-93.3348236083984\n831,41.5050621032715,-93.3348236083984\n832,41.1555557250977,-95.1625595092773\n832,41.1612892150879,-95.3802871704102\n832,41.1612892150879,-95.8844833374023\n832,41.1784744262695,-95.8902130126953\n832,41.2185821533203,-95.9016723632812\n832,41.2586898803711,-95.9016723632812\n832,41.2930679321289,-95.8787612915039\n832,41.3102569580078,-95.8730316162109\n832,41.3159866333008,-95.8787612915039\n832,41.3274459838867,-95.9016723632812\n832,41.3389053344727,-95.9245986938477\n832,41.3503646850586,-95.9303207397461\n832,41.3618240356445,-95.9245986938477\n832,41.3847427368164,-95.9245986938477\n832,41.419116973877,-95.9303207397461\n832,41.4420356750488,-95.9360504150391\n832,41.4592247009277,-95.947509765625\n832,41.4878730773926,-95.9990768432617\n832,41.5050621032715,-96.0048141479492\n832,41.5050621032715,-95.494873046875\n832,41.5050621032715,-95.1682891845703\n832,41.1555557250977,-95.1625595092773\n833,41.871753692627,-92.7618637084961\n833,41.871753692627,-92.2805786132812\n833,41.6081924438477,-92.2863159179688\n833,41.6081924438477,-92.2748489379883\n833,41.5222511291504,-92.2691192626953\n833,41.5222511291504,-92.4123611450195\n833,41.5165214538574,-92.7446823120117\n833,41.6311111450195,-92.7446823120117\n833,41.6311111450195,-92.7618637084961\n833,41.871753692627,-92.7618637084961\n834,40.9034576416016,-94.0166473388672\n834,40.5997886657715,-94.0166473388672\n834,40.5940628051758,-94.2400970458984\n834,40.5940628051758,-94.4807434082031\n834,40.9034576416016,-94.4864654541016\n834,40.9034576416016,-94.0166473388672\n835,42.5650367736816,-95.3974685668945\n835,42.5593032836914,-94.9219207763672\n835,42.4733619689941,-94.9219207763672\n835,42.4733619689941,-94.8646240234375\n835,42.2098007202148,-94.8703536987305\n835,42.2040710449219,-95.0995407104492\n835,42.2040710449219,-95.3401794433594\n835,42.4733619689941,-95.3344497680664\n835,42.4733619689941,-95.3917388916016\n835,42.5650367736816,-95.3974685668945\n836,41.7800827026367,-90.8768310546875\n836,41.7800827026367,-90.7622451782227\n836,41.7514343261719,-90.7278671264648\n836,41.7514343261719,-90.7221374511719\n836,41.7628936767578,-90.6820297241211\n836,41.7743530273438,-90.6591110229492\n836,41.7800827026367,-90.6361923217773\n836,41.7800827026367,-90.607551574707\n836,41.7800827026367,-90.5788955688477\n836,41.7743530273438,-90.5617141723633\n836,41.7800827026367,-90.5502471923828\n836,41.7915420532227,-90.5330657958984\n836,41.7800827026367,-90.4986801147461\n836,41.7915420532227,-90.4872283935547\n836,41.7972717285156,-90.4700393676758\n836,41.7915420532227,-90.4585723876953\n836,41.7800827026367,-90.4585723876953\n836,41.7743530273438,-90.4471206665039\n836,41.7800827026367,-90.429931640625\n836,41.7800827026367,-90.4184646606445\n836,41.7514343261719,-90.3955535888672\n836,41.7457046508789,-90.3669052124023\n836,41.722785949707,-90.3210678100586\n836,41.6941375732422,-90.3267974853516\n836,41.6196556091309,-90.3439865112305\n836,41.596736907959,-90.3554458618164\n836,41.5623550415039,-90.4127349853516\n836,41.5394401550293,-90.4585723876953\n836,41.5222511291504,-90.5445175170898\n836,41.4993362426758,-90.607551574707\n836,41.4649543762207,-90.6533889770508\n836,41.4592247009277,-90.7164077758789\n836,41.4592247009277,-90.7737045288086\n836,41.602466583252,-90.7622451782227\n836,41.602466583252,-90.882568359375\n836,41.7800827026367,-90.8768310546875\n837,41.8602981567383,-95.5578994750977\n837,41.8602981567383,-95.1052627563477\n837,41.602466583252,-95.1052627563477\n837,41.602466583252,-95.0537033081055\n837,41.5050621032715,-95.0594329833984\n837,41.5050621032715,-95.1682891845703\n837,41.5050621032715,-95.494873046875\n837,41.596736907959,-95.489143371582\n837,41.602466583252,-95.5521774291992\n837,41.8602981567383,-95.5578994750977\n838,43.2640419006348,-95.8615646362305\n838,42.9088096618652,-95.8558349609375\n838,42.9030799865723,-96.5204696655273\n838,42.9259986877441,-96.5204696655273\n838,42.9431838989258,-96.4975509643555\n838,42.9832916259766,-96.4975509643555\n838,43.0119400024414,-96.4975509643555\n838,43.0291290283203,-96.5147399902344\n838,43.0520477294922,-96.4459838867188\n838,43.080696105957,-96.4402542114258\n838,43.1036148071289,-96.4345245361328\n838,43.1208038330078,-96.4345245361328\n838,43.1494483947754,-96.4402542114258\n838,43.1781005859375,-96.4517135620117\n838,43.2010192871094,-96.4574508666992\n838,43.218204498291,-96.4689025878906\n838,43.2239379882812,-96.4975509643555\n838,43.2239379882812,-96.5319290161133\n838,43.2353935241699,-96.5548477172852\n838,43.2583122253418,-96.5605773925781\n838,43.2640419006348,-95.8615646362305\n839,42.2098007202148,-93.7015228271484\n839,42.2098007202148,-93.4666061401367\n839,42.2098007202148,-93.231689453125\n839,41.8660278320312,-93.231689453125\n839,41.8602981567383,-93.3462829589844\n839,41.8602981567383,-93.7015228271484\n839,42.2098007202148,-93.7015228271484\n840,42.3014755249023,-92.2863159179688\n840,41.871753692627,-92.2805786132812\n840,41.871753692627,-92.7618637084961\n840,42.2155303955078,-92.7618637084961\n840,42.3014755249023,-92.7618637084961\n840,42.3014755249023,-92.5269546508789\n840,42.3014755249023,-92.2863159179688\n841,40.5940628051758,-94.4807434082031\n841,40.5940628051758,-94.6354370117188\n841,40.5997886657715,-94.9161911010742\n841,40.7373008728027,-94.9219207763672\n841,40.7373008728027,-94.9333801269531\n841,40.9034576416016,-94.9333801269531\n841,40.9034576416016,-94.4864654541016\n841,40.5940628051758,-94.4807434082031\n842,41.1612892150879,-94.4864654541016\n842,41.1612892150879,-94.2458267211914\n842,41.1612892150879,-94.0166473388672\n842,40.9034576416016,-94.0166473388672\n842,40.9034576416016,-94.4864654541016\n842,41.1612892150879,-94.4864654541016\n843,40.9034576416016,-91.7018966674805\n843,40.8232421875,-91.7076263427734\n843,40.6169776916504,-91.7018966674805\n843,40.6169776916504,-91.9368057250977\n843,40.6169776916504,-92.1717224121094\n843,40.9034576416016,-92.1717224121094\n843,40.9034576416016,-91.7018966674805\n844,41.1670188903809,-92.1659927368164\n844,40.9034576416016,-92.1717224121094\n844,40.9034576416016,-92.6300888061523\n844,41.1670188903809,-92.6358108520508\n844,41.1727447509766,-92.3951721191406\n844,41.1670188903809,-92.1659927368164\n845,41.4936027526855,-93.3348236083984\n845,41.1612892150879,-93.3348236083984\n845,41.1612892150879,-93.5640106201172\n845,41.1670188903809,-93.8046493530273\n845,41.5107917785645,-93.8046493530273\n845,41.5165214538574,-93.4666061401367\n845,41.5107917785645,-93.3978500366211\n845,41.4936027526855,-93.3348236083984\n846,41.1727447509766,-91.9253540039062\n846,41.5165214538574,-91.9310836791992\n846,41.5165214538574,-91.8222122192383\n846,41.5222511291504,-91.5185546875\n846,41.5107917785645,-91.5013580322266\n846,41.4993362426758,-91.4956283569336\n846,41.4764175415039,-91.5013580322266\n846,41.4649543762207,-91.4898986816406\n846,41.4477653503418,-91.4841690063477\n846,41.4305801391602,-91.4727172851562\n846,41.1727447509766,-91.4669799804688\n846,41.1727447509766,-91.7018966674805\n846,41.1727447509766,-91.9253540039062\n847,40.5997886657715,-93.5697402954102\n847,40.9034576416016,-93.5640106201172\n847,40.9034576416016,-93.1056442260742\n847,40.6055183410645,-93.0999145507812\n847,40.5997886657715,-93.3749313354492\n847,40.5997886657715,-93.5697402954102\n848,42.5593032836914,-93.9650802612305\n848,42.4676284790039,-93.9650802612305\n848,42.4676284790039,-93.9307022094727\n848,42.2098007202148,-93.9307022094727\n848,42.2098007202148,-94.1656112670898\n848,42.2098007202148,-94.40625\n848,42.4733619689941,-94.4005279541016\n848,42.4733619689941,-94.4406356811523\n848,42.5535736083984,-94.4463577270508\n848,42.6452484130859,-94.4406356811523\n848,42.639518737793,-93.9708099365234\n848,42.5593032836914,-93.9650802612305\n849,43.5104141235352,-93.4952545166016\n849,43.2640419006348,-93.5009765625\n849,43.2583122253418,-93.9708099365234\n849,43.5104141235352,-93.9765396118164\n849,43.5104141235352,-93.6442260742188\n849,43.5104141235352,-93.4952545166016\n850,43.5046844482422,-92.0800476074219\n850,43.5104141235352,-91.7248153686523\n850,43.5104141235352,-91.6044921875\n850,43.3499870300293,-91.610221862793\n850,43.3557167053223,-91.598762512207\n850,43.08642578125,-91.598762512207\n850,43.08642578125,-92.0743179321289\n850,43.218204498291,-92.0800476074219\n850,43.5046844482422,-92.0800476074219\n851,42.2670974731445,-96.3485794067383\n851,42.3301200866699,-96.405876159668\n851,42.3530387878418,-96.4116134643555\n851,42.3816909790039,-96.405876159668\n851,42.3988761901855,-96.394416809082\n851,42.4160652160645,-96.3886871337891\n851,42.4389839172363,-96.3886871337891\n851,42.4619026184082,-96.394416809082\n851,42.4733619689941,-96.4345245361328\n851,42.4733619689941,-96.4402542114258\n851,42.507740020752,-96.4689025878906\n851,42.5306549072266,-96.4689025878906\n851,42.5478477478027,-96.4689025878906\n851,42.5535736083984,-95.8558349609375\n851,42.5593032836914,-95.7412490844727\n851,42.4733619689941,-95.7412490844727\n851,42.4733619689941,-95.672492980957\n851,42.2040710449219,-95.672492980957\n851,42.2098007202148,-96.319938659668\n851,42.2441787719727,-96.3485794067383\n851,42.2499084472656,-96.3428497314453\n851,42.2670974731445,-96.3485794067383\n852,43.5104141235352,-93.0254287719727\n852,43.2583122253418,-93.0254287719727\n852,43.2640419006348,-93.5009765625\n852,43.5104141235352,-93.4952545166016\n852,43.5104141235352,-93.0598068237305\n852,43.5104141235352,-93.0254287719727\n853,42.9145393371582,-93.4952545166016\n853,42.5593032836914,-93.4952545166016\n853,42.5593032836914,-93.9650802612305\n853,42.639518737793,-93.9708099365234\n853,42.9145393371582,-93.9708099365234\n853,42.9145393371582,-93.4952545166016"
+    },
+    {
+      "name": ".0/group_by1",
+      "source": ".0/group_by1_flat",
+      "transform": [
+        {
+          "type": "treefacet",
+          "keys": [
+            "data.group"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scale/x",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "domain": "number"
+        }
+      },
+      "values": "\"domain\"\n-96.9298496246338\n-89.8142833709717"
+    },
+    {
+      "name": "scale/y",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "domain": "number"
+        }
+      },
+      "values": "\"domain\"\n40.2196311950684\n43.6671180725098"
+    }
+  ],
+  "scales": [
+    {
+      "name": "x",
+      "domain": {
+        "data": "scale/x",
+        "field": "data.domain"
+      },
+      "zero": false,
+      "nice": false,
+      "clamp": false,
+      "range": "width"
+    },
+    {
+      "name": "y",
+      "domain": {
+        "data": "scale/y",
+        "field": "data.domain"
+      },
+      "zero": false,
+      "nice": false,
+      "clamp": false,
+      "range": "height"
+    }
+  ],
+  "marks": [
+    {
+      "type": "group",
+      "from": {
+        "data": ".0/group_by1"
+      },
+      "marks": [
+        {
+          "type": "line",
+          "properties": {
+            "update": {
+              "stroke": {
+                "value": "#000000"
+              },
+              "y": {
+                "scale": "y",
+                "field": "data.lat"
+              },
+              "x": {
+                "scale": "x",
+                "field": "data.long"
+              }
+            },
+            "ggvis": {
+              "data": {
+                "value": ".0/group_by1"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "legends": [],
+  "axes": [
+    {
+      "type": "x",
+      "scale": "x",
+      "orient": "bottom",
+      "layer": "back",
+      "grid": true,
+      "title": "long"
+    },
+    {
+      "type": "y",
+      "scale": "y",
+      "orient": "left",
+      "layer": "back",
+      "grid": true,
+      "title": "lat"
+    }
+  ],
+  "padding": null,
+  "ggvis_opts": {
+    "keep_aspect": false,
+    "resizable": true,
+    "padding": {},
+    "duration": 250,
+    "renderer": "svg",
+    "hover_duration": 0,
+    "width": 768,
+    "height": 470.4
+  },
+  "handlers": null
+};
+ggvis.getPlot("plot_id234710131").parseSpec(plot_id234710131_spec);
+</script>
+</section><section id="adding-interactivity" class="slide level2">
+<h2>Adding interactivity</h2>
+<p>Note that points now have a <strong>fill</strong> color and a <strong>stroke</strong> color</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mtcars %&gt;%<span class="st"> </span><span class="kw">ggvis</span>(<span class="dt">x=</span>~mpg, <span class="dt">y=</span>~wt, fill :<span class="er">=</span><span class="st"> &quot;red&quot;</span>) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">layer_points</span>() %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">layer_smooths</span>(<span class="dt">span =</span> <span class="kw">input_slider</span>(<span class="dt">min =</span> <span class="fl">0.1</span>, <span class="dt">max =</span> <span class="dv">1</span>,  <span class="dt">value=</span><span class="fl">0.6</span>))</code></pre></div>
+<div id="plot_id956367975-container" class="ggvis-output-container">
+<div id="plot_id956367975" class="ggvis-output"></div>
+<div class="plot-gear-icon">
+<nav class="ggvis-control">
+<a class="ggvis-dropdown-toggle" title="Controls" onclick="return false;"></a>
+<ul class="ggvis-dropdown">
+<li>
+Renderer: 
+<a id="plot_id956367975_renderer_svg" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id956367975" data-renderer="svg">SVG</a>
+ | 
+<a id="plot_id956367975_renderer_canvas" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id956367975" data-renderer="canvas">Canvas</a>
+</li>
+<li>
+<a id="plot_id956367975_download" class="ggvis-download" data-plot-id="plot_id956367975">Download</a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<script type="text/javascript">
+var plot_id956367975_spec = {
+  "data": [
+    {
+      "name": ".0",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "mpg": "number",
+          "wt": "number"
+        }
+      },
+      "values": "\"mpg\",\"wt\"\n21,2.62\n21,2.875\n22.8,2.32\n21.4,3.215\n18.7,3.44\n18.1,3.46\n14.3,3.57\n24.4,3.19\n22.8,3.15\n19.2,3.44\n17.8,3.44\n16.4,4.07\n17.3,3.73\n15.2,3.78\n10.4,5.25\n10.4,5.424\n14.7,5.345\n32.4,2.2\n30.4,1.615\n33.9,1.835\n21.5,2.465\n15.5,3.52\n15.2,3.435\n13.3,3.84\n19.2,3.845\n27.3,1.935\n26,2.14\n30.4,1.513\n15.8,3.17\n19.7,2.77\n15,3.57\n21.4,2.78"
+    },
+    {
+      "name": ".0/model_prediction1",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "pred_": "number",
+          "resp_": "number"
+        }
+      },
+      "values": "\"pred_\",\"resp_\"\n10.4,5.30352336208469\n10.6974683544304,5.16645202594005\n10.9949367088608,5.03523953382056\n11.2924050632911,4.90981726809601\n11.5898734177215,4.79011661113615\n11.8873417721519,4.67606894531078\n12.1848101265823,4.56760565298965\n12.4822784810127,4.46465811654256\n12.779746835443,4.36715771833926\n13.0772151898734,4.27503584074955\n13.3746835443038,4.18823861378495\n13.6721518987342,4.1070226518978\n13.9696202531646,4.03146196671099\n14.2670886075949,3.96150051180512\n14.5645569620253,3.8970822407608\n14.8620253164557,3.83987282034864\n15.1594936708861,3.79279017127411\n15.4569620253165,3.76816335653325\n15.7544303797468,3.73767410076527\n16.0518987341772,3.71059928126427\n16.3493670886076,3.68227604324933\n16.646835443038,3.65854107144458\n16.9443037974684,3.6516653001598\n17.2417721518987,3.65027359296585\n17.5392405063291,3.64247716433795\n17.8367088607595,3.61646414506498\n18.1341772151899,3.57083926437935\n18.4316455696203,3.51562709033347\n18.7291139240506,3.45922941918198\n19.026582278481,3.37740595366548\n19.3240506329114,3.30188375195773\n19.6215189873418,3.22191128447151\n19.9189873417722,3.13395876358847\n20.2164556962025,3.04593188022085\n20.5139240506329,2.96573632528088\n20.8113924050633,2.90127778968081\n21.1088607594937,2.86218794362551\n21.4063291139241,2.84270620045367\n21.7037974683544,2.81220030005803\n22.0012658227848,2.78645471268993\n22.2987341772152,2.76120392824184\n22.5962025316456,2.73218243660624\n22.8936708860759,2.69561817810196\n23.1911392405063,2.65567373569274\n23.4886075949367,2.61459230769284\n23.7860759493671,2.57263545902921\n24.0835443037975,2.53006475462877\n24.3810126582278,2.48714175941848\n24.6784810126582,2.44412803832525\n24.9759493670886,2.40128515627602\n25.273417721519,2.35887467819774\n25.5708860759494,2.31715816901733\n25.8683544303797,2.27639719366173\n26.1658227848101,2.23685331705787\n26.4632911392405,2.1987881041327\n26.7607594936709,2.16246311981314\n27.0582278481013,2.12813992902613\n27.3556962025316,2.09602811953064\n27.653164556962,2.06450818322234\n27.9506329113924,2.03306244730562\n28.2481012658228,2.00217743814282\n28.5455696202532,1.9723396820963\n28.8430379746835,1.94403570552839\n29.1405063291139,1.91775203480146\n29.4379746835443,1.89397519627785\n29.7354430379747,1.8731917163199\n30.0329113924051,1.85588812128998\n30.3303797468354,1.84255093755042\n30.6278481012658,1.83295318750087\n30.9253164556962,1.8256955377857\n31.2227848101266,1.82075241862422\n31.520253164557,1.81816077155718\n31.8177215189873,1.81795753812536\n32.1151898734177,1.8201796598695\n32.4126582278481,1.82486407833039\n32.7101265822785,1.83204773504877\n33.0075949367089,1.84176757156542\n33.3050632911392,1.85406052942109\n33.6025316455696,1.86896355015655\n33.9,1.88651357531256"
+    },
+    {
+      "name": "scale/x",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "domain": "number"
+        }
+      },
+      "values": "\"domain\"\n9.225\n35.075"
+    },
+    {
+      "name": "scale/y",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "domain": "number"
+        }
+      },
+      "values": "\"domain\"\n1.31745\n5.61955"
+    }
+  ],
+  "scales": [
+    {
+      "name": "x",
+      "domain": {
+        "data": "scale/x",
+        "field": "data.domain"
+      },
+      "zero": false,
+      "nice": false,
+      "clamp": false,
+      "range": "width"
+    },
+    {
+      "name": "y",
+      "domain": {
+        "data": "scale/y",
+        "field": "data.domain"
+      },
+      "zero": false,
+      "nice": false,
+      "clamp": false,
+      "range": "height"
+    }
+  ],
+  "marks": [
+    {
+      "type": "symbol",
+      "properties": {
+        "update": {
+          "size": {
+            "value": 50
+          },
+          "x": {
+            "scale": "x",
+            "field": "data.mpg"
+          },
+          "y": {
+            "scale": "y",
+            "field": "data.wt"
+          },
+          "fill": {
+            "value": "red"
+          }
+        },
+        "ggvis": {
+          "data": {
+            "value": ".0"
+          }
+        }
+      },
+      "from": {
+        "data": ".0"
+      }
+    },
+    {
+      "type": "line",
+      "properties": {
+        "update": {
+          "stroke": {
+            "value": "#000000"
+          },
+          "strokeWidth": {
+            "value": 2
+          },
+          "x": {
+            "scale": "x",
+            "field": "data.pred_"
+          },
+          "y": {
+            "scale": "y",
+            "field": "data.resp_"
+          },
+          "fill": {
+            "value": "transparent"
+          }
+        },
+        "ggvis": {
+          "data": {
+            "value": ".0/model_prediction1"
+          }
+        }
+      },
+      "from": {
+        "data": ".0/model_prediction1"
+      }
+    }
+  ],
+  "legends": [],
+  "axes": [
+    {
+      "type": "x",
+      "scale": "x",
+      "orient": "bottom",
+      "layer": "back",
+      "grid": true,
+      "title": "mpg"
+    },
+    {
+      "type": "y",
+      "scale": "y",
+      "orient": "left",
+      "layer": "back",
+      "grid": true,
+      "title": "wt"
+    }
+  ],
+  "padding": null,
+  "ggvis_opts": {
+    "keep_aspect": false,
+    "resizable": true,
+    "padding": {},
+    "duration": 250,
+    "renderer": "svg",
+    "hover_duration": 0,
+    "width": 384,
+    "height": 336
+  },
+  "handlers": null
+};
+ggvis.getPlot("plot_id956367975").parseSpec(plot_id956367975_spec);
+</script>
+</section><section id="adding-interactivity-contd" class="slide level2">
+<h2>Adding interactivity (cont’d)</h2>
+<ul>
+<li><code>input_</code> functions allow the user to set and change input values interactively</li>
+<li><code>input_checkbox</code> , <code>input_checkboxgroup</code>, <code>input_numeric</code>, <code>input_radiobuttons</code>, <code>input_select</code>, <code>input_slider</code>, <code>input_text</code></li>
+<li><code>input_</code> functions have similar structure:</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">function (value, <span class="dt">label =</span> <span class="st">&quot;&quot;</span>, <span class="dt">id =</span> <span class="kw">rand_id</span>(<span class="st">&quot;text_&quot;</span>), <span class="dt">map =</span> identity) </code></pre></div>
+</section><section id="your-turn-1" class="slide level2">
+<h2>Your Turn</h2>
+<ul>
+<li>Create a scatterplot using <code>ggvis</code> functionality</li>
+<li>Give the user a choice of colors for the points</li>
+<li><em>Tricky</em>: Give the user a choice between a loess smooth and a regression line.</li>
+</ul>
+<p><br> <br> <br> <br> <br> <br> <br> <br> <br> <br></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">whichModel &lt;-<span class="kw">input_checkbox</span>(<span class="dt">label =</span> <span class="st">&quot;Regression?&quot;</span>,
+                          <span class="dt">value=</span><span class="ot">TRUE</span>,
+  <span class="dt">map =</span> function(val) if(val) <span class="st">&quot;lm&quot;</span> else <span class="st">&quot;loess&quot;</span>)
+
+mtcars %&gt;%<span class="st"> </span><span class="kw">ggvis</span>(<span class="dt">x=</span>~mpg, <span class="dt">y=</span>~wt, 
+                 fill :<span class="er">=</span><span class="st"> </span><span class="kw">input_radiobuttons</span>(<span class="dt">choices=</span><span class="kw">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;purple&quot;</span>, <span class="st">&quot;steelblue&quot;</span>), <span class="dt">selected=</span><span class="st">&quot;red&quot;</span>, <span class="dt">label =</span> <span class="st">&quot;Pick a color for the points&quot;</span>)) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">layer_points</span>() %&gt;%
+<span class="st">  </span><span class="kw">layer_model_predictions</span>(<span class="dt">model=</span>whichModel)</code></pre></div>
+<pre><code>## Guessing formula = wt ~ mpg</code></pre>
+<pre><code>## Warning: Can&#39;t output dynamic/interactive ggvis plots in a knitr document.
+## Generating a static (non-dynamic, non-interactive) version of the plot.</code></pre>
+<div id="plot_id201832943-container" class="ggvis-output-container">
+<div id="plot_id201832943" class="ggvis-output"></div>
+<div class="plot-gear-icon">
+<nav class="ggvis-control">
+<a class="ggvis-dropdown-toggle" title="Controls" onclick="return false;"></a>
+<ul class="ggvis-dropdown">
+<li>
+Renderer: 
+<a id="plot_id201832943_renderer_svg" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id201832943" data-renderer="svg">SVG</a>
+ | 
+<a id="plot_id201832943_renderer_canvas" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id201832943" data-renderer="canvas">Canvas</a>
+</li>
+<li>
+<a id="plot_id201832943_download" class="ggvis-download" data-plot-id="plot_id201832943">Download</a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<script type="text/javascript">
+var plot_id201832943_spec = {
+  "data": [
+    {
+      "name": ".0",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "mpg": "number",
+          "wt": "number"
+        }
+      },
+      "values": "\"mpg\",\"wt\",\"reactive_730234471\"\n21,2.62,\"red\"\n21,2.875,\"red\"\n22.8,2.32,\"red\"\n21.4,3.215,\"red\"\n18.7,3.44,\"red\"\n18.1,3.46,\"red\"\n14.3,3.57,\"red\"\n24.4,3.19,\"red\"\n22.8,3.15,\"red\"\n19.2,3.44,\"red\"\n17.8,3.44,\"red\"\n16.4,4.07,\"red\"\n17.3,3.73,\"red\"\n15.2,3.78,\"red\"\n10.4,5.25,\"red\"\n10.4,5.424,\"red\"\n14.7,5.345,\"red\"\n32.4,2.2,\"red\"\n30.4,1.615,\"red\"\n33.9,1.835,\"red\"\n21.5,2.465,\"red\"\n15.5,3.52,\"red\"\n15.2,3.435,\"red\"\n13.3,3.84,\"red\"\n19.2,3.845,\"red\"\n27.3,1.935,\"red\"\n26,2.14,\"red\"\n30.4,1.513,\"red\"\n15.8,3.17,\"red\"\n19.7,2.77,\"red\"\n15,3.57,\"red\"\n21.4,2.78,\"red\""
+    },
+    {
+      "name": ".0/model_prediction1",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "pred_": "number",
+          "resp_": "number"
+        }
+      },
+      "values": "\"pred_\",\"resp_\"\n10.4,4.5822905267902\n10.6974683544304,4.54038854841058\n10.9949367088608,4.49848657003095\n11.2924050632911,4.45658459165132\n11.5898734177215,4.4146826132717\n11.8873417721519,4.37278063489207\n12.1848101265823,4.33087865651245\n12.4822784810127,4.28897667813282\n12.779746835443,4.2470746997532\n13.0772151898734,4.20517272137357\n13.3746835443038,4.16327074299394\n13.6721518987342,4.12136876461432\n13.9696202531646,4.07946678623469\n14.2670886075949,4.03756480785507\n14.5645569620253,3.99566282947544\n14.8620253164557,3.95376085109582\n15.1594936708861,3.91185887271619\n15.4569620253165,3.86995689433656\n15.7544303797468,3.82805491595694\n16.0518987341772,3.78615293757731\n16.3493670886076,3.74425095919769\n16.646835443038,3.70234898081806\n16.9443037974684,3.66044700243844\n17.2417721518987,3.61854502405881\n17.5392405063291,3.57664304567919\n17.8367088607595,3.53474106729956\n18.1341772151899,3.49283908891993\n18.4316455696203,3.45093711054031\n18.7291139240506,3.40903513216068\n19.026582278481,3.36713315378106\n19.3240506329114,3.32523117540143\n19.6215189873418,3.28332919702181\n19.9189873417722,3.24142721864218\n20.2164556962025,3.19952524026255\n20.5139240506329,3.15762326188293\n20.8113924050633,3.1157212835033\n21.1088607594937,3.07381930512368\n21.4063291139241,3.03191732674405\n21.7037974683544,2.99001534836443\n22.0012658227848,2.9481133699848\n22.2987341772152,2.90621139160517\n22.5962025316456,2.86430941322555\n22.8936708860759,2.82240743484592\n23.1911392405063,2.7805054564663\n23.4886075949367,2.73860347808667\n23.7860759493671,2.69670149970705\n24.0835443037975,2.65479952132742\n24.3810126582278,2.61289754294779\n24.6784810126582,2.57099556456817\n24.9759493670886,2.52909358618854\n25.273417721519,2.48719160780892\n25.5708860759494,2.44528962942929\n25.8683544303797,2.40338765104967\n26.1658227848101,2.36148567267004\n26.4632911392405,2.31958369429041\n26.7607594936709,2.27768171591079\n27.0582278481013,2.23577973753116\n27.3556962025316,2.19387775915154\n27.653164556962,2.15197578077191\n27.9506329113924,2.11007380239229\n28.2481012658228,2.06817182401266\n28.5455696202532,2.02626984563303\n28.8430379746835,1.98436786725341\n29.1405063291139,1.94246588887378\n29.4379746835443,1.90056391049416\n29.7354430379747,1.85866193211453\n30.0329113924051,1.81675995373491\n30.3303797468354,1.77485797535528\n30.6278481012658,1.73295599697566\n30.9253164556962,1.69105401859603\n31.2227848101266,1.6491520402164\n31.520253164557,1.60725006183678\n31.8177215189873,1.56534808345715\n32.1151898734177,1.52344610507753\n32.4126582278481,1.4815441266979\n32.7101265822785,1.43964214831828\n33.0075949367089,1.39774016993865\n33.3050632911392,1.35583819155902\n33.6025316455696,1.3139362131794\n33.9,1.27203423479977"
+    },
+    {
+      "name": "scale/x",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "domain": "number"
+        }
+      },
+      "values": "\"domain\"\n9.225\n35.075"
+    },
+    {
+      "name": "scale/y",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "domain": "number"
+        }
+      },
+      "values": "\"domain\"\n1.06443594653976\n5.63159828826001"
+    }
+  ],
+  "scales": [
+    {
+      "name": "x",
+      "domain": {
+        "data": "scale/x",
+        "field": "data.domain"
+      },
+      "zero": false,
+      "nice": false,
+      "clamp": false,
+      "range": "width"
+    },
+    {
+      "name": "y",
+      "domain": {
+        "data": "scale/y",
+        "field": "data.domain"
+      },
+      "zero": false,
+      "nice": false,
+      "clamp": false,
+      "range": "height"
+    }
+  ],
+  "marks": [
+    {
+      "type": "symbol",
+      "properties": {
+        "update": {
+          "size": {
+            "value": 50
+          },
+          "x": {
+            "scale": "x",
+            "field": "data.mpg"
+          },
+          "y": {
+            "scale": "y",
+            "field": "data.wt"
+          },
+          "fill": {
+            "field": "data.reactive_730234471"
+          }
+        },
+        "ggvis": {
+          "data": {
+            "value": ".0"
+          }
+        }
+      },
+      "from": {
+        "data": ".0"
+      }
+    },
+    {
+      "type": "line",
+      "properties": {
+        "update": {
+          "stroke": {
+            "value": "#000000"
+          },
+          "strokeWidth": {
+            "value": 2
+          },
+          "x": {
+            "scale": "x",
+            "field": "data.pred_"
+          },
+          "y": {
+            "scale": "y",
+            "field": "data.resp_"
+          },
+          "fill": {
+            "value": "transparent"
+          }
+        },
+        "ggvis": {
+          "data": {
+            "value": ".0/model_prediction1"
+          }
+        }
+      },
+      "from": {
+        "data": ".0/model_prediction1"
+      }
+    }
+  ],
+  "legends": [],
+  "axes": [
+    {
+      "type": "x",
+      "scale": "x",
+      "orient": "bottom",
+      "layer": "back",
+      "grid": true,
+      "title": "mpg"
+    },
+    {
+      "type": "y",
+      "scale": "y",
+      "orient": "left",
+      "layer": "back",
+      "grid": true,
+      "title": "wt"
+    }
+  ],
+  "padding": null,
+  "ggvis_opts": {
+    "keep_aspect": false,
+    "resizable": true,
+    "padding": {},
+    "duration": 250,
+    "renderer": "svg",
+    "hover_duration": 0,
+    "width": 768,
+    "height": 470.4
+  },
+  "handlers": null
+};
+ggvis.getPlot("plot_id201832943").parseSpec(plot_id201832943_spec);
+</script>
+</section><section id="interactive-plots-and-shiny" class="slide level2">
+<h2>Interactive plots and shiny</h2>
+<ul>
+<li>plotly charts are embedded in the interface with the command <code>plotlyOutput</code></li>
+<li><code>ggvis</code> needs a bit more work:
+<ul>
+<li>ggvis is internally implemented as a shiny app</li>
+<li>two apps cannot run at the same time</li>
+<li>integrate ggvis in shiny: <code>bind_shiny(ggvis_object, &quot;name_of_plot&quot;, &quot;name_of_control&quot;)</code></li>
+</ul></li>
+</ul>
+</section><section id="your-turn-needs-some-time" class="slide level2">
+<h2>Your Turn (needs some time)</h2>
+<ul>
+<li>Rewrite your shiny app to use a <code>plotly</code> object</li>
+<li>Rewrite the plot in your shiny app as <code>ggvis</code> command and embed into your app.</li>
+</ul>
+</section>
+
+  <!--
+  To hide progress bar from entire presentation
+  just remove “progress” element.
+  -->
+  <!-- <div class="progress"></div> -->
+  <script src="02_plotly_files/rmdshower/node_modules/shower/node_modules/shower-core/shower.min.js"></script>
+  <!-- Copyright © 2015 Yours Truly, Famous Inc. -->
+  <!-- Photos by John Carey, fiftyfootshadows.net -->
+
+    <script>renderMathInElement(document.body);</script>
+  
+  
+</body>
+</html>

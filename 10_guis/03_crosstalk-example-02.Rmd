@@ -1,0 +1,27 @@
+---
+title: "Crosstalk - Example 2"
+author: "Heike Hofmann"
+date: "4/10/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo = FALSE, warning = FALSE, message=FALSE, fig.width=8, fig.height=6}
+library(gapminder)
+library(crosstalk)
+library(ggplot2)
+library(plotly)
+
+g <- crosstalk::SharedData$new(gapminder, ~continent)
+
+gg <- ggplot(g, aes(gdpPercap, lifeExp, color = continent, frame = year)) +
+  geom_point(aes(size = pop, ids = country)) +
+  geom_smooth(se = FALSE, method = "lm") +
+  scale_x_log10()
+ggplotly(gg) %>% 
+  highlight("plotly_hover")
+```
+

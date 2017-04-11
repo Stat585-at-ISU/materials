@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Stat 585 - Crosstalk</title>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="03_crosstalk_files/rmdshower/node_modules/shower-ribbon/styles/screen-4x3.css">
+  <link rel="stylesheet" href="03_crosstalk_files/rmdshower/style-common.css">
+  <link rel="stylesheet" href="03_crosstalk_files/rmdshower/style-ribbon.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.js"></script>
+  <script src="03_crosstalk_files/rmdshower/auto-render.min.js" type="text/javascript"></script>
+  
+  
+    <style type="text/css">
+   div.sourceCode { overflow-x: auto; }
+   table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+     margin: 0; padding: 0; vertical-align: baseline; border: none; }
+   table.sourceCode { width: 100%; line-height: 100%; }
+   td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+   td.sourceCode { padding-left: 5px; }
+   code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+   code > span.dt { color: #902000; } /* DataType */
+   code > span.dv { color: #40a070; } /* DecVal */
+   code > span.bn { color: #40a070; } /* BaseN */
+   code > span.fl { color: #40a070; } /* Float */
+   code > span.ch { color: #4070a0; } /* Char */
+   code > span.st { color: #4070a0; } /* String */
+   code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+   code > span.ot { color: #007020; } /* Other */
+   code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+   code > span.fu { color: #06287e; } /* Function */
+   code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+   code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+   code > span.cn { color: #880000; } /* Constant */
+   code > span.sc { color: #4070a0; } /* SpecialChar */
+   code > span.vs { color: #4070a0; } /* VerbatimString */
+   code > span.ss { color: #bb6688; } /* SpecialString */
+   code > span.im { } /* Import */
+   code > span.va { color: #19177c; } /* Variable */
+   code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+   code > span.op { color: #666666; } /* Operator */
+   code > span.bu { } /* BuiltIn */
+   code > span.ex { } /* Extension */
+   code > span.pp { color: #bc7a00; } /* Preprocessor */
+   code > span.at { color: #7d9029; } /* Attribute */
+   code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+   code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+   code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+   code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+  
+  
+  
+</head>
+
+<body class="shower list">
+
+  <header class="caption">
+    <h1>Stat 585 - Crosstalk</h1>
+    <p>Heike Hofmann</p>
+  </header>
+
+    
+  
+<section id="making-widgets-talk-to-each-other" class="titleslide slide level1"><h2 class="shout">Making widgets talk to each other</h2></section><section id="what-is-crosstalk" class="slide level2">
+<h2>What is <code>crosstalk</code>?</h2>
+<ul>
+<li><code>crosstalk</code> is an add-on R package to <code>htmlwidgets</code> produced by RStudio.</li>
+<li>extends htmlwidgets and allows implementing cross-widget interactions: linked brushing and filtering. <br><br><br><br><br><br></li>
+<li>Tutorial: <a href="http://rstudio.github.io/crosstalk/" class="uri">http://rstudio.github.io/crosstalk/</a></li>
+</ul>
+</section><section id="crosstalk-example" class="slide level2">
+<h2>crosstalk Example</h2>
+<p><a href="03_crosstalk-example-01.html">Result</a></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(crosstalk)
+<span class="kw">library</span>(shiny)
+<span class="kw">library</span>(d3scatter)
+
+shared_mtcars &lt;-<span class="st"> </span>SharedData$<span class="kw">new</span>(mtcars)
+<span class="kw">bscols</span>(<span class="dt">widths =</span> <span class="kw">c</span>(<span class="dv">3</span>,<span class="ot">NA</span>,<span class="ot">NA</span>),
+  <span class="kw">list</span>(
+    <span class="kw">filter_checkbox</span>(<span class="st">&quot;cyl&quot;</span>, <span class="st">&quot;Cylinders&quot;</span>, shared_mtcars, 
+                    ~cyl, <span class="dt">inline =</span> <span class="ot">TRUE</span>),
+    <span class="kw">filter_slider</span>(<span class="st">&quot;hp&quot;</span>, <span class="st">&quot;Horsepower&quot;</span>, shared_mtcars, 
+                  ~hp, <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>),
+    <span class="kw">filter_select</span>(<span class="st">&quot;auto&quot;</span>, <span class="st">&quot;Automatic&quot;</span>, shared_mtcars, 
+                  ~<span class="kw">ifelse</span>(am ==<span class="st"> </span><span class="dv">0</span>, <span class="st">&quot;Yes&quot;</span>, <span class="st">&quot;No&quot;</span>))
+  ),
+  <span class="kw">d3scatter</span>(shared_mtcars, ~wt, ~mpg, ~<span class="kw">factor</span>(cyl), 
+            <span class="dt">width=</span><span class="st">&quot;300&quot;</span>, <span class="dt">height=</span><span class="dv">250</span>),
+  <span class="kw">d3scatter</span>(shared_mtcars, ~hp, ~qsec, ~<span class="kw">factor</span>(cyl), 
+            <span class="dt">width=</span><span class="st">&quot;300&quot;</span>, <span class="dt">height=</span><span class="dv">250</span>)
+)</code></pre></div>
+</section><section id="another---crazy---example" class="slide level2">
+<h2>Another - crazy(!) - example</h2>
+<p><a href="03_crosstalk-example-02.html">Result</a></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(gapminder)
+<span class="kw">library</span>(crosstalk)
+<span class="kw">library</span>(ggplot2)
+<span class="kw">library</span>(plotly)
+
+g &lt;-<span class="st"> </span>crosstalk::SharedData$<span class="kw">new</span>(gapminder, ~continent)
+
+gg &lt;-<span class="st"> </span><span class="kw">ggplot</span>(g, <span class="kw">aes</span>(gdpPercap, lifeExp, <span class="dt">color =</span> continent, 
+                    <span class="dt">frame =</span> year)) +
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">size =</span> pop, <span class="dt">ids =</span> country)) +
+<span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">se =</span> <span class="ot">FALSE</span>, <span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>) +
+<span class="st">  </span><span class="kw">scale_x_log10</span>()
+
+<span class="kw">ggplotly</span>(gg) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">highlight</span>(<span class="st">&quot;plotly_hover&quot;</span>)</code></pre></div>
+</section><section id="sharing-data-between-charts" class="slide level2">
+<h2>Sharing data between charts</h2>
+<p><strong><code>SharedData</code></strong>: puts the data frame into a reactive expression, adds a key and a crosstalk group (crosstalk identifier, different objects can have the same crosstalk group).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(crosstalk)
+shared_iris &lt;-<span class="st"> </span>SharedData$<span class="kw">new</span>(iris)
+shared_iris$<span class="kw">key</span>() <span class="co"># row names are used by default</span></code></pre></div>
+<pre><code>##   [1] &quot;1&quot;   &quot;2&quot;   &quot;3&quot;   &quot;4&quot;   &quot;5&quot;   &quot;6&quot;   &quot;7&quot;   &quot;8&quot;   &quot;9&quot;   &quot;10&quot;  &quot;11&quot; 
+##  [12] &quot;12&quot;  &quot;13&quot;  &quot;14&quot;  &quot;15&quot;  &quot;16&quot;  &quot;17&quot;  &quot;18&quot;  &quot;19&quot;  &quot;20&quot;  &quot;21&quot;  &quot;22&quot; 
+##  [23] &quot;23&quot;  &quot;24&quot;  &quot;25&quot;  &quot;26&quot;  &quot;27&quot;  &quot;28&quot;  &quot;29&quot;  &quot;30&quot;  &quot;31&quot;  &quot;32&quot;  &quot;33&quot; 
+##  [34] &quot;34&quot;  &quot;35&quot;  &quot;36&quot;  &quot;37&quot;  &quot;38&quot;  &quot;39&quot;  &quot;40&quot;  &quot;41&quot;  &quot;42&quot;  &quot;43&quot;  &quot;44&quot; 
+##  [45] &quot;45&quot;  &quot;46&quot;  &quot;47&quot;  &quot;48&quot;  &quot;49&quot;  &quot;50&quot;  &quot;51&quot;  &quot;52&quot;  &quot;53&quot;  &quot;54&quot;  &quot;55&quot; 
+##  [56] &quot;56&quot;  &quot;57&quot;  &quot;58&quot;  &quot;59&quot;  &quot;60&quot;  &quot;61&quot;  &quot;62&quot;  &quot;63&quot;  &quot;64&quot;  &quot;65&quot;  &quot;66&quot; 
+##  [67] &quot;67&quot;  &quot;68&quot;  &quot;69&quot;  &quot;70&quot;  &quot;71&quot;  &quot;72&quot;  &quot;73&quot;  &quot;74&quot;  &quot;75&quot;  &quot;76&quot;  &quot;77&quot; 
+##  [78] &quot;78&quot;  &quot;79&quot;  &quot;80&quot;  &quot;81&quot;  &quot;82&quot;  &quot;83&quot;  &quot;84&quot;  &quot;85&quot;  &quot;86&quot;  &quot;87&quot;  &quot;88&quot; 
+##  [89] &quot;89&quot;  &quot;90&quot;  &quot;91&quot;  &quot;92&quot;  &quot;93&quot;  &quot;94&quot;  &quot;95&quot;  &quot;96&quot;  &quot;97&quot;  &quot;98&quot;  &quot;99&quot; 
+## [100] &quot;100&quot; &quot;101&quot; &quot;102&quot; &quot;103&quot; &quot;104&quot; &quot;105&quot; &quot;106&quot; &quot;107&quot; &quot;108&quot; &quot;109&quot; &quot;110&quot;
+## [111] &quot;111&quot; &quot;112&quot; &quot;113&quot; &quot;114&quot; &quot;115&quot; &quot;116&quot; &quot;117&quot; &quot;118&quot; &quot;119&quot; &quot;120&quot; &quot;121&quot;
+## [122] &quot;122&quot; &quot;123&quot; &quot;124&quot; &quot;125&quot; &quot;126&quot; &quot;127&quot; &quot;128&quot; &quot;129&quot; &quot;130&quot; &quot;131&quot; &quot;132&quot;
+## [133] &quot;133&quot; &quot;134&quot; &quot;135&quot; &quot;136&quot; &quot;137&quot; &quot;138&quot; &quot;139&quot; &quot;140&quot; &quot;141&quot; &quot;142&quot; &quot;143&quot;
+## [144] &quot;144&quot; &quot;145&quot; &quot;146&quot; &quot;147&quot; &quot;148&quot; &quot;149&quot; &quot;150&quot;</code></pre>
+</section><section id="filter-functions" class="slide level2">
+<h2>Filter functions</h2>
+<ul>
+<li><code>filter_checkbox</code>, <code>filter_slider</code>, <code>filter_select</code> are crosstalk input function</li>
+<li>similar to <code>shiny</code> and <code>ggvis</code></li>
+<li>Input data must be a SharedData object, filter selections are stored and visualizations updated correspondingly</li>
+</ul>
+</section><section id="linked-brushing" class="slide level2">
+<h2>Linked brushing</h2>
+<ul>
+<li>Function <code>bscols</code> helps with the layout in the webpage</li>
+<li>Brushing is enabled in <code>d3scatter</code> plots (like selection filter)</li>
+<li>Corresponding points are shown in <strong>linked</strong> plots (i.e. plots using the same data)</li>
+</ul>
+<p><a href="03_crosstalk-example-03.html">Result</a></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(crosstalk)
+<span class="kw">library</span>(leaflet)
+
+shared_quakes &lt;-<span class="st"> </span>SharedData$<span class="kw">new</span>(quakes[<span class="kw">sample</span>(<span class="kw">nrow</span>(quakes), <span class="dv">100</span>),])
+<span class="kw">bscols</span>(
+  <span class="kw">leaflet</span>(shared_quakes, <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>, <span class="dt">height =</span> <span class="dv">300</span>) %&gt;%
+<span class="st">    </span><span class="kw">addTiles</span>() %&gt;%
+<span class="st">    </span><span class="kw">addMarkers</span>(),
+  <span class="kw">d3scatter</span>(shared_quakes, ~depth, ~mag, <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>, <span class="dt">height =</span> <span class="dv">300</span>)
+)</code></pre></div>
+</section><section id="something-doesnt-work" class="slide level2">
+<h2>Something doesn’t work?</h2>
+<ul>
+<li>Drawback of the bleeding edge: packages are still under active development</li>
+<li>Package versions are important</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools::<span class="kw">session_info</span>()</code></pre></div>
+<pre><code>## Session info --------------------------------------------------------------</code></pre>
+<pre><code>##  setting  value                       
+##  version  R version 3.3.1 (2016-06-21)
+##  system   x86_64, darwin13.4.0        
+##  ui       X11                         
+##  language (EN)                        
+##  collate  en_US.UTF-8                 
+##  tz       America/Chicago             
+##  date     2017-04-10</code></pre>
+<pre><code>## Packages ------------------------------------------------------------------</code></pre>
+<pre><code>##  package    * version    date       source                          
+##  assertthat   0.1        2013-12-06 CRAN (R 3.3.0)                  
+##  broom        0.4.1      2016-06-24 CRAN (R 3.3.0)                  
+##  colorspace   1.3-2      2016-12-14 cran (@1.3-2)                   
+##  crosstalk  * 1.0.0      2016-12-21 CRAN (R 3.3.2)                  
+##  DBI          0.5-1      2016-09-10 cran (@0.5-1)                   
+##  devtools     1.12.0     2016-06-24 CRAN (R 3.3.0)                  
+##  digest       0.6.12     2017-01-27 cran (@0.6.12)                  
+##  dplyr      * 0.5.0      2016-06-24 CRAN (R 3.3.0)                  
+##  evaluate     0.10       2016-10-11 cran (@0.10)                    
+##  forcats      0.2.0      2017-01-23 CRAN (R 3.3.2)                  
+##  ggplot2    * 2.2.1      2016-12-30 CRAN (R 3.3.2)                  
+##  gtable       0.2.0      2016-02-26 CRAN (R 3.3.0)                  
+##  haven        1.0.0      2016-09-23 cran (@1.0.0)                   
+##  hms          0.3        2016-11-22 cran (@0.3)                     
+##  htmltools    0.3.5      2016-03-21 CRAN (R 3.3.0)                  
+##  httpuv       1.3.3      2015-08-04 CRAN (R 3.3.0)                  
+##  httr         1.2.1      2016-07-03 CRAN (R 3.3.0)                  
+##  jsonlite     1.4        2017-04-08 cran (@1.4)                     
+##  knitr        1.15.1     2016-11-22 CRAN (R 3.3.2)                  
+##  lattice      0.20-33    2015-07-14 CRAN (R 3.3.1)                  
+##  lazyeval     0.2.0.9000 2017-04-10 Github (hadley/lazyeval@c155c3d)
+##  lubridate    1.6.0      2016-09-13 cran (@1.6.0)                   
+##  magrittr     1.5        2014-11-22 CRAN (R 3.3.0)                  
+##  memoise      1.0.0      2016-01-29 CRAN (R 3.3.0)                  
+##  mime         0.5        2016-07-07 CRAN (R 3.3.0)                  
+##  mnormt       1.5-4      2016-03-09 CRAN (R 3.3.0)                  
+##  modelr       0.1.0      2016-08-31 cran (@0.1.0)                   
+##  munsell      0.4.3      2016-02-13 CRAN (R 3.3.0)                  
+##  nlme         3.1-128    2016-05-10 CRAN (R 3.3.1)                  
+##  plyr         1.8.4      2016-06-08 CRAN (R 3.3.0)                  
+##  psych        1.6.6      2016-06-28 CRAN (R 3.3.0)                  
+##  purrr      * 0.2.2      2016-06-18 CRAN (R 3.3.0)                  
+##  R6           2.2.0      2016-10-05 cran (@2.2.0)                   
+##  Rcpp         0.12.10    2017-03-19 cran (@0.12.10)                 
+##  readr      * 1.1.0      2017-03-22 cran (@1.1.0)                   
+##  readxl       0.1.1      2016-03-28 cran (@0.1.1)                   
+##  reshape2     1.4.2      2016-10-22 cran (@1.4.2)                   
+##  rmarkdown    1.1        2016-10-16 CRAN (R 3.3.0)                  
+##  rmdshower    2.0.0      2016-06-06 CRAN (R 3.3.0)                  
+##  rvest        0.3.2      2016-06-17 cran (@0.3.2)                   
+##  scales       0.4.1.9000 2016-11-13 Github (hadley/scales@89c2a2f)  
+##  shiny        1.0.1      2017-04-01 cran (@1.0.1)                   
+##  stringi      1.1.2      2016-10-01 cran (@1.1.2)                   
+##  stringr      1.2.0      2017-02-18 cran (@1.2.0)                   
+##  tibble     * 1.3.0      2017-04-01 cran (@1.3.0)                   
+##  tidyr      * 0.6.0      2016-08-12 local (@0.6.0)                  
+##  tidyverse  * 1.1.1      2017-01-27 CRAN (R 3.3.2)                  
+##  withr        1.0.2      2016-06-20 CRAN (R 3.3.0)                  
+##  xml2         1.1.1      2017-01-24 cran (@1.1.1)                   
+##  xtable       1.8-2      2016-02-05 CRAN (R 3.3.0)                  
+##  yaml         2.1.14     2016-11-12 cran (@2.1.14)</code></pre>
+</section><section id="your-turn-5-min" class="slide level2">
+<h2>Your Turn (5 min)</h2>
+<ul>
+<li>Copy the code for the <code>mtcars</code> example into a new RMarkdown file and run it.</li>
+<li>Add a scatterplot of displacement (<code>disp</code>) and horse power (<code>hp</code>)</li>
+<li>Add an input filter for the number of carburetors.</li>
+</ul>
+</section><section id="your-turn-10-min" class="slide level2">
+<h2>Your Turn (10 min)</h2>
+<ul>
+<li>Exchange on of the scatterplots for a <code>plotly</code> chart. What happens with the linked brushing and filters?</li>
+</ul>
+</section><section id="ggplot2-and-crosstalk" class="slide level2">
+<h2>ggplot2 and crosstalk</h2>
+<p><a href="03_crosstalk-example-04.html">Result</a></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sd &lt;-<span class="st"> </span>SharedData$<span class="kw">new</span>(mtcars)
+<span class="kw">bscols</span>(  
+<span class="kw">filter_checkbox</span>(<span class="st">&quot;cyl&quot;</span>, <span class="st">&quot;Cylinders&quot;</span>, sd, 
+                    ~cyl, <span class="dt">inline =</span> <span class="ot">TRUE</span>),
+    <span class="kw">filter_slider</span>(<span class="st">&quot;hp&quot;</span>, <span class="st">&quot;Horsepower&quot;</span>, sd, 
+                  ~hp, <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>),
+    <span class="kw">filter_select</span>(<span class="st">&quot;auto&quot;</span>, <span class="st">&quot;Automatic&quot;</span>, sd, 
+                  ~<span class="kw">ifelse</span>(am ==<span class="st"> </span><span class="dv">0</span>, <span class="st">&quot;Yes&quot;</span>, <span class="st">&quot;No&quot;</span>))
+
+)
+<span class="kw">renderPlot</span>({
+   df &lt;-<span class="st"> </span>sd$<span class="kw">data</span>(<span class="dt">withSelection =</span> <span class="ot">TRUE</span>, <span class="dt">withFilter =</span> <span class="ot">TRUE</span>)
+   <span class="kw">ggplot</span>(df, <span class="kw">aes</span>(wt, mpg,
+     <span class="dt">color =</span> <span class="kw">factor</span>(cyl))) +
+<span class="st">     </span><span class="kw">geom_point</span>() 
+   })</code></pre></div>
+</section>
+
+  <!--
+  To hide progress bar from entire presentation
+  just remove “progress” element.
+  -->
+  <!-- <div class="progress"></div> -->
+  <script src="03_crosstalk_files/rmdshower/node_modules/shower/node_modules/shower-core/shower.min.js"></script>
+  <!-- Copyright © 2015 Yours Truly, Famous Inc. -->
+  <!-- Photos by John Carey, fiftyfootshadows.net -->
+
+    <script>renderMathInElement(document.body);</script>
+  
+  
+</body>
+</html>

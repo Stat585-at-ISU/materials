@@ -1,0 +1,154 @@
+---
+title: "Stat 585 - Crosstalk"
+author: "Heike Hofmann"
+ratio: 16x10
+output:
+  rmdshower::shower_presentation:
+    self_contained: false
+    katex: true
+    theme: ribbon
+---
+```{r setup, include=FALSE, message=FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+
+# Making widgets talk to each other
+
+## What is `crosstalk`?
+
+- `crosstalk` is an add-on R package to `htmlwidgets` produced by RStudio.
+- extends htmlwidgets and allows implementing cross-widget interactions: linked brushing and filtering. <br><br><br><br><br><br>
+- Tutorial: http://rstudio.github.io/crosstalk/
+
+## crosstalk Example
+
+[Result](03_crosstalk-example-01.html)
+
+```{r, eval = FALSE, fig.width=5, fig.height=4}
+library(crosstalk)
+library(shiny)
+library(d3scatter)
+
+shared_mtcars <- SharedData$new(mtcars)
+bscols(widths = c(3,NA,NA),
+  list(
+    filter_checkbox("cyl", "Cylinders", shared_mtcars, 
+                    ~cyl, inline = TRUE),
+    filter_slider("hp", "Horsepower", shared_mtcars, 
+                  ~hp, width = "100%"),
+    filter_select("auto", "Automatic", shared_mtcars, 
+                  ~ifelse(am == 0, "Yes", "No"))
+  ),
+  d3scatter(shared_mtcars, ~wt, ~mpg, ~factor(cyl), 
+            width="300", height=250),
+  d3scatter(shared_mtcars, ~hp, ~qsec, ~factor(cyl), 
+            width="300", height=250)
+)
+```
+
+## Another - crazy(!) - example
+
+[Result](03_crosstalk-example-02.html)
+
+```{r, eval = FALSE, warning = FALSE, fig.width=5, fig.height=4}
+library(gapminder)
+library(crosstalk)
+library(ggplot2)
+library(plotly)
+
+g <- crosstalk::SharedData$new(gapminder, ~continent)
+
+gg <- ggplot(g, aes(gdpPercap, lifeExp, color = continent, 
+                    frame = year)) +
+  geom_point(aes(size = pop, ids = country)) +
+  geom_smooth(se = FALSE, method = "lm") +
+  scale_x_log10()
+
+ggplotly(gg) %>% 
+  highlight("plotly_hover")
+```
+
+
+## Sharing data between charts
+
+**`SharedData`**: puts the data frame into a reactive expression, adds a key and a crosstalk group (crosstalk identifier, different objects can have the same crosstalk group). 
+
+```{r warning=FALSE, message=FALSE}
+library(crosstalk)
+shared_iris <- SharedData$new(iris)
+shared_iris$key() # row names are used by default
+```
+
+## Filter functions
+
+- `filter_checkbox`, `filter_slider`, `filter_select` are crosstalk input function
+- similar to `shiny` and `ggvis`
+- Input data must be a SharedData object, filter selections are stored and visualizations updated correspondingly
+
+
+## Linked brushing
+
+- Function `bscols` helps with the layout in the webpage
+- Brushing is enabled in `d3scatter` plots (like selection filter)
+- Corresponding points are shown in **linked** plots (i.e. plots using the same data)
+
+[Result](03_crosstalk-example-03.html)
+
+```{r, eval = FALSE}
+library(crosstalk)
+library(leaflet)
+
+shared_quakes <- SharedData$new(quakes[sample(nrow(quakes), 100),])
+bscols(
+  leaflet(shared_quakes, width = "100%", height = 300) %>%
+    addTiles() %>%
+    addMarkers(),
+  d3scatter(shared_quakes, ~depth, ~mag, width = "100%", height = 300)
+)
+```
+
+
+## Something doesn't work?
+
+- Drawback of the bleeding edge: packages are still under active development
+- Package versions are important
+
+```{r}
+devtools::session_info()
+```
+
+
+## Your Turn (5 min)
+
+- Copy the code for the `mtcars` example into a new RMarkdown file and run it.
+- Add a scatterplot of displacement (`disp`) and horse power (`hp`)
+- Add an input filter for the number of carburetors.
+
+## Your Turn (10 min)
+
+- Exchange on of the scatterplots for a `plotly` chart. What happens with the linked brushing and filters?
+
+## ggplot2 and crosstalk
+
+[Result](03_crosstalk-example-04.html)
+
+```{r, eval = FALSE}
+sd <- SharedData$new(mtcars)
+bscols(  
+filter_checkbox("cyl", "Cylinders", sd, 
+                    ~cyl, inline = TRUE),
+    filter_slider("hp", "Horsepower", sd, 
+                  ~hp, width = "100%"),
+    filter_select("auto", "Automatic", sd, 
+                  ~ifelse(am == 0, "Yes", "No"))
+
+)
+renderPlot({
+   df <- sd$data(withSelection = TRUE, withFilter = TRUE)
+   ggplot(df, aes(wt, mpg,
+     color = factor(cyl))) +
+     geom_point() 
+   })
+```
