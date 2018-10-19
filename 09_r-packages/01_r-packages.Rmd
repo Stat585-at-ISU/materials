@@ -165,7 +165,7 @@ add(10, 1)
 }
 ```
 
-## Your Turn (12 mins)
+## Your Turn 
 
 - Create a new R package using the RStudio dialog to set it up in a new project.
 - Build the package (CMD + shift + B) and run the function `hello()`
@@ -180,11 +180,12 @@ add(10, 1)
 
 | Tag      | Purpose           |
 | ------ |:------------------------------------------------------------------- |
+| `@export` |	Make the function visible to users of the package |
 | `@param` |	Describe inputs |
+| `@return` |	Describe outputs |
 | `@examples` |	Show how the function works |
 | `@author`	| "Who wrote the function (if different from package)"|
 | `@seealso` |	Pointers to related functions |
-| `@return` |	Describe outputs |
 | `@aliases` |	Make it easier for users to find |
 | `@rdname`	| Useful for functions that are invalid filenames and for combining docs |
 
