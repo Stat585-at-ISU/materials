@@ -51,7 +51,11 @@ This course deals with concepts, skills, and tools related to
 ## Data comes in a lot of different formats
 
 ... as sound 
-![](data/i-like-statistics_hh.mp3)
+<audio controls>
+  <source src="horse.ogg" type="audio/ogg">
+  <source src="data/i-like-statistics_hh.mp3" type="audio/mpeg">
+Your browser does not support the audio element.
+</audio>
 
 ... as image
 <img src="data/striations.jpg" width=150>
