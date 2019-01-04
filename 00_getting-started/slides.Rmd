@@ -1,35 +1,52 @@
 ---
 title: "Stat 585 - Syllabus discussion"
 author: "Heike Hofmann"
-ratio: 16x10
 output:
-  rmdshower::shower_presentation:
-    self_contained: false
-    katex: true
-    theme: ribbon
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
 ---
+class: center, middle
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
 
 # Welcome to Data Technologies for Statistical Analysis
+
+---
 
 ## Why Data Technologies?
 
 Not all data ... 
 
 - lives in spread sheets, 
+
 - is nice and clean, 
+
 - fits in a machine's main memory.
 
 As statisticians we **cannot** always rely on other people and disciplines to get the data into a nice and tidy format.
+
+---
 
 ## What are we going to do?
 
 This course deals with concepts, skills, and tools related to 
 
 - acquiring and combining data from different sources, 
+
 - rearranging and summarising data,
+
 - communicating methods and results in form of graphics, packages, and web applications.
 
+
 ... along the way ... make our process as transparent and reproducible as possible.
+
+---
 
 ## Data comes in a lot of different formats
 
@@ -42,6 +59,8 @@ This course deals with concepts, skills, and tools related to
 ... in a monitoring device
 <img src="data/fitbit.png" width=250>
 
+
+---
 
 ## 
 
@@ -59,19 +78,25 @@ library(tidyverse)
 ils_df %>% ggplot(aes(time, right)) + geom_line()
 ```
 
-##
 
-```{r}
-library(jpeg)
-img <- readJPEG("data/imgres.jpg")
-str(img)
+---
+
+## Data from images
+
+
+```{r, message = FALSE}
+library(magick)
+img <- image_read('data/imgres.jpg')
+image_info(img)
 ```
 
 ```{r, echo = FALSE, message = TRUE, cache= TRUE, fig.width=9, fig.height=3}
-img_df <- data.frame(expand.grid(y = 1:dim(img)[1], x = 1:dim(img)[2]))
-img_df$red <- as.numeric(img[,,1])
-img_df$green <- as.numeric(img[,,2])
-img_df$blue <- as.numeric(img[,,3])
+im_mat <- image_data(img)
+
+img_df <- data.frame(expand.grid(x = 1:dim(im_mat)[2], y = 1:dim(im_mat)[3]))
+img_df$red <- as.numeric(im_mat[1,,])
+img_df$green <- as.numeric(im_mat[2,,])
+img_df$blue <- as.numeric(im_mat[3,,])
 p1 <- qplot(data=img_df, geom="tile", x =x, y=-y, fill = red) + xlab("") +ylab("") + scale_fill_gradient(low="white", high = "red") + theme(legend.position="none")
 p2 <- qplot(data=img_df, geom="tile", x =x, y=-y, fill = green) + xlab("") +ylab("") + scale_fill_gradient(low="white", high = "green")+ theme(legend.position="none")
 p3 <- qplot(data=img_df, geom="tile", x =x, y=-y, fill = blue) + xlab("") +ylab("") + scale_fill_gradient(low="white", high = "blue")+ theme(legend.position="none")
@@ -81,6 +106,8 @@ grid.arrange(p1,p2,p3, nrow=1)
 
 ... what kind of birds are [these](http://www.theradzoo.com/meet-the-animals/birds/rainbow-lorikeet/)?
 
+---
+
 ## ... there's an R package for that!
 
 answer almost independent from the question asked ... obvious advantages
@@ -88,46 +115,61 @@ answer almost independent from the question asked ... obvious advantages
 disadvantages
 
 - finding a needle in a haystack? - problem of riches: which is the best solution, is there a good solution?
+
 - often a solution to a different problem - can we extend/append functionality? how?
+
 - packages are of varying quality - we need to be able to assess code for its performance
 
 ... these are some of the problems we will be dealing with.
 
+---
+
 ## Syllabus
 
-Full syllabus is available [from the course website](syllabus.pdf).
+Full syllabus is available [from the course website](https://stat585-at-isu.github.io/syllabus.pdf).
 
 ###Textbook (optional)
 
-- Hadley Wickham: *Advanced Programming in R*
-- Paul Murrell: *Data Technologies in R*
-- Yihui Xie: *Dynamic Documents with R and knitr*
+- Hadley Wickham: [*Advanced Programming in R*](https://github.com/hadley/adv-r)
+
+- Hadley Wickham: [*R packages*](http://r-pkgs.had.co.nz/)
+
+- Yihui Xie: [*Dynamic Documents with R and knitr*](https://github.com/yihui/knitr-book) and [*bookdown: Authoring Books and Technical Documents with R Markdown*](https://bookdown.org/yihui/bookdown/)
+
 - additional readings
+
 
 Course website: 
 
 - Materials, assignments, code: [https://stat585-at-isu.github.io/](https://stat585-at-isu.github.io/)
-- Blackboard (for grades)
 
+- Canvas (for grades)
 
+---
 
 ## Grades
 
 | Component | Weight |
 |:-- | --:|
-| Reading & Blog | 15% |
+| Reading & Blogs | 15% |
 | Labs | 40% |
 | *Final Project* | |
-|   report | 35% |
-|   presentation | 10% |
+|   report | 30% |
+|   presentation | 15% |
 
+---
 
 ## Labs
 
-- during class time on every other Thursday (starting with Thursday, Jan 19th) 
-- you will be partnered (randomly) in groups of 2 to 3
+- during class time on every other Wednesday (starting with Wednesday, Jan 30th) 
+
+- you will be partnered (randomly) in groups of 3 to 4
+
 - lab assignments are designed to be finished during class time, but 'finishing touches' can be applied until the following Monday, 10pm. 
+
 - if you cannot attend the lab, please let me know beforehand. Nevertheless, you are expected to do the work!
+
+---
 
 ## Attendance
 
@@ -135,23 +177,33 @@ I expect you to attend class: there will be a substantial amount of time devoted
 
 If you have to miss class, please 
 
-(a) let me know ahead of time. 
-(b) make sure to catch up with the material (e.g. have a designated note taker, talk to one of your team members, ... )
+1. let me know ahead of time. 
+
+2. make sure to catch up with the material (e.g. have a designated note taker, talk to one of your team members, ... )
+
+---
 
 ## Getting Help
 
 There's lots of ways to get help in case you are stuck:
 
-(1) Google is your friend! in particular, stackoverflow and R help are usually great resources,
-(2) ask a team member,
-(3) write email to the instructor with your question
+1. Google is your friend! in particular, stackoverflow and R help are usually great resources,
+
+2. ask a team member,
+
+3. write email to the instructor with your question, but please avoid any [lmgtfy](http://lmgtfy.com/?q=What+does+lmgtfy+mean?) questions!
+
+
+---
 
 ## Asking a good question
 
-is a learned and valuable skill!
+is a learned and valuable skill! 
 
 Have a look at:
 
 - stackoverflow's [Asking a good question](http://stackoverflow.com/help/how-to-ask)
+
 - R's [Posting guidelines](https://www.r-project.org/posting-guide.html)
+
 

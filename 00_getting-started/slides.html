@@ -1,215 +1,258 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Stat 585 - Syllabus discussion</title>
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="slides_files/rmdshower/node_modules/shower-ribbon/styles/screen-4x3.css">
-  <link rel="stylesheet" href="slides_files/rmdshower/style-common.css">
-  <link rel="stylesheet" href="slides_files/rmdshower/style-ribbon.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.js"></script>
-  <script src="slides_files/rmdshower/auto-render.min.js" type="text/javascript"></script>
-  
-  
-    <style type="text/css">
-   div.sourceCode { overflow-x: auto; }
-   table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-     margin: 0; padding: 0; vertical-align: baseline; border: none; }
-   table.sourceCode { width: 100%; line-height: 100%; }
-   td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-   td.sourceCode { padding-left: 5px; }
-   code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-   code > span.dt { color: #902000; } /* DataType */
-   code > span.dv { color: #40a070; } /* DecVal */
-   code > span.bn { color: #40a070; } /* BaseN */
-   code > span.fl { color: #40a070; } /* Float */
-   code > span.ch { color: #4070a0; } /* Char */
-   code > span.st { color: #4070a0; } /* String */
-   code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-   code > span.ot { color: #007020; } /* Other */
-   code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-   code > span.fu { color: #06287e; } /* Function */
-   code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-   code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-   code > span.cn { color: #880000; } /* Constant */
-   code > span.sc { color: #4070a0; } /* SpecialChar */
-   code > span.vs { color: #4070a0; } /* VerbatimString */
-   code > span.ss { color: #bb6688; } /* SpecialString */
-   code > span.im { } /* Import */
-   code > span.va { color: #19177c; } /* Variable */
-   code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-   code > span.op { color: #666666; } /* Operator */
-   code > span.bu { } /* BuiltIn */
-   code > span.ex { } /* Extension */
-   code > span.pp { color: #bc7a00; } /* Preprocessor */
-   code > span.at { color: #7d9029; } /* Attribute */
-   code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-   code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-   code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-   code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-  </style>
-  
-  
-  
-</head>
+  <head>
+    <title>Stat 585 - Syllabus discussion</title>
+    <meta charset="utf-8">
+    <meta name="author" content="Heike Hofmann" />
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
 
-<body class="shower list">
+# Stat 585 - Syllabus discussion
+### Heike Hofmann
 
-  <header class="caption">
-    <h1>Stat 585 - Syllabus discussion</h1>
-    <p>Heike Hofmann</p>
-  </header>
+---
 
-    
-  
-<section id="welcome-to-data-technologies-for-statistical-analysis" class="titleslide slide level1"><h2 class="shout">Welcome to Data Technologies for Statistical Analysis</h2></section><section id="why-data-technologies" class="slide level2">
-<h2>Why Data Technologies?</h2>
-<p>Not all data …</p>
-<ul>
-<li>lives in spread sheets,</li>
-<li>is nice and clean,</li>
-<li>fits in a machine’s main memory.</li>
-</ul>
-<p>As statisticians we <strong>cannot</strong> always rely on other people and disciplines to get the data into a nice and tidy format.</p>
-</section><section id="what-are-we-going-to-do" class="slide level2">
-<h2>What are we going to do?</h2>
-<p>This course deals with concepts, skills, and tools related to</p>
-<ul>
-<li>acquiring and combining data from different sources,</li>
-<li>rearranging and summarising data,</li>
-<li>communicating methods and results in form of graphics, packages, and web applications.</li>
-</ul>
-<p>… along the way … make our process as transparent and reproducible as possible.</p>
-</section><section id="data-comes-in-a-lot-of-different-formats" class="slide level2">
-<h2>Data comes in a lot of different formats</h2>
-<p>… as sound <embed src="data/i-like-statistics_hh.mp3" /></p>
-<p>… as image <img src="data/striations.jpg" width=150></p>
-<p>… in a monitoring device <img src="data/fitbit.png" width=250></p>
-</section><section id="section" class="slide level2">
-<h2></h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tuneR)
-ils_class &lt;-<span class="st"> </span><span class="kw">readWave</span>(<span class="st">&quot;data/i-like-statistics_hh.wav&quot;</span>)
-<span class="kw">str</span>(ils_class)</code></pre></div>
-<pre><code>## Formal class &#39;Wave&#39; [package &quot;tuneR&quot;] with 6 slots
+class: center, middle
+
+
+
+# Welcome to Data Technologies for Statistical Analysis
+
+---
+
+## Why Data Technologies?
+
+Not all data ... 
+
+- lives in spread sheets, 
+
+- is nice and clean, 
+
+- fits in a machine's main memory.
+
+As statisticians we **cannot** always rely on other people and disciplines to get the data into a nice and tidy format.
+
+---
+
+## What are we going to do?
+
+This course deals with concepts, skills, and tools related to 
+
+- acquiring and combining data from different sources, 
+
+- rearranging and summarising data,
+
+- communicating methods and results in form of graphics, packages, and web applications.
+
+
+... along the way ... make our process as transparent and reproducible as possible.
+
+---
+
+## Data comes in a lot of different formats
+
+... as sound 
+![](data/i-like-statistics_hh.mp3)
+
+... as image
+&lt;img src="data/striations.jpg" width=150&gt;
+
+... in a monitoring device
+&lt;img src="data/fitbit.png" width=250&gt;
+
+
+---
+
+## 
+
+
+```r
+library(tuneR)
+ils_class &lt;- readWave("data/i-like-statistics_hh.wav")
+str(ils_class)
+```
+
+```
+## Formal class 'Wave' [package "tuneR"] with 6 slots
 ##   ..@ left     : int [1:110592] 0 0 0 -1 2 -2 2 -2 1 -1 ...
 ##   ..@ right    : int [1:110592] -1 2 -2 2 -1 -1 2 -2 3 -3 ...
 ##   ..@ stereo   : logi TRUE
 ##   ..@ samp.rate: int 44100
 ##   ..@ bit      : int 16
-##   ..@ pcm      : logi TRUE</code></pre>
-<p><img src="slides_files/figure-revealjs/unnamed-chunk-2-1.png" width="480" /></p>
-</section><section id="section-1" class="slide level2">
-<h2></h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(jpeg)
-img &lt;-<span class="st"> </span><span class="kw">readJPEG</span>(<span class="st">&quot;data/imgres.jpg&quot;</span>)
-<span class="kw">str</span>(img)</code></pre></div>
-<pre><code>##  num [1:193, 1:200, 1:3] 0.235 0.235 0.239 0.239 0.243 ...</code></pre>
-<p><img src="slides_files/figure-revealjs/unnamed-chunk-4-1.png" width="864" /></p>
-<p>… what kind of birds are <a href="http://www.theradzoo.com/meet-the-animals/birds/rainbow-lorikeet/">these</a>?</p>
-</section><section id="theres-an-r-package-for-that" class="slide level2">
-<h2>… there’s an R package for that!</h2>
-<p>answer almost independent from the question asked … obvious advantages</p>
-<p>disadvantages</p>
-<ul>
-<li>finding a needle in a haystack? - problem of riches: which is the best solution, is there a good solution?</li>
-<li>often a solution to a different problem - can we extend/append functionality? how?</li>
-<li>packages are of varying quality - we need to be able to assess code for its performance</li>
-</ul>
-<p>… these are some of the problems we will be dealing with.</p>
-</section><section id="syllabus" class="slide level2">
-<h2>Syllabus</h2>
-<p>Full syllabus is available <a href="syllabus.pdf">from the course website</a>.</p>
-<h3 id="textbook-optional">Textbook (optional)</h3>
-<ul>
-<li>Hadley Wickham: <em>Advanced Programming in R</em></li>
-<li>Paul Murrell: <em>Data Technologies in R</em></li>
-<li>Yihui Xie: <em>Dynamic Documents with R and knitr</em></li>
-<li>additional readings</li>
-</ul>
-<p>Course website:</p>
-<ul>
-<li>Materials, assignments, code: <a href="https://stat585-at-isu.github.io/" class="uri">https://stat585-at-isu.github.io/</a></li>
-<li>Blackboard (for grades)</li>
-</ul>
-</section><section id="grades" class="slide level2">
-<h2>Grades</h2>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Component</th>
-<th style="text-align: right;">Weight</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">Reading &amp; Blog</td>
-<td style="text-align: right;">15%</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Labs</td>
-<td style="text-align: right;">40%</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><em>Final Project</em></td>
-<td style="text-align: right;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">report</td>
-<td style="text-align: right;">35%</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">presentation</td>
-<td style="text-align: right;">10%</td>
-</tr>
-</tbody>
-</table>
-</section><section id="labs" class="slide level2">
-<h2>Labs</h2>
-<ul>
-<li>during class time on every other Thursday (starting with Thursday, Jan 19th)</li>
-<li>you will be partnered (randomly) in groups of 2 to 3</li>
-<li>lab assignments are designed to be finished during class time, but ‘finishing touches’ can be applied until the following Monday, 10pm.</li>
-<li>if you cannot attend the lab, please let me know beforehand. Nevertheless, you are expected to do the work!</li>
-</ul>
-</section><section id="attendance" class="slide level2">
-<h2>Attendance</h2>
-<p>I expect you to attend class: there will be a substantial amount of time devoted to ‘hands-on’ examples on the computers. Make use of that time!</p>
-<p>If you have to miss class, please</p>
-<ol type="a">
-<li>let me know ahead of time.</li>
-<li>make sure to catch up with the material (e.g. have a designated note taker, talk to one of your team members, … )</li>
-</ol>
-</section><section id="getting-help" class="slide level2">
-<h2>Getting Help</h2>
-<p>There’s lots of ways to get help in case you are stuck:</p>
-<ol type="1">
-<li>Google is your friend! in particular, stackoverflow and R help are usually great resources,</li>
-<li>ask a team member,</li>
-<li>write email to the instructor with your question</li>
-</ol>
-</section><section id="asking-a-good-question" class="slide level2">
-<h2>Asking a good question</h2>
-<p>is a learned and valuable skill!</p>
-<p>Have a look at:</p>
-<ul>
-<li>stackoverflow’s <a href="http://stackoverflow.com/help/how-to-ask">Asking a good question</a></li>
-<li>R’s <a href="https://www.r-project.org/posting-guide.html">Posting guidelines</a></li>
-</ul>
-</section>
+##   ..@ pcm      : logi TRUE
+```
 
-  <!--
-  To hide progress bar from entire presentation
-  just remove “progress” element.
-  -->
-  <!-- <div class="progress"></div> -->
-  <script src="slides_files/rmdshower/node_modules/shower/node_modules/shower-core/shower.min.js"></script>
-  <!-- Copyright © 2015 Yours Truly, Famous Inc. -->
-  <!-- Photos by John Carey, fiftyfootshadows.net -->
+![](slides_files/figure-html/unnamed-chunk-2-1.png)&lt;!-- --&gt;
 
-    <script>renderMathInElement(document.body);</script>
-  
-  
-</body>
+
+---
+
+## Data from images
+
+
+
+```r
+library(magick)
+img &lt;- image_read('data/imgres.jpg')
+image_info(img)
+```
+
+```
+##   format width height colorspace matte filesize density
+## 1   JPEG   200    193       sRGB FALSE     9520   72x72
+```
+
+![](slides_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+
+... what kind of birds are [these](http://www.theradzoo.com/meet-the-animals/birds/rainbow-lorikeet/)?
+
+---
+
+## ... there's an R package for that!
+
+answer almost independent from the question asked ... obvious advantages
+
+disadvantages
+
+- finding a needle in a haystack? - problem of riches: which is the best solution, is there a good solution?
+
+- often a solution to a different problem - can we extend/append functionality? how?
+
+- packages are of varying quality - we need to be able to assess code for its performance
+
+... these are some of the problems we will be dealing with.
+
+---
+
+## Syllabus
+
+Full syllabus is available [from the course website](https://stat585-at-isu.github.io/syllabus.pdf).
+
+###Textbook (optional)
+
+- Hadley Wickham: [*Advanced Programming in R*](https://github.com/hadley/adv-r)
+
+- Hadley Wickham: [*R packages*](http://r-pkgs.had.co.nz/)
+
+- Yihui Xie: [*Dynamic Documents with R and knitr*](https://github.com/yihui/knitr-book) and [*bookdown: Authoring Books and Technical Documents with R Markdown*](https://bookdown.org/yihui/bookdown/)
+
+- additional readings
+
+
+Course website: 
+
+- Materials, assignments, code: [https://stat585-at-isu.github.io/](https://stat585-at-isu.github.io/)
+
+- Canvas (for grades)
+
+---
+
+## Grades
+
+| Component | Weight |
+|:-- | --:|
+| Reading &amp; Blogs | 15% |
+| Labs | 40% |
+| *Final Project* | |
+|   report | 30% |
+|   presentation | 15% |
+
+---
+
+## Labs
+
+- during class time on every other Wednesday (starting with Wednesday, Jan 30th) 
+
+- you will be partnered (randomly) in groups of 3 to 4
+
+- lab assignments are designed to be finished during class time, but 'finishing touches' can be applied until the following Monday, 10pm. 
+
+- if you cannot attend the lab, please let me know beforehand. Nevertheless, you are expected to do the work!
+
+---
+
+## Attendance
+
+I expect you to attend class: there will be a substantial amount of time devoted to 'hands-on' examples on the computers. Make use of that time!
+
+If you have to miss class, please 
+
+1. let me know ahead of time. 
+
+2. make sure to catch up with the material (e.g. have a designated note taker, talk to one of your team members, ... )
+
+---
+
+## Getting Help
+
+There's lots of ways to get help in case you are stuck:
+
+1. Google is your friend! in particular, stackoverflow and R help are usually great resources,
+
+2. ask a team member,
+
+3. write email to the instructor with your question, but please avoid any [lmgtfy](http://lmgtfy.com/?q=What+does+lmgtfy+mean?) questions!
+
+
+---
+
+## Asking a good question
+
+is a learned and valuable skill! 
+
+Have a look at:
+
+- stackoverflow's [Asking a good question](http://stackoverflow.com/help/how-to-ask)
+- R's [Posting guidelines](https://www.r-project.org/posting-guide.html)
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script>
+(function() {
+  var i, text, code, codes = document.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+})();
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
 </html>
